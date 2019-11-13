@@ -29,10 +29,10 @@ $cod = isset($_REQUEST["cod"]) ? (int)htmlspecialchars($_REQUEST["cod"], ENT_QUO
 ?>
 <!-- === Menu === --> 
 <ul class="nav nav-tabs">
-    <li><a href="/do/indexportal/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li class="active"><a href="/do/gerusuario/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="/do/classes/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li><a href="/do/peles/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li><a href="do/indexportal/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Informações do Publicare</a></li>
+    <li class="active"><a href="do/gerusuario/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li><a href="do/classes/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li><a href="do/peles/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -49,8 +49,8 @@ if ($acao == "")
 
     
     <div class="panel-body">
-        <script src="/include/javascript_datatable" type="text/javascript"></script>
-        <link href="/include/css_datatable" rel="stylesheet" type="text/css"> 
+        <script src="include/javascript_datatable" type="text/javascript"></script>
+        <link href="include/css_datatable" rel="stylesheet" type="text/css"> 
         
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -98,8 +98,8 @@ foreach ($permissoes as $cod=>$perm)
 }
                             ?></td>
                             <td>
-                                <a href="/do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=editar&cod=<?php echo($usu["cod_usuario"]); ?>" title='Editar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Usuário' data-placement='left' title='Editar este usuário'><i class="fapbl fapbl-pencil-alt font-size16"></i></a>
-                                <a href="/do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=bloquear&cod=<?php echo($usu["cod_usuario"]); ?>" title='Apagar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Usuário' data-placement='left' title='Apagar este usuário'><i class="fapbl fapbl-times-circle font-size16"></i></a>
+                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=editar&cod=<?php echo($usu["cod_usuario"]); ?>" title='Editar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Usuário' data-placement='left' title='Editar este usuário'><i class="fapbl fapbl-pencil-alt font-size16"></i></a>
+                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=bloquear&cod=<?php echo($usu["cod_usuario"]); ?>" title='Apagar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Usuário' data-placement='left' title='Apagar este usuário'><i class="fapbl fapbl-times-circle font-size16"></i></a>
                             </td>
                         </tr>
 <?php
@@ -126,7 +126,7 @@ $(document).ready(function() {
     });
     
     $("#btnAdicionar").click(function(){
-        document.location.href="/do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=novo";
+        document.location.href="do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=novo";
     });
 });
 </script>
@@ -160,8 +160,8 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
         $tmpArrPerfilObjeto = $_page->_usuario->PegaDireitosDoUsuario($_page, $cod);
     }
 ?>
-    <script src="/include/javascript_datepicker" type="text/javascript"></script>
-    <link href="/include/css_datepicker" rel="stylesheet" type="text/css">  
+    <script src="include/javascript_datepicker" type="text/javascript"></script>
+    <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
     
     <div class="panel-body">
         <div class="panel panel-info">
@@ -169,7 +169,7 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
                 <h3 class="font-size20" style="line-height: 30px;"><?php echo($titPagina); ?> usuário</h3>
             </div>
 			
-            <form action="/do/gerusuario_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html" method="POST" id="form_usuario">
+            <form action="do/gerusuario_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <div class="panel-body">
                 				
                     <input type="hidden" name="cod_usuario" id="cod_usuario" value="<?php echo isset($usuario['cod_usuario']) ? $usuario['cod_usuario'] : ""; ?>" />
@@ -347,7 +347,7 @@ $(document).ready(function() {
         document.getElementById("PassValue").value = complexity; 
     });
     $("#btnCancelar").click(function(){
-        document.location.href="/do/gerusuario/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html";
+        document.location.href="do/gerusuario/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html";
     });
     $("#ldap").click(function(){
         if (this.checked)
@@ -372,7 +372,7 @@ elseif ($acao=="bloquear" && $cod > 0)
     
     if (!$usuario)
     {
-        echo "<script>document.location.href='/do/gerusuario/".$_page->_objeto->Valor($_page, "cod_objeto").".html?msge=".urlencode("Usuário não encontrado")."';</script>";
+        echo "<script>document.location.href='do/gerusuario/".$_page->_objeto->Valor($_page, "cod_objeto").".html?msge=".urlencode("Usuário não encontrado")."';</script>";
         exit();
     }
 ?>
@@ -381,7 +381,7 @@ elseif ($acao=="bloquear" && $cod > 0)
             <div class="panel-heading">
                 <h3 class="font-size20" style="line-height: 30px;">Apagar usuário</h3>
             </div>
-            <form action="/do/gerusuario_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html" method="POST" id="form_usuario">
+            <form action="do/gerusuario_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <input type="hidden" name="cod_usuario" value="<?php echo($cod); ?>" />
                 <div class="panel-body">
                     <p>Deseja realmente apagar o usuário <b>"<?php echo($usuario["nome"]); ?>"</b>?</p>
@@ -393,7 +393,7 @@ elseif ($acao=="bloquear" && $cod > 0)
 <script>
     $("document").ready(function(){
         $("#btnBNao").click(function(){
-            document.location.href='/do/gerusuario/".$_page->_objeto->Valor($_page, "cod_objeto").".html';
+            document.location.href='do/gerusuario/".$_page->_objeto->Valor($_page, "cod_objeto").".html';
         });
     });
 </script>

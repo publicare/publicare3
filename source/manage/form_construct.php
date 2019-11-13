@@ -71,10 +71,10 @@ $new_status = 0;
 if ($_page->_objeto->Valor($_page, "cod_objeto") == _ROOT) $new_status = _STATUS_PUBLICADO;
 else $new_status = _STATUS_PRIVADO;
 ?>
-<script src="/include/javascript_datepicker" type="text/javascript"></script>
-<link href="/include/css_datepicker" rel="stylesheet" type="text/css">  
+<script src="include/javascript_datepicker" type="text/javascript"></script>
+<link href="include/css_datepicker" rel="stylesheet" type="text/css">  
 
-<form enctype="multipart/form-data" action="/do/obj_post/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" method="post" name="formobj" id="formobj">
+<form enctype="multipart/form-data" action="do/obj_post/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" method="post" name="formobj" id="formobj">
     <input type="hidden" name="op" value="<?php if($edit){echo "edit";} ?>">
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">

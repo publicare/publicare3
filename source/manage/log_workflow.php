@@ -34,14 +34,14 @@ global $_page, $loglist;
 		});
 	});
 </script>
-<script src="/include/javascript_datatable" type="text/javascript"></script>
-<link href="/include/css_datatable" rel="stylesheet" type="text/css">
+<script src="include/javascript_datatable" type="text/javascript"></script>
+<link href="include/css_datatable" rel="stylesheet" type="text/css">
 
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li><a href="/do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li class="active"><a href="/do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
-  <li><a href="/do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
+  <li><a href="do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li class="active"><a href="do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
+  <li><a href="do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -74,7 +74,7 @@ global $_page, $loglist;
 						</tr>
 					</thead>
 					<tbody>
-<?
+<?php
 	$count=0;
 	if (isset($loglist) && is_array($loglist)){
 		foreach($loglist as $log)
@@ -119,7 +119,7 @@ global $_page, $loglist;
 	</div>
 </div>
 <!-- === WORKFLOW === -->
-<?	
+<?php	
 	}
 	else {
 	include("manage/vazio.php");	

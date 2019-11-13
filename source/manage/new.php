@@ -29,7 +29,7 @@ $("document").ready(function(){
     });
 });
 </script>
-<form action="<?php echo(_URL) ?>/do/new_post/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent">
+<form action="do/new_post/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent">
     <input type="hidden" name="cod_objeto" value="<?php echo($cod_objeto) ?>">
     <input type="hidden" name="prefixo" id="prefixo" value="">
     <!-- === Selecione a classe === -->

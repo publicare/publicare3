@@ -1,4 +1,4 @@
-<?
+<?php
 global $_page, $cod_objeto;
 
 	$_page->_administracao->ApagarObjeto($_page, $cod_objeto);

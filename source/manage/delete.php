@@ -65,9 +65,9 @@ global $_page, $info, $num_filhos;
 		<!-- === Final === Dados do Objeto === -->
 		
     </div>
-	<form action="/do/delete_post.php/<? echo $_page->_objeto->Valor($_page, "cod_objeto")?>.html" method="post" name="delete_post" id="delete_post">
+	<form action="do/delete_post.php/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html" method="post" name="delete_post" id="delete_post">
 	<div class="panel-footer" style="text-align: right">
-		<input type="hidden" name="cod_pai" value="<? echo $_page->_objeto->Valor($_page, "cod_pai")?>">
+		<input type="hidden" name="cod_pai" value="<?php echo($_page->_objeto->Valor($_page, "cod_pai")); ?>">
 		<input type="submit" name="submit" value="Remover Objeto" class="btn btn-danger">
 	</div>
 	</form>

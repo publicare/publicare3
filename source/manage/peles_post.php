@@ -113,10 +113,10 @@ else
 	}
 	else
 	{
-		header("Location:/do/peles/".$_page->_objeto->Valor($_page, "cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
+		header("Location:"._URL."/do/peles/".$_page->_objeto->Valor($_page, "cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
 		exit();
 	}
 }
 
-header("Location:/do/peles/".$_page->_objeto->Valor($_page, "cod_objeto").".html?cod_pele=".$cod_pele);
+header("Location:"._URL."/do/peles/".$_page->_objeto->Valor($_page, "cod_objeto").".html?cod_pele=".$cod_pele);
 exit();

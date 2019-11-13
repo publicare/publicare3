@@ -22,9 +22,9 @@ global $_page;
 ?>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li class="active"><a href="/do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li><a href="/do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
-  <li><a href="/do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
+  <li class="active"><a href="do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li><a href="do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
+  <li><a href="do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -62,7 +62,7 @@ global $_page;
 	$tmpCaminhoObjeto=$_page->_objeto->PegaCaminhoComTitulo($_page);
 	foreach ($tmpCaminhoObjeto as $item)
 	{
-		echo '<a href="/index.php/do/preview/'.$item['cod_objeto'].'.html">'.$item['titulo'].'</a><i> [cod: '.$item['cod_objeto'].']</i><br>';
+		echo '<a href="do/preview/'.$item['cod_objeto'].'.html">'.$item['titulo'].'</a><i> [cod: '.$item['cod_objeto'].']</i><br>';
 	}
 ?>
 								</div>

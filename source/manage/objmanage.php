@@ -1,4 +1,4 @@
-<?
+<?php
 global $_page;
 ?>
 

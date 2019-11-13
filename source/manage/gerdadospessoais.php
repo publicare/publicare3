@@ -61,8 +61,8 @@ global $_page;
         
         <!-- === Dados do usuário === -->
         <div class="panel panel-info">
-            <div class="panel-heading">Dados do usuário (<?php echo $_SESSION['usuario']['nome']; ?>)</div>
-            <form action="/index.php/do/gerdadospessoais_post/<?echo $_page->_objeto->Valor($_page, 'cod_objeto')?>.html" method="POST" onsubmit="return ChecaValidade(this);">
+            <div class="panel-heading">Dados do usuário (<?php echo( $_SESSION['usuario']['nome']); ?>)</div>
+            <form action="do/gerdadospessoais_post/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')); ?>.html" method="POST">
                 <input type="hidden" name="cod_usuario" value="<?php echo $_SESSION['usuario']['cod_usuario']; ?>">
                 <input type="hidden" name="nomehidden" value="<?php echo $_SESSION['usuario']['nome']; ?>">
                 <input type="hidden" name="secao" value="<?php echo $_SESSION['usuario']['secao']; ?>">

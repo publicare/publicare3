@@ -28,9 +28,10 @@
 			<td class="pblTextoLog">
 				<strong>Data</strong></td>
 		</tr>
-	<?
+	<?php
 		$count=0;
 		if (isset($loglist) && is_array($loglist)){
+//                    xd($loglist);
 			foreach($loglist as $log)
 			{
 				if ($count++%2)
@@ -56,6 +57,6 @@
 	
 	</table>
 	</div>
-<?
+<?php
 	//BoxSimplesBottom();
 }?>

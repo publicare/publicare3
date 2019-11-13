@@ -243,6 +243,7 @@ class Blob
         
         foreach ($this->tipos_ver as $ext=>$type)
         {
+//        xd(_BLOBDIR);
             if (file_exists(_BLOBDIR . '/' . Blob::identificaPasta($cod_blob) . '/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
@@ -254,6 +255,7 @@ class Blob
         if (is_null($filetype)) $_page->headerHtml(404, "Arquivo não encontrado");
         $cod_objeto = $this->CodigoObjeto($_page, $cod_blob);
         $cod_objeto = $cod_objeto["cod"];
+        
         
         if (!$_page->_adminobjeto->estaSobAreaProtegida($_page, $cod_objeto)) $_page->headerHtml(403, "Acesso não permitido");
 

@@ -53,5 +53,5 @@ foreach($_POST['objlist'] as $obj)
         $_page->_administracao->SubmeterObjeto($_page, 'Objeto solicitado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
     }
 }
-header ("Location:"._URL.'/index.php/do/'.$netRedirect.'/'.$_POST['return_obj'].'.html');
+header ("Location:"._URL.'/do/'.$netRedirect.'/'.$_POST['return_obj'].'.html');
 ?>

@@ -130,7 +130,7 @@ class ClasseLog
      */
     function PegaLogObjeto(&$_page, $cod_objeto)
     {
-        $result = "";
+        $result = array();
         $_OPERACAO_OBJETO = array('','Criar','Editar','Apagar','Recuperar');
         $sql = "select usuario.nome as usuario, cod_operacao,
                         estampa from logobjeto

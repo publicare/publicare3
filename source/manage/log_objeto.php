@@ -20,7 +20,7 @@
 
 global $_page, $loglist, $log, $count;
 
-	$loglist = $_page->_log->PegaLogWorkflow($_page, $_page->_objeto->Valor($_page, "cod_objeto"));
+	$loglist = $_page->_log->PegaLogObjeto($_page, $_page->_objeto->Valor($_page, "cod_objeto"));
 	if (count ($loglist))
 	{
 ?>
@@ -33,14 +33,14 @@ global $_page, $loglist, $log, $count;
 		});
 	});
 </script>
-<script src="/include/javascript_datatable" type="text/javascript"></script>
-<link href="/include/css_datatable" rel="stylesheet" type="text/css">
+<script src="include/javascript_datatable" type="text/javascript"></script>
+<link href="include/css_datatable" rel="stylesheet" type="text/css">
 
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li><a href="/do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li><a href="/do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
-  <li class="active"><a href="/do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
+  <li><a href="do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li><a href="do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
+  <li class="active"><a href="do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -72,8 +72,9 @@ global $_page, $loglist, $log, $count;
 						</tr>
 					</thead>
 					<tbody>
-<?
+<?php
 	$count=0;
+//        xd($loglist);
 	if (isset($loglist) && is_array($loglist)){
 		foreach($loglist as $log)
 		{
@@ -113,7 +114,7 @@ global $_page, $loglist, $log, $count;
 	</div>
 </div>
 <!-- === Log Status === -->
-<?
+<?php
 	}
 	else {
 	include("manage/vazio.php");	

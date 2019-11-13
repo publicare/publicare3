@@ -162,7 +162,7 @@ if ($_SESSION['usuario']['perfil'] == 1)
     $msge = "Acesso negado a edição deste usuário.";
 }
 
-$url = "Location:/do/gerusuario/" . $_page->_objeto->Valor($_page, 'cod_objeto') . ".html?acao=".$acao.$gets;
+$url = "Location:"._URL."/do/gerusuario/" . $_page->_objeto->Valor($_page, 'cod_objeto') . ".html?acao=".$acao.$gets;
 
 if ($msg!="") $url .= "&msg=" . urlencode($msg);
 if ($msge!="") $url .= "&msge=" . urlencode($msge);

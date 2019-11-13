@@ -24,7 +24,7 @@ global $_page;
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Ajuda do Publicare</b></h3></div>
     <div class="panel-body">
-        <a href="/html/ajuda/" target="_blank">
+        <a href="html/ajuda/" target="_blank">
             <u>Programa de ajuda para Editores e Autores</u></a>
         <br><br>
         clique no link para abrir a ajuda.
