@@ -21,9 +21,10 @@
 global $_page, $cod_objeto;
 
 $total = $_page->_administracao->PegaTotalDeVencidos($_page, $cod_objeto);
+$inicio = !isset($inicio)?0:$inicio;
 ?>
-<script src="/include/javascript_datatable" type="text/javascript"></script>
-<link href="/include/css_datatable" rel="stylesheet" type="text/css"> 
+<script src="include/javascript_datatable" type="text/javascript"></script>
+<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
  
 <script>
 $(document).ready(function(){
@@ -58,7 +59,7 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objeto Vencidos</b></h3></div>
 	
-		<form action="/do/vencidos_post.php/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+		<form action="do/vencidos_post.php/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
 		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor($_page, "cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
@@ -100,7 +101,7 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
 { 
 ?>
-                            <a href="/do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>

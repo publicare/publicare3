@@ -28,6 +28,8 @@ $ord1 = isset($_GET["ord1"])?$_GET["ord1"]:"titulo";
 $ord2 = isset($_GET["ord2"])?$_GET["ord2"]:"asc";
 if ($ord2=="asc") $ordf = $ord1;
 else $ordf = "-".$ord1;
+
+$inicio = isset($inicio)?$inicio:0;
 ?>
 
 <script type="text/javascript">
@@ -55,14 +57,14 @@ $(document).ready(function(){
     });
 });
 </script>
-<script src="/include/javascript_datatable" type="text/javascript"></script>
-<link href="/include/css_datatable" rel="stylesheet" type="text/css"> 
+<script src="include/javascript_datatable" type="text/javascript"></script>
+<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
 
 <!-- === Recuperar objetos apagados === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Recuperar objetos apagados</b></h3></div>
 
-	<form action="/do/recuperar_post/<? echo $_page->_objeto->Valor($_page, 'cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
+	<form action="do/recuperar_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
 	<div class="panel-body">
 
 		<!-- === Listar Conteúdo === -->
@@ -89,7 +91,7 @@ $(document).ready(function(){
 						</tr>
 					</thead>
 					<tbody>
-<?
+<?php
 	$deletedlist = $_page->_administracao->PegaListaDeApagados($_page, $inicio);
 
 	$count=0;
@@ -111,12 +113,12 @@ $(document).ready(function(){
 				$classe="pblTextoLogPar";
 ?>
 						<tr>
-							<td width="10"><input type="checkbox" id="objlist[]" name="objlist[]" value="<? echo $obj["cod_objeto"];?>" class="chkObj"></td>
+							<td width="10"><input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo $obj["cod_objeto"];?>" class="chkObj"></td>
 							<td width="60%"><a href="<? echo $obj["exibir"]?>"><strong><? echo $obj["titulo"];?></strong></a></td>
 							<td width="20%"><?php echo $obj["classe"];?></td>
-							<td width="20%"><? echo ConverteData($obj["data_exclusao"], 5);?></td>
+							<td width="20%"><?php echo ConverteData($obj["data_exclusao"], 5);?></td>
 						</tr>
-<?
+<?php
 		}
 	}
 ?>

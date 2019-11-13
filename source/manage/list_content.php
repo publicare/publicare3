@@ -23,8 +23,8 @@ $_page->_objeto->PegaListaDeFilhos($_page, '*');
 ?>
 <style>trMouseAction1:hover { background: #fff; }</style>
 <ul class="nav nav-tabs">
-  <li class="active"><a href="/do/list_content/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Listar Conteúdo</a></li>
-  <li><a href="/do/pilha/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Pilha</a></li>
+  <li class="active"><a href="do/list_content/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Listar Conteúdo</a></li>
+  <li><a href="do/pilha/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Pilha</a></li>
 </ul>
 <script>
 $(document).ready(function(){
@@ -54,14 +54,14 @@ $(document).ready(function(){
     });
 });
 </script>
-<script src="/include/javascript_datatable" type="text/javascript"></script>
-<link href="/include/css_datatable" rel="stylesheet" type="text/css"> 
+<script src="include/javascript_datatable" type="text/javascript"></script>
+<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
 
 <!-- === Listar Conteúdo === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Listar Conteúdo</b></h3></div>
 	
-    <form action="/do/list_content_post.php/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
+    <form action="do/list_content_post.php/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
         <input type="hidden" name="return_obj" value="<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>">
 
         <div class="panel-footer">
@@ -113,7 +113,7 @@ elseif ($_SESSION['usuario']['perfil'] == _PERFIL_AUTOR)
 if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
 { 
 ?>
-                            <a class="ABranco" href="/do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a class="ABranco" href="do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>

@@ -2,18 +2,18 @@
 global $_page;
 ?>
 
-<form action="/index.php/do/submeter_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
+<form action="index.php/do/submeter_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
 	<div class="pblAlinhamentoTabelas">
 	<TABLE WIDTH=500 BORDER=0 CELLPADDING=0 CELLSPACING=8 class="pblTabelaGeral">
 	<TR>
 		<TD>
-			<img border=0 src="/html/imagens/portalimages/peca3.gif" ALT="" align="left"><font class="pblTituloBox">Solicitar publica&ccedil;&atilde;o</font><br>
+			<img border=0 src="html/imagens/portalimages/peca3.gif" ALT="" align="left"><font class="pblTituloBox">Solicitar publica&ccedil;&atilde;o</font><br>
 			<font class="pblTextoForm"><? echo $_page->_objeto->Valor($_page, "titulo")?></font>
 		</td>
 
 		<TD width="120" class="pblAlinhamentoBotoes">
-					<a class="ABranco" href="/index.php/content/view/<? echo $_page->_objeto->Valor($_page, "cod_objeto")?>.html"><img border=0 src="/html/imagens/portalimages/exibir.png" ALT="Exibir Objeto" hspace="2"></a>
-					<a href="#" onclick="history.back()"><img border=0 src="/html/imagens/portalimages/voltar2.gif" ALT="Voltar"></a>
+					<a class="ABranco" href="index.php/content/view/<? echo $_page->_objeto->Valor($_page, "cod_objeto")?>.html"><img border=0 src="/html/imagens/portalimages/exibir.png" ALT="Exibir Objeto" hspace="2"></a>
+					<a href="#" onclick="history.back()"><img border=0 src="html/imagens/portalimages/voltar2.gif" ALT="Voltar"></a>
 				</TD>
 	</TR>
 

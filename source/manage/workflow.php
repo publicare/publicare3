@@ -28,7 +28,7 @@ header("Content-Type: text/html; charset=ISO-8859-1",true);
 			<td class="pblTextoLog" width="280">
 				<strong>Mensagem</strong></td>
 		</tr>
-	<?
+	<?php
 		$count=0;
 		if (isset($loglist) && is_array($loglist)){
 			foreach($loglist as $log)
@@ -58,7 +58,7 @@ header("Content-Type: text/html; charset=ISO-8859-1",true);
 	
 	</table>
 	</div>
-<?	
+<?php	
 	//BoxSimplesBottom();
 	}
 	else {

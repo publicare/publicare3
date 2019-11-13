@@ -24,7 +24,7 @@ global $_page;
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Rejeitar Objeto</b></h3></div>
 
-	<form action="/index.php/do/rejeitar_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
+	<form action="index.php/do/rejeitar_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
 		<div class="panel-body">
 			
 			<!-- === Objeto === -->

@@ -55,14 +55,14 @@ $(document).ready(function(){
     });
 });
 </script>
-<script src="/include/javascript_datatable" type="text/javascript"></script>
-<link href="/include/css_datatable" rel="stylesheet" type="text/css"> 
+<script src="include/javascript_datatable" type="text/javascript"></script>
+<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
 
 <!-- === Apagar em definitivo === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Apagar em definitivo</b></h3></div>
 
-	<form action="/do/apagar_definitivo_post.php/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+	<form action="do/apagar_definitivo_post.php/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
 	<div class="panel-body">
 
 		<!-- === Listar Conteúdo === -->
@@ -118,7 +118,7 @@ $(document).ready(function(){
 							<td><?php echo $obj["classe"];?></td>
 							<td><?php echo ConverteData($obj["data_exclusao"], 5);?></td>
 						</tr>
-<?
+<?php
 		}
 	}
 ?>

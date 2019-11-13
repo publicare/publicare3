@@ -37,10 +37,11 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 		<title> <? echo $PORTAL_NAME ;?> -- <?php echo _VERSIONPROG; ?></title>
 		<meta name="description" content="Sistema de Gestão de Conteúdo (PUBLICARE)" />
 		<meta name="keywords" content="Gestão de Conteúdo, CMS, PHP, Fácil de usar, PUBLICARE, Formulário, CMS Público Brasileiro" />
-		<meta name="author" content="EPL" />
+                
+                <base href="<?php echo(_URL); ?>/" target="_self" />
 
-		<script src="/include/javascript" type="text/javascript"></script>
-		<link href="/include/css" rel="stylesheet" type="text/css">    
+		<script src="include/javascript" type="text/javascript"></script>
+		<link href="include/css" rel="stylesheet" type="text/css">    
     </head>
 
     <body>
@@ -73,6 +74,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 						}
 						else
 						{
+                                                    if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
 							echo "
 								<li><a href='".$item["script"]."/".$_page->_objeto->Valor($_page, 'cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
 						}
@@ -89,7 +91,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 			<!-- === Final === Usuário logado === -->
 			
 			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
+			<li><a class="codrops-icon codrops-icon-drop logout" href="do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
 			<!-- === Final === Logout === -->
 			
 		</ul> 

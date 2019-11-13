@@ -29,10 +29,11 @@ $cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['co
         <title>Login - Publicare</title>
         <meta name="description" content="Login do Sistema de Gestão de Conteúdo (PUBLICARE)" />
         <meta name="keywords" content="Login, Formulário, Explicação, Gestão de Conteúdo, CMS, PHP, Fácil de usar, PUBLICARE, Formulário, CMS Público Brasileiro" />
-        <meta name="author" content="EPL" />
+        
+        <base href="<?php echo(_URL); ?>/" target="_self" />
 
-        <script src="/include/javascript_login" type="text/javascript"></script>
-        <link href="/include/css_login" rel="stylesheet" type="text/css">
+        <script src="include/javascript_login" type="text/javascript"></script>
+        <link href="include/css_login" rel="stylesheet" type="text/css">
         
         <script type="text/javascript">
             $("document").ready(function(){
@@ -71,7 +72,7 @@ if (isset($_GET["LoginMessage"]) && strlen($_GET["LoginMessage"])>0)
 <?php
 }
 ?>
-                        <form action="/do/login_post/" method="post" name="formLogin" id="formLogin">
+                        <form action="do/login_post/" method="post" name="formLogin" id="formLogin">
                             <fieldset id="login">
                                 <ul>
                                     <li><label for="login">Login</label><input type="text" name="login" id="login" value="" class="required"></li>
@@ -93,6 +94,3 @@ if (isset($_GET["LoginMessage"]) && strlen($_GET["LoginMessage"])>0)
 
     </body>
 </html>
-<?php
-//x($_SESSION);
-?>

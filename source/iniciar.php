@@ -30,7 +30,7 @@ date_default_timezone_set(_TZ);
 // inicia tratamento de URL
 $url = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, "UTF-8");
 
-xd($url);
+//xd($url);
 
 // removendo index.php da url
 $url = preg_replace('/index\.php/', '', $url);
@@ -71,10 +71,11 @@ if (isset($_dominios))
 
 $cod_objeto = $cod_root;
 $cod_blob = 0;
+$url = str_ireplace(_PASTA, "", $url);
+$url = preg_replace("[\/+]", "/", $url);
 $arrUrl = preg_split("[\/]", $url);
 
-xd($arrUrl);
-
+//xd($arrUrl);
 
 if (isset($arrUrl[1]))
 {
@@ -126,6 +127,7 @@ if (isset($arrUrl[1]))
             {
                 $cod_objeto = identificaCodigoObjeto($arrUrl[3], $cod_root);
             }
+//            xd($cod_objeto);
             break;
 
         // nenhum caso conhecido, tenta url amigavel
@@ -172,6 +174,7 @@ if ($action=="" || isset($_GET["action"]) || isset($_POST["action"]))
 
 
 // iniciando pagina
+//x("1");
 $_page = new Pagina($_db, $cod_objeto, $cod_blob);
 //xd("Iniciou page");
 //exit(); 
