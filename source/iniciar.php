@@ -71,7 +71,7 @@ if (isset($_dominios))
 
 $cod_objeto = $cod_root;
 $cod_blob = 0;
-$url = str_ireplace(_PASTA, "", $url);
+$url = defined("_PASTA")?str_ireplace(_PASTA, "", $url):$url;
 $url = preg_replace("[\/+]", "/", $url);
 $arrUrl = preg_split("[\/]", $url);
 
@@ -94,7 +94,18 @@ if (isset($arrUrl[1]))
 
         // formulario de login
         case "login":
-            $incluir = "includes/login.php";
+            if (file_exists($_SERVER["DOCUMENT_ROOT"]."/html/template/view_login.php"))
+            {
+                $action = "/html/login";
+                if (isset($arrUrl[3])) 
+                {
+                    $cod_objeto = identificaCodigoObjeto($arrUrl[3], $cod_root);
+                }
+            }
+            else
+            {
+                $incluir = "includes/login.php";
+            }
             break;
 
         // chamando arquivos pasta objects
@@ -172,12 +183,7 @@ if ($action=="" || isset($_GET["action"]) || isset($_POST["action"]))
     else $action = "/content/view";
 }
 
-
-// iniciando pagina
-//x("1");
 $_page = new Pagina($_db, $cod_objeto, $cod_blob);
-//xd("Iniciou page");
-//exit(); 
 
 // se for inclusao de arquivo, inclui o mesmo e termina execucao
 if ($incluir != "") {

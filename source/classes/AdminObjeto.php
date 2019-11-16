@@ -54,8 +54,7 @@ class AdminObjeto
      */
     function CondicaoData(&$_page)
     {
-        return " and (".$_page->_db->nomes_tabelas["objeto"].".data_publicacao<=".date("YmdHi")."00 and ".$_page->_db->nomes_tabelas["objeto"].".data_validade>=".date("YmdHi")."00)";
-//        return "";
+        return " and (".$_page->_db->nomes_tabelas["objeto"].".data_publicacao<=".date("YmdH")."0000 and ".$_page->_db->nomes_tabelas["objeto"].".data_validade>=".date("YmdH")."0000)";
     }
 
     /**

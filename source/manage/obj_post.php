@@ -1,53 +1,89 @@
 <?php
+/**
+* Publicare - O CMS Público Brasileiro
+* @description Arquivo obj_post.php - é responsável pelas ações no gerenciamento de objetos
+* @copyright GPL © 2007
+* @package publicare/manage
+*
+* MCTI - Ministério da Ciência, Tecnologia e Inovação - www.mcti.gov.br
+* ANTT - Agência Nacional de Transportes Terrestres - www.antt.gov.br
+* EPL - Empresa de Planejamento e Logística - www.epl.gov.br
+* LogicBSB - LogicBSB Sistemas Inteligentes - www.logicbsb.com.br
+*
+* Este arquivo é parte do programa Publicare
+* Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU 
+* como publicada pela Fundação do Software Livre (FSF); na versão 3 da Licença, ou (na sua opinião) qualquer versão.
+* Este programa é distribuído na esperança de que possa ser  útil, mas SEM NENHUMA GARANTIA; sem uma garantia implícita 
+* de ADEQUAÇÃO a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU para maiores detalhes.
+* Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
+*/
 // AJUSTES
 global $_page, $cod;
 
 // força o código do status para despublicado
 $_POST['cod_status'] = 1;
 // remover barras duplas, para evitar erro
-$_POST['script_exibir'] = str_replace("//", "/", $_POST['script_exibir']); // Arruma uma falha
+$_POST['script_exibir'] = preg_replace("[\/+]", "/", $_POST['script_exibir']); // Arruma uma falha
+
 
 // chama a execução de scripts antes de gravar o objeto
-$execAntes = $_page->_adminobjeto->ExecutaScript($_page, $_POST['cod_classe'], $_POST['cod_pele'], 'antes');
+
 $palavra = "criação";
 
 $cod = 0;
+$local = _URL;
+$acaoobj = filter_input(INPUT_POST, 'op', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$publicar = 0;
 
-if ($_POST['op'] == "edit")
+if (isset($_POST["gravaresolicitar"]))
 {
-    $cod = $_page->_administracao->AlterarObjeto($_page, $_POST);
-    $palavra = "edição";
+    $publicar = 1;
 }
-else
+elseif (isset($_POST["gravarepublicar"]))
 {
-    $cod = $_page->_administracao->CriarObjeto($_page, $_POST);
-}
-
-// pega dados do objeto gravado
-$data = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $cod);
-
-if (isset($_POST["gravarepublicar"]) && $_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
-{
-    $_page->_administracao->PublicarObjeto($_page, 'Objeto publicado durante a '.$palavra, $cod);
-}
-elseif (isset($_POST["gravaresolicitar"]))
-{
-    $_page->_administracao->SubmeterObjeto($_page, 'Objeto solicitado durante a '.$palavra, $cod);
-}
-elseif ($_POST['op']=="edit")
-{
-    $_page->_administracao->RemovePendencia($_page, 'Objeto editado ap&oacute;s solicita&ccedil;&atilde;o. Status redefinido pelo sistema.', $cod);
+    $publicar = 2;
 }
 
-// chama a execução de scripts depois de gravar o objeto
-$execDepois = $_page->_adminobjeto->ExecutaScript($_page, $_POST['cod_classe'], $_POST['cod_pele'], 'depois');
+$obj = $_page->_administracao->GravarObjeto($_page, $_POST, $acaoobj, $publicar);
 
-$local = _URL."/".$data["url_amigavel"];
-
-if (isset($_POST["gravaroutro"]))
-{
-    $local = _URL."/manage/new_".$data['prefixoclasse']."/".$data['cod_pai'].".html";
-}
+//exit();
+//
+//if ($_POST['op'] == "edit")
+//{
+//    $cod = $_page->_administracao->AlterarObjeto($_page, $_POST);
+//    $palavra = "edição";
+//}
+//elseif ($_POST['op'] == "create")
+//{
+//    $cod = $_page->_administracao->CriarObjeto($_page, $_POST);
+//}
+//
+//// pega dados do objeto gravado
+//$data = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $cod);
+//
+//if (isset($_POST["gravarepublicar"]) && $_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
+//{
+//    $_page->_administracao->PublicarObjeto($_page, 'Objeto publicado durante a '.$palavra, $cod);
+//}
+//elseif (isset($_POST["gravaresolicitar"]))
+//{
+//    $_page->_administracao->SubmeterObjeto($_page, 'Objeto solicitado durante a '.$palavra, $cod);
+//}
+//elseif ($_POST['op']=="edit")
+//{
+//    $_page->_administracao->RemovePendencia($_page, 'Objeto editado ap&oacute;s solicita&ccedil;&atilde;o. Status redefinido pelo sistema.', $cod);
+//}
+//
+//// chama a execução de scripts depois de gravar o objeto
+//$execDepois = $_page->_adminobjeto->ExecutaScript($_page, $_POST['cod_classe'], $_POST['cod_pele'], 'depois');
+//
+//$local = _URL."/".$data["url_amigavel"];
+////xd($local);
+//
+//if (isset($_POST["gravaroutro"]))
+//{
+//    $local = _URL."/manage/new_".$data['prefixoclasse']."/".$data['cod_pai'].".html";
+//}
 
 header("Location: ".$local);
 exit();

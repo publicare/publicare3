@@ -174,7 +174,8 @@ class Administracao
                 . "data_publicacao = '".ConverteData($data_publicacao, 27)."', "
                 . "data_validade = '".ConverteData($data_validade, 27)."', "
                 . "peso = ".$peso.", "
-                . "url_amigavel = '".$url_amigavel."' "
+                . "url_amigavel = '".$url_amigavel."', "
+                . "versao = versao + 1 "
                 . "WHERE cod_objeto=".$cod_objeto;
         $_page->_db->ExecSQL($sql);
 
@@ -187,8 +188,6 @@ class Administracao
             $_page->_log->IncluirLogObjeto($_page, $cod_objeto, _OPERACAO_OBJETO_EDITAR);
         }
         
-        $this->cacheFlush($_page);
-
         return $cod_objeto;
     }
 
@@ -453,9 +452,18 @@ class Administracao
      */
     function verificaExistenciaUrlAmigavel(&$_page, $url, $cod_objeto=0, $nivel=0, $tamanho=0)
     {
-        $url = limpaString($url);
-        $url = strtolower($url);
-        if (strlen($url)>249) $url = substr($url_amigavel, 0, 245);
+        $urls_proibidas = array("login", "blob", "include", "html", "content", "manage", "do");
+        
+        $url = strtolower(limpaString($url));
+        if (strlen($url)>249) { $url = substr($url, 0, 245); }
+        
+        if (in_array($url, $urls_proibidas))
+        {
+            if ($tamanho==0) $tamanho = strlen($url);
+            $nivel++;
+            $url = substr($url, 0, $tamanho).$nivel;
+        }
+        
         $sql = "select cod_objeto from objeto where url_amigavel='".$url."'";
         if ($cod_objeto>0) $sql .= " and not cod_objeto = ".$cod_objeto;
         $rs = $_page->_db->ExecSQL($sql);
@@ -733,41 +741,13 @@ class Administracao
         if ($dados['url_amigavel']=="") $dados['url_amigavel'] = limpaString($campos['titulo']);
         $campos['url_amigavel'] = $this->verificaExistenciaUrlAmigavel($_page, $dados['url_amigavel']);
         
-        // grava objeto e recebe código de volta
-        $sql = "INSERT INTO objeto "
-                . "("
-                . "cod_pai, "
-                . "cod_classe, "
-                . "cod_usuario, "
-                . ($campos['cod_pele']==0?"":"cod_pele, ")
-                . "cod_status, "
-                . "titulo, "
-                . "descricao, "
-                . "data_publicacao, "
-                . "data_validade, "
-                . "script_exibir, "
-                . "apagado,"
-                . "objetosistema,"
-                . "peso,"
-                . "url_amigavel"
-                . ") VALUES ("
-                . $campos['cod_pai'].", "
-                . $campos['cod_classe'].", "
-                . $campos['cod_usuario'].", "
-                . ($campos['cod_pele']==0?"":$campos['cod_pele'].", ").""
-                . $campos['cod_status'].", "
-                . "'".$campos['titulo']."', "
-                . "'".$campos['descricao']."', "
-                . $campos['data_publicacao'].", "
-                . $campos['data_validade'].", "
-                . "'".$campos['script_exibir']."', "
-                . "0, "
-                . "0, "
-                . $campos['peso'].", "
-                . "'".$campos['url_amigavel']."'"
-                . ")";
-        $_page->_db->ExecSQL($sql);
-        $cod_objeto = $_page->_db->InsertID("objeto");
+        $campos['apagado'] = 0;
+        $campos['objetosistema'] = 0;
+        $campos['versao'] = 1;
+        
+        if ($campos['cod_pele']==0) { unset($campos['cod_pele']); }
+        
+        $cod_objeto = $_page->_db->Insert("objeto", $campos);
         
         // grava as propriedades do objeto
         $this->GravarPropriedades($_page, $cod_objeto, $dados['cod_classe'], $proplist, $array_files);
@@ -775,17 +755,35 @@ class Administracao
         $this->CriaParentesco($_page, $cod_objeto, $dados['cod_pai']);
         // grava as tags
         $this->GravarTags($_page, $cod_objeto, $tagslist);
+        
         // grava o log
         if ($log) $_page->_log->IncluirLogObjeto($_page, $cod_objeto, _OPERACAO_OBJETO_CRIAR);
-        // esvazia o cache
-        $this->cacheFlush($_page);
-
+        
         return $cod_objeto;
+    }
+    
+    function GravaVersao(&$_page, $cod_objeto)
+    {
+        $obj = new Objeto($_page, $cod_objeto);
+        $obj->PegaListaDePropriedades($_page);
+        $arr_obj = serialize($obj);
+        
+        $sql = "INSERT INTO versaoobjeto "
+                . "(cod_objeto, versao, conteudo, data_criacao, cod_usuario) "
+                . "VALUES (".$cod_objeto.", ".$obj->Valor($_page, "versao").", '".$arr_obj."', '".date("Y-m-d H:i:s")."', ".$_SESSION["usuario"]["cod_usuario"].");";
+        $_page->_db->ExecSQL($sql);
+        $_page->_log->RegistraLogWorkFlow($_page, "Criada versão ".$obj->Valor($_page, "versao"), $cod_objeto, 1);
     }
     
     function cacheFlush(&$_page)
     {
-        if (ATIVA_CACHE_BANCO===true) $_page->_db->con->CacheFlush();
+        GLOBAL $ADODB_CACHE_DIR;
+        
+        if (_DBCACHE===true) 
+        {
+            if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
+            $_page->_db->getCon()->CacheFlush();
+        }
     }
 
     /**
@@ -934,6 +932,8 @@ class Administracao
         }
 
         $_page->_log->IncluirLogObjeto($_page, $cod_objeto,_OPERACAO_OBJETO_REMOVER);
+        
+        $this->cacheFlush($_page);
     }
     
     /**
@@ -1008,6 +1008,7 @@ class Administracao
     {			
         if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
         {
+//            xd($mensagem);
             $this->TrocaStatusObjeto($_page, $mensagem, $cod_objeto, _STATUS_PUBLICADO);
             $_page->_db->ExecSQL("delete from pendencia where cod_objeto=".$cod_objeto);
 
@@ -1111,10 +1112,12 @@ class Administracao
      */
     function TrocaStatusObjeto(&$_page, $mensagem, $cod_objeto, $cod_status)
     {
+//        xd($mensagem);
         if ($cod_objeto != _ROOT)
         {
             $_page->_db->ExecSQL("update objeto set cod_status=".$cod_status." where cod_objeto=$cod_objeto");
             $_page->_log->RegistraLogWorkFlow($_page, $mensagem, $cod_objeto, $cod_status);
+            $this->cacheFlush($_page);
         }
     }
 
@@ -2203,6 +2206,44 @@ $str .= "*  <hr /> \r\n"
             if (($prop['obrigatorio']) && (!strlen($propriedades['prop:'.$prop['nome']]))) return false;
         }
         return true;	
+    }
+    
+    function GravarObjeto(&$_page, $post, $acao, $publicar=0)
+    {
+        // executa scripts antes da gravacao do objeto
+        $execAntes = $_page->_adminobjeto->ExecutaScript($_page, $post['cod_classe'], $post['cod_pele'], 'antes');
+        
+        $executa = false;
+        $cod = 0;
+        
+        if ($acao=="create")
+        {
+            $cod = $this->CriarObjeto($_page, $post);
+            $executa = true;
+        }
+        elseif ($acao=="edit")
+        {
+            $cod = $this->AlterarObjeto($_page, $post);
+            $executa = true;
+        }
+        
+        if ($executa === true)
+        {
+            $obj = new Objeto($_page, $cod);
+            $this->GravaVersao($_page, $cod);
+            
+            if ($publicar==1)
+            {
+                $_page->_administracao->SubmeterObjeto($_page, 'Solicitada publicação da versão '.$obj->Valor($_page, "versao"), $cod);
+            }
+            elseif ($publicar==2)
+            {
+                $_page->_administracao->PublicarObjeto($_page, 'Publicada versão '.$obj->Valor($_page, "versao"), $cod);
+            }
+        }
+        
+        // chama a execução de scripts depois de gravar o objeto
+        $execDepois = $_page->_adminobjeto->ExecutaScript($_page, $post['cod_classe'], $post['cod_pele'], 'depois');
     }
 
 }

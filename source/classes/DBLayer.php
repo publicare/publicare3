@@ -115,7 +115,9 @@ class DBLayer
         'url',
         'peso',
         'tags',
-        'url_amigavel');
+        'url_amigavel',
+        'versao',
+        'versao_publicada');
 			
 	// definindo tipos de dados para os bancos
         switch ($this->server){
@@ -159,28 +161,29 @@ class DBLayer
         }
 		
 	// definindo sql geral de consulta
-        $this->sqlobjsel = " ".$this->nomes_tabelas["objeto"].".cod_objeto,
-        ".$this->nomes_tabelas["objeto"].".cod_pai,
-        ".$this->nomes_tabelas["objeto"].".cod_classe,
-        ".$this->nomes_tabelas["classe"].".nome as classe,
-        ".$this->nomes_tabelas["classe"].".temfilhos,
-        ".$this->nomes_tabelas["classe"].".prefixo as prefixoclasse,
-        ".$this->nomes_tabelas["objeto"].".cod_usuario,
-        ".$this->nomes_tabelas["objeto"].".cod_pele, 
-        ".$this->nomes_tabelas["pele"].".nome as pele, 
-        ".$this->nomes_tabelas["pele"].".prefixo as prefixopele,
-        ".$this->nomes_tabelas["objeto"].".cod_status,
-        ".$this->nomes_tabelas["status"].".nome as status,
-        ".$this->nomes_tabelas["objeto"].".titulo,
-        ".$this->nomes_tabelas["objeto"].".descricao,
-        ".$this->nomes_tabelas["objeto"].".data_publicacao,
-        ".$this->nomes_tabelas["objeto"].".data_validade,
-        ".$this->nomes_tabelas["objeto"].".script_exibir,
-        ".$this->nomes_tabelas["objeto"].".apagado,
-        ".$this->nomes_tabelas["objeto"].".objetosistema,
-        ".$this->nomes_tabelas["objeto"].".peso,
-        ".$this->nomes_tabelas["objeto"].".url_amigavel
-        ";
+        $this->sqlobjsel = " ".$this->nomes_tabelas["objeto"].".cod_objeto,"
+                . " ".$this->nomes_tabelas["objeto"].".cod_pai,"
+                . " ".$this->nomes_tabelas["objeto"].".cod_classe,"
+                . " ".$this->nomes_tabelas["classe"].".nome as classe,"
+                . " ".$this->nomes_tabelas["classe"].".temfilhos,"
+                . " ".$this->nomes_tabelas["classe"].".prefixo as prefixoclasse,"
+                . " ".$this->nomes_tabelas["objeto"].".cod_usuario,"
+                . " ".$this->nomes_tabelas["objeto"].".cod_pele,"
+                . " ".$this->nomes_tabelas["pele"].".nome as pele,"
+                . " ".$this->nomes_tabelas["pele"].".prefixo as prefixopele,"
+                . " ".$this->nomes_tabelas["objeto"].".cod_status,"
+                . " ".$this->nomes_tabelas["status"].".nome as status,"
+                . " ".$this->nomes_tabelas["objeto"].".titulo,"
+                . " ".$this->nomes_tabelas["objeto"].".descricao,"
+                . " ".$this->nomes_tabelas["objeto"].".data_publicacao,"
+                . " ".$this->nomes_tabelas["objeto"].".data_validade,"
+                . " ".$this->nomes_tabelas["objeto"].".script_exibir,"
+                . " ".$this->nomes_tabelas["objeto"].".apagado,"
+                . " ".$this->nomes_tabelas["objeto"].".objetosistema,"
+                . " ".$this->nomes_tabelas["objeto"].".peso,"
+                . "  ".$this->nomes_tabelas["objeto"].".url_amigavel,"
+                . " ".$this->nomes_tabelas["objeto"].".versao,"
+                . " ".$this->nomes_tabelas["objeto"].".versao_publicada ";
 	
 	// definindo clausula from do sql geral de consulta
         $this->sqlobjfrom = " from objeto ".$this->nomes_tabelas["objeto"]." 
@@ -195,15 +198,26 @@ class DBLayer
             $this->con = ADONewConnection($this->server);
 //            $this->con->debug = true;
             
-            if (defined("ATIVA_CACHE_BANCO") && ATIVA_CACHE_BANCO===true)
+            if (defined("_DBCACHE") && _DBCACHE===true)
             {
-                if (_tipoCacheBanco=="memcache")
+                if (defined("_DBCACHETIPO") && _DBCACHETIPO=="disco")
+                {
+                    if (defined("_DBCACHEPATH") && _DBCACHEPATH!="") 
+                    {
+                        if (!is_dir(_DBCACHEPATH))
+                        {
+                            mkdir(_DBCACHEPATH, 0775, true);
+                        }
+                        $ADODB_CACHE_DIR = _DBCACHEPATH;
+                    }
+                }
+                elseif (defined("_DBCACHETIPO") && _DBCACHETIPO=="memoria")
                 {
                     $this->con->memCache = true;
-                    $hosts = preg_split("[,]", _serverCacheBanco);
+                    $hosts = preg_split("[,]", _DBCACHEHOST);
                     $this->con->memCacheHost = $hosts;
-                    $this->con->memCachePort = _portaCacheBanco;
-                    $this->con->memCacheCompress = _compressCacheBanco;
+                    $this->con->memCachePort = _DBCACHEPORT;
+                    $this->con->memCacheCompress = _DBCACHECOMPRESS;
                 }
             }
             
@@ -217,6 +231,7 @@ class DBLayer
                     break;
                 case "mysql":
                 case "mysqli":
+                case "pdo_mysql":
                     $this->con->Execute("set names utf8");
                     break;
                 case "mssql":
@@ -278,7 +293,9 @@ class DBLayer
                                         "apagado ".$this->tipodados["inteiropqn"]." NULL",
                                         "objetosistema ".$this->tipodados["inteiropqn"]." NULL",
                                         "peso ".$this->tipodados["inteiro"]." NULL",
-                                        "url_amigavel ".$this->tipodados["texto"]." NULL");
+                                        "url_amigavel ".$this->tipodados["texto"]." NULL",
+                                        "versao ".$this->tipodados["inteiro"]." NULL",
+                                        "versao_publicada ".$this->tipodados["inteiro"]." NULL");
         return $tabelaTemp;
     }
 	
@@ -291,6 +308,8 @@ class DBLayer
      */
     function ExecSQL($sql, $start=-1, $limit=-1)
     {
+        GLOBAL $ADODB_CACHE_DIR;
+        
         $this->contador++;
         $this->LogSQL[]=$sql;
 
@@ -300,10 +319,11 @@ class DBLayer
 
         if ($limit!=-1 && $start!=-1)
         {
-            if (ATIVA_CACHE_BANCO===true)
+            if (_DBCACHE===true && stripos($sql, "insert into")===false)
             {
-                if (is_array($sql)) $this->con->CacheSelectLimit(_tempoCacheBanco, $sql[0], $limit, $start, $sql[1]);
-                else $this->result = $this->con->CacheSelectLimit(_tempoCacheBanco, $sql, $limit, $start); 
+                if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
+                if (is_array($sql)) $this->con->CacheSelectLimit(_DBCACHETIME, $sql[0], $limit, $start, $sql[1]);
+                else $this->result = $this->con->CacheSelectLimit(_DBCACHETIME, $sql, $limit, $start); 
             }
             else
             {
@@ -313,10 +333,11 @@ class DBLayer
         }
         else 
         {
-            if (ATIVA_CACHE_BANCO===true)
+            if (_DBCACHE===true && stripos($sql, "insert into")===false)
             {
-                if (is_array($sql)) $this->result = $this->con->CacheExecute(_tempoCacheBanco, $sql[0], $sql[1]);
-                else $this->result = $this->con->CacheExecute(_tempoCacheBanco, $sql);
+                if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
+                if (is_array($sql)) $this->result = $this->con->CacheExecute(_DBCACHETIME, $sql[0], $sql[1]);
+                else $this->result = $this->con->CacheExecute(_DBCACHETIME, $sql);
             }
             else
             {
@@ -469,13 +490,14 @@ class DBLayer
      */
     function Insert($table, $fields)
     {
+        $values = array();
         foreach ($fields as $value)
         {
             if (is_int($value)) $values[]=$value;
             else $values[]="'".$this->EscapeString($value)."'";		
         }
 
-        $sql = sprintf("INSERT INTO %s (%s) VALUES(%s)",$table, implode(',',array_keys($fields)),implode(',',$values));
+        $sql = sprintf("INSERT INTO %s (%s) VALUES(%s)",$table, implode(',',array_keys($fields)), implode(',',$values));
 
         if ($this->Query($sql)) return $this->InsertID($table);
         else return false;

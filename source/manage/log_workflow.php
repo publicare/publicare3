@@ -30,7 +30,7 @@ global $_page, $loglist;
 		$('#tabelaLista').dataTable({
 			responsive: true,
 			language: linguagemDataTable,
-			order: [[ 1, "asc" ]],
+			order: [[ 2, "desc" ]],
 		});
 	});
 </script>

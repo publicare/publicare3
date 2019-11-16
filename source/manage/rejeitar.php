@@ -19,12 +19,21 @@
  */
 
 global $_page;
+
+
+$classname = $_page->_objeto->Valor($_page, "prefixoclasse");
+$classe = $_page->_administracao->PegaInfoDaClasse($_page, $_page->_objeto->Valor($_page, "cod_classe"));
 ?>
 <!-- === Rejeitar Objeto === -->
 <div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Rejeitar Objeto</b></h3></div>
+    <div class="panel-heading"><h3><b>Rejeitar Objeto</b></h3>
+    <p class="padding-top10">
+            <strong>Despublicar</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>)<br /><strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+            <strong>Vers&atilde;o</strong>: <?php echo($_page->_objeto->Valor($_page, "versao")) ?>
+        </p>
+    </div>
 
-	<form action="index.php/do/rejeitar_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
+	<form action="do/rejeitar_post/<?php echo($_page->_objeto->Valor($_page, "cod_objeto"));?>.html" method="post">
 		<div class="panel-body">
 			
 			<!-- === Objeto === -->

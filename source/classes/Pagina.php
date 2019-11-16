@@ -199,7 +199,6 @@ class Pagina
         }
         elseif ($acao == "/blob/verinterno")
         {
-//            xd($this->cod_blob);
             $this->_blob->VerBlobInterno($this, $this->cod_blob);
         }
         elseif ($acao == "/blob/baixar")
@@ -308,122 +307,132 @@ class Pagina
                         $incluir["view"]["parse"] = false;
                     }
                 }
-//                xd($incluir);
             }
             else
             {
                 $this->ExibirMensagemProibido($acao);
             }
         }
-        
         // resultado de busca
-        if ($acao == "/html/objects/search_result")
+        elseif ($acao == "/html/objects/search_result")
         {
             $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/objects/search_result.php";
+            $incluir["view"]["parse"] = true;
+        }
+        elseif ($acao == "/html/login")
+        {
+            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_login.php";
             $incluir["view"]["parse"] = true;
         }
         // Ver pagina
         elseif ($acao == "/content/view")
         {
-            
-            if ($this->_objeto->Valor($this, 'apagado'))
+            if ($this->_usuario->PodeExecutar($this, $acao))
             {
-                $this->ExibirMensagemProibido($acao);
-                return false;
-            }
             
-            // caso tenha view definida manualmente pega o arquivo
-            $tmpScriptAtual = $this->_objeto->metadados['script_exibir'];
-            
-            // caso o objeto nao esteja protegido
-            if ($this->_adminobjeto->estaSobAreaProtegida($this, $this->_objeto->metadados['cod_objeto']))
-            {
-                // caso tenha passado valor execview e objeto nao estiver com view protegida
-                if ((isset($_GET['execview'])) && (!preg_match("/_protegido.*/", $tmpScriptAtual)))
+                if ($this->_objeto->Valor($this, 'apagado'))
                 {
-                    // verifica existencia da view dentro da pasta da pele
-                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php"))
+                    $this->ExibirMensagemProibido($acao);
+                    return false;
+                }
+
+                // caso tenha view definida manualmente pega o arquivo
+                $tmpScriptAtual = $this->_objeto->metadados['script_exibir'];
+
+                // caso o objeto nao esteja protegido
+                if ($this->_adminobjeto->estaSobAreaProtegida($this, $this->_objeto->metadados['cod_objeto']))
+                {
+                    // caso tenha passado valor execview e objeto nao estiver com view protegida
+                    if ((isset($_GET['execview'])) && (!preg_match("/_protegido.*/", $tmpScriptAtual)))
                     {
-                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php";
+                        // verifica existencia da view dentro da pasta da pele
+                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php"))
+                        {
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php";
+                            $incluir["view"]["parse"] = true;
+                        }
+                        // verifica existencia da view dentro da pasta template
+                        elseif (file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_".$_GET['execview'].".php"))
+                        {
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_".$_GET['execview'].".php";
+                            $incluir["view"]["parse"] = true;
+                        }
+                    }
+
+                    // caso tenha view definida manualmente e ainda nao tenha selecionado view
+                    if ($tmpScriptAtual && $tmpScriptAtual != "" && $incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT'].$tmpScriptAtual))
+                    {
+                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT'].$this->_objeto->metadados['script_exibir'];
                         $incluir["view"]["parse"] = true;
                     }
-                    // verifica existencia da view dentro da pasta template
-                    elseif (file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_".$_GET['execview'].".php"))
+
+                    // caso nao tenha view selecionada, verifica se tem na PELE
+                    if ($this->_objeto->metadados['cod_pele'] > 0)
                     {
-                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_".$_GET['execview'].".php";
+                        // uma view para a classe do objeto
+                        if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$this->_objeto->metadados['prefixoclasse'].".php"))
+                        {
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$this->_objeto->metadados['prefixoclasse'].".php";
+                            $incluir["view"]["parse"] = true;
+                        }
+
+                        // verifica se tem view padrao na pele
+                        if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_basic.php"))
+                        {
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_basic.php";
+                            $incluir["view"]["parse"] = true;
+                        }
+                    }
+
+
+                    // caso nao tenha view definida ainda, busca na pasta template pelo prefixo da classe
+                    if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->_objeto->metadados['prefixoclasse'].".php"))
+                    {
+                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->_objeto->metadados['prefixoclasse'].".php";
                         $incluir["view"]["parse"] = true;
+                    }
+                    // caso nao tenha view definida ainda, busca na pasta template pela view default
+                    if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_basic.php"))
+                    {
+                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_basic.php";
+                        $incluir["view"]["parse"] = true;
+                    }
+
+                    // caso nao encontre nenhuma view, mesmo depois de todas as buscas, exibe mensagem de erro
+                    if ($incluir["view"]["arquivo"] == "")
+                    {
+                        echo "<span class=\"txtErro\">N&atilde;o foram encontrados os arquivos de SCRIPT DE EXIBI&Ccedil;&Atilde;O.</span>";
                     }
                 }
-                
-                // caso tenha view definida manualmente e ainda nao tenha selecionado view
-                if ($tmpScriptAtual && $tmpScriptAtual != "" && $incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT'].$tmpScriptAtual))
+                // caso esteja protegido
+                else
                 {
-                    $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT'].$this->_objeto->metadados['script_exibir'];
+                    $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_protegido.php";
                     $incluir["view"]["parse"] = true;
                 }
-                
-                // caso nao tenha view selecionada, verifica se tem na PELE
+
+                // Definindo header e footer que serao exibidos
+                // caso tenha pele busca header e footer dentro da pele
                 if ($this->_objeto->metadados['cod_pele'] > 0)
                 {
-                    // uma view para a classe do objeto
-                    if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$this->_objeto->metadados['prefixoclasse'].".php"))
+                    // verificando header dentro da pele
+                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/header.php"))
                     {
-                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$this->_objeto->metadados['prefixoclasse'].".php";
-                        $incluir["view"]["parse"] = true;
+                        $incluir["header"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/header.php";
+                        $incluir["header"]["parse"] = true;
                     }
-                    
-                    // verifica se tem view padrao na pele
-                    if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_basic.php"))
+
+                    //verificando footer dentro da pele
+                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/footer.php"))
                     {
-                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_basic.php";
-                        $incluir["view"]["parse"] = true;
+                        $incluir["footer"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/footer.php";
+                        $incluir["footer"]["parse"] = true;
                     }
-                }
-                
-                
-                // caso nao tenha view definida ainda, busca na pasta template pelo prefixo da classe
-                if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->_objeto->metadados['prefixoclasse'].".php"))
-                {
-                    $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->_objeto->metadados['prefixoclasse'].".php";
-                    $incluir["view"]["parse"] = true;
-                }
-                // caso nao tenha view definida ainda, busca na pasta template pela view default
-                if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_basic.php"))
-                {
-                    $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_basic.php";
-                    $incluir["view"]["parse"] = true;
-                }
-                
-                // caso nao encontre nenhuma view, mesmo depois de todas as buscas, exibe mensagem de erro
-                if ($incluir["view"]["arquivo"] == "")
-                {
-                    echo "<span class=\"txtErro\">N&atilde;o foram encontrados os arquivos de SCRIPT DE EXIBI&Ccedil;&Atilde;O.</span>";
                 }
             }
-            // caso esteja protegido
             else
             {
-                $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_protegido.php";
-                $incluir["view"]["parse"] = true;
-            }
-            
-            // Definindo header e footer que serao exibidos
-            // caso tenha pele busca header e footer dentro da pele
-            if ($this->_objeto->metadados['cod_pele'] > 0)
-            {
-                // verificando header dentro da pele
-                if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/header.php"))
-                {
-                    $incluir["header"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/header.php";
-                    $incluir["header"]["parse"] = true;
-                }
-                
-                //verificando footer dentro da pele
-                if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/footer.php"))
-                {
-                    $incluir["footer"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/footer.php";
-                    $incluir["footer"]["parse"] = true;
-                }
+                $this->ExibirMensagemProibido($acao);
             }
         }
         
@@ -507,11 +516,11 @@ class Pagina
     {
         if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/error404.php"))
         {
-            include($_SERVER['DOCUMENT_ROOT']."/html/template/error404.php");
+            $this->_parser->Start($_SERVER['DOCUMENT_ROOT']."/html/template/error404.php");
         }
-        elseif (file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/error404.pbl"))
+        elseif (file_exists(_PUBLICAREPATH."/includes/error404.php"))
         {
-            include($_SERVER['DOCUMENT_ROOT']."/html/template/error404.pbl");
+            include(_PUBLICAREPATH."/includes/error404.php");
         }
         else
         {

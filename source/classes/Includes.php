@@ -42,7 +42,7 @@ class Includes
         {
             foreach ($this->_scripts as $script)
             {
-                $path = _dirDefault."/includes/";
+                $path = _PUBLICAREPATH."/includes/";
                 if ($this->_tipo == "js") $path .= "javascript";
                 if ($this->_tipo == "css") $path .= "css";
                 if ($this->_tipo == "font") $path .= "fonts";

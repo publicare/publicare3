@@ -32,6 +32,7 @@ $peles = $_page->_administracao->PegaListaDePeles($_page);
 // lista de views disponiveis
 $views = $_page->_administracao->PegaListaDeViews($_page);
 $dadosPai = array();
+$edit = false;
 
 // Pegando dados da classe conforme ação.. criação ou edição
 // Criação de objeto
@@ -39,7 +40,6 @@ if (strpos($action,"edit") === false)
 {
     $classname = substr($action,strpos($action,'_')+1);
     $classe = $_page->_administracao->PegaInfoDaClasse($_page, $_page->_administracao->CodigoDaClasse($_page, $classname));
-    $edit = false;
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
     $dadosPai = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $_page->_objeto->Valor($_page, "cod_objeto"));
@@ -75,7 +75,7 @@ else $new_status = _STATUS_PRIVADO;
 <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
 
 <form enctype="multipart/form-data" action="do/obj_post/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" method="post" name="formobj" id="formobj">
-    <input type="hidden" name="op" value="<?php if($edit){echo "edit";} ?>">
+    <input type="hidden" name="op" value="<?php echo($edit===true?"edit":"create"); ?>">
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">
     <input type="hidden" name="cod_objeto" value="<?php echo($edit?$_page->_objeto->Valor($_page, "cod_objeto"):0); ?>">
@@ -87,16 +87,19 @@ else $new_status = _STATUS_PRIVADO;
     if ($edit)
     {
 ?>
-                <strong>Editando</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>)</p>
+                <strong>Editando</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+                <strong>Vers&atilde;o</strong>: <?php echo($_page->_objeto->Valor($_page, "versao")) ?>
+                
 <?php
     }
     else
     {
 ?>
-                <strong>Criando em</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>),  <?php echo($_page->_objeto->Valor($_page, "classe")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>)</p>
+                <strong>Criando em</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>),  <?php echo($_page->_objeto->Valor($_page, "classe")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
 <?php
     }
 ?>
+            </p>
         </div>
         <div class="panel-footer text-right">
             <!-- === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->

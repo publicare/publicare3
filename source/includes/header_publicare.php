@@ -34,7 +34,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title> <? echo $PORTAL_NAME ;?> -- <?php echo _VERSIONPROG; ?></title>
+		<title> <?php echo(_PORTAL_NAME); ?> -- <?php echo _VERSIONPROG; ?></title>
 		<meta name="description" content="Sistema de Gestão de Conteúdo (PUBLICARE)" />
 		<meta name="keywords" content="Gestão de Conteúdo, CMS, PHP, Fácil de usar, PUBLICARE, Formulário, CMS Público Brasileiro" />
                 
