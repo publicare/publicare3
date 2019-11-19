@@ -51,8 +51,8 @@ $cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['co
                 <!-- === Explição da tela (Lado Esquerdo) === -->
                 <div class="col-sm-12 col-md-6 col-lg-7 list">
                     <div class="text-center text-white">
-                        <h1 class="padding-bottom30"><div class="font-size30">Bem vindos ao</div><div class="bitter-regular font-size70">PUBLICARE</div></h1>
-                        <p class="lead">Publicare, o CMS Público Brasileiro.</p>
+                        <h1 class="padding-bottom30"><div class="font-size30">Bem vindos ao</div><div class="bitter-regular font-size70"><?php echo(defined("_PORTAL_NAME")&&_PORTAL_NAME!=""?_PORTAL_NAME:"PUBLICARE"); ?></div></h1>
+                        <p class="lead"><?php echo(defined("_ORGAO_NAME")&&_ORGAO_NAME!=""?_ORGAO_NAME:"Publicare, o CMS Público Brasileiro"); ?></p>
                     </div>
                 </div>
                 <!-- === FInal === Explição da tela (Lado Esquerdo) === -->
@@ -77,12 +77,16 @@ if (isset($_GET["LoginMessage"]) && strlen($_GET["LoginMessage"])>0)
                                 <ul>
                                     <li><label for="login">Login</label><input type="text" name="login" id="login" value="" class="required"></li>
                                     <li><label for="password">Senha</label><input type="password" name="password" id="password" value="" class="required"></li>
-                                    <!-- <li><input type="checkbox" id="customCheck1"><label class="left" for="customCheck1">Lembrar senha</label></li> -->
                                     <input type="hidden" name="cod_objeto" value="<?php echo($cod_objeto); ?>" />
                                     <li><input class="btn btn-primary border pblBotaoForm" type="submit" name="submit" value="Logar"></li>
-                                    <!--<li><a href="" class="">Esqueceu a senha?</a></li>-->
                                 </ul>
                             </fieldset>
+                            <div class="row">
+                                <?php if (defined("_PERMITE_CADASTRO") && _PERMITE_CADASTRO===true) { ?>
+                                <div class="col-md-6 text-left"><a href="cadastro">Cadastre-se</a></div>
+                                <?php } ?>
+                                <div class="col-md-6 text-right">Esqueci a senha</div>
+                            </div>
                         </form>
                     </div>
                 </div>
