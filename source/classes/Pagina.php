@@ -227,6 +227,7 @@ class Pagina
             }
             elseif ($this->_usuario->PodeExecutar($this, $acao))
             {
+                
                 $this->IncluirAdmin();
 //                $tmpArrPerfilObjeto = $this->_usuario->PegaDireitosDoUsuario($this, $_SESSION['usuario']['cod_usuario']);
                 
@@ -310,6 +311,7 @@ class Pagina
             }
             else
             {
+//                xd($acao);
                 $this->ExibirMensagemProibido($acao);
             }
         }
@@ -322,6 +324,16 @@ class Pagina
         elseif ($acao == "/html/login")
         {
             $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_login.php";
+            $incluir["view"]["parse"] = true;
+        }
+        elseif ($acao == "/html/cadastro")
+        {
+            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_cadastro.php";
+            $incluir["view"]["parse"] = true;
+        }
+        elseif ($acao == "/html/esquecisenha")
+        {
+            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_esquecisenha.php";
             $incluir["view"]["parse"] = true;
         }
         // Ver pagina
