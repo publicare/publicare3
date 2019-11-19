@@ -390,21 +390,23 @@ class Administracao
         $result=array();
         if (in_array($propriedade, $_page->_db->metadados))
         {
-            $sql = "select cod_objeto as codigo,
-            ".$propriedade." as texto 
-            from objeto 
-            where cod_classe=".$cod_classe." 
-            and apagado <> 1 
-            order by ".$propriedade;
+            $sql = "select cod_objeto as codigo, "
+                    . "".$propriedade." as texto "
+                    . "from objeto "
+                    . "where cod_classe=".$cod_classe." "
+                    . "and apagado <> 1 "
+                    . "order by ".$propriedade;
         }
         else
         {
-            $info = $_page->_adminobjeto->CriaSQLPropriedade($_page, cod_classe, $propriedade, ' asc');
-            $sql = "select objeto.cod_objeto as codigo,
-            ".$info['field']." as texto 
-            from objeto ".$info['join']." 
-            where ".$info['where']." 
-            order by ".$info['sort'];
+            $info = $_page->_adminobjeto->CriaSQLPropriedade($_page, $propriedade, ' asc', $cod_classe);
+            $sql = "select ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto as codigo, "
+                    . "".$info['field']." as texto "
+                    . "from objeto ".$_page->_db->nomes_tabelas["objeto"]." "
+                    . "".$info['from']." "
+                    . "where ".$info['where']." "
+                    . "and ".$_page->_db->nomes_tabelas["objeto"].".apagado <> 1 "
+                    . "order by ".$info['field'];
         }
         $res=$_page->_db->ExecSQL($sql);
         
@@ -767,10 +769,11 @@ class Administracao
         $obj = new Objeto($_page, $cod_objeto);
         $obj->PegaListaDePropriedades($_page);
         $arr_obj = serialize($obj);
+        $ip = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0');
         
         $sql = "INSERT INTO versaoobjeto "
-                . "(cod_objeto, versao, conteudo, data_criacao, cod_usuario) "
-                . "VALUES (".$cod_objeto.", ".$obj->Valor($_page, "versao").", '".$arr_obj."', '".date("Y-m-d H:i:s")."', ".$_SESSION["usuario"]["cod_usuario"].");";
+                . "(cod_objeto, versao, conteudo, data_criacao, cod_usuario, ip) "
+                . "VALUES (".$cod_objeto.", ".$obj->Valor($_page, "versao").", '".$arr_obj."', '".date("Y-m-d H:i:s")."', ".$_SESSION["usuario"]["cod_usuario"].", '".$ip."');";
         $_page->_db->ExecSQL($sql);
         $_page->_log->RegistraLogWorkFlow($_page, "Criada versão ".$obj->Valor($_page, "versao"), $cod_objeto, 1);
     }
@@ -2208,8 +2211,9 @@ $str .= "*  <hr /> \r\n"
         return true;	
     }
     
-    function GravarObjeto(&$_page, $post, $acao, $publicar=0)
+    function GravarObjeto(&$_page, $post, $acao, $publicar=0, &$cod)
     {
+        $retorno = array();
         // executa scripts antes da gravacao do objeto
         $execAntes = $_page->_adminobjeto->ExecutaScript($_page, $post['cod_classe'], $post['cod_pele'], 'antes');
         
@@ -2229,8 +2233,10 @@ $str .= "*  <hr /> \r\n"
         
         if ($executa === true)
         {
+            
             $obj = new Objeto($_page, $cod);
             $this->GravaVersao($_page, $cod);
+            $retorno["obj"] = $obj;
             
             if ($publicar==1)
             {
@@ -2244,6 +2250,8 @@ $str .= "*  <hr /> \r\n"
         
         // chama a execução de scripts depois de gravar o objeto
         $execDepois = $_page->_adminobjeto->ExecutaScript($_page, $post['cod_classe'], $post['cod_pele'], 'depois');
+        
+        return $retorno;
     }
 
 }
