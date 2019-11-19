@@ -71,11 +71,12 @@ if (isset($_dominios))
 
 $cod_objeto = $cod_root;
 $cod_blob = 0;
-$url = defined("_PASTA")?str_ireplace(_PASTA, "", $url):$url;
+//x($url);
+$url = defined("_PASTA")?str_ireplace("/"._PASTA."/", "/", $url):$url;
 $url = preg_replace("[\/+]", "/", $url);
 $arrUrl = preg_split("[\/]", $url);
+//xd($url);
 
-//xd($arrUrl);
 
 if (isset($arrUrl[1]))
 {
@@ -94,20 +95,26 @@ if (isset($arrUrl[1]))
 
         // formulario de login
         case "login":
-            if (file_exists($_SERVER["DOCUMENT_ROOT"]."/html/template/view_login.php"))
+        case "cadastro":
+        case "esquecisenha":
+            if (file_exists($_SERVER["DOCUMENT_ROOT"]."/html/template/view_".$arrUrl[1].".php"))
             {
-                $action = "/html/login";
-                if (isset($arrUrl[3])) 
+                $action = "/html/".$arrUrl[1];
+                if (isset($arrUrl[2])) 
                 {
-                    $cod_objeto = identificaCodigoObjeto($arrUrl[3], $cod_root);
+                    $cod_objeto = identificaCodigoObjeto($arrUrl[2], 0);
+                    if ($cod_objeto==0)
+                    {
+                        $amigavel = $arrUrl[2];
+                    }
                 }
             }
             else
             {
-                $incluir = "includes/login.php";
+                $incluir = "includes/".$arrUrl[1].".php";
             }
             break;
-
+            
         // chamando arquivos pasta objects
         case "html":
             if ($arrUrl[2] == "objects")

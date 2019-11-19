@@ -17,7 +17,7 @@
 }
 
 .gn-menu-mainpbl {
-	position: fixed !important; top: 0; left: 0; width: 100%; height: 50px; font-size: 13px; z-index: 9999999;
+	position: fixed !important; top: 0; left: 0; width: 100%; height: 50px; font-size: 13px; z-index: 99999;
 	border-bottom: 1px solid #c6d0da;
 }
 
@@ -26,7 +26,7 @@
 
 .no-touchpbl .gn-menu-mainpbl a:hover,
 .no-touchpbl .gn-menupbl li.gn-search-itempbl:hover,
-.no-touchpbl .gn-menupbl li.gn-search-itempbl:hover a {background: #5f6f81; color: white;}
+.no-touchpbl .gn-menupbl li.gn-search-itempbl:hover a {background: #5f6f81; color: white; z-index: 99999}
 
 .gn-menu-mainpbl > li {display: block; float: left; height: 100%; border-right: 1px solid #c6d0da; text-align: center;}
 

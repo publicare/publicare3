@@ -25,9 +25,7 @@ $_POST['cod_status'] = 1;
 // remover barras duplas, para evitar erro
 $_POST['script_exibir'] = preg_replace("[\/+]", "/", $_POST['script_exibir']); // Arruma uma falha
 
-
 // chama a execução de scripts antes de gravar o objeto
-
 $palavra = "criação";
 
 $cod = 0;
@@ -44,46 +42,13 @@ elseif (isset($_POST["gravarepublicar"]))
     $publicar = 2;
 }
 
-$obj = $_page->_administracao->GravarObjeto($_page, $_POST, $acaoobj, $publicar);
+$obj = $_page->_administracao->GravarObjeto($_page, $_POST, $acaoobj, $publicar, $cod);
+$local .= $obj["obj"]->Valor($_page, "url");
 
-//exit();
-//
-//if ($_POST['op'] == "edit")
-//{
-//    $cod = $_page->_administracao->AlterarObjeto($_page, $_POST);
-//    $palavra = "edição";
-//}
-//elseif ($_POST['op'] == "create")
-//{
-//    $cod = $_page->_administracao->CriarObjeto($_page, $_POST);
-//}
-//
-//// pega dados do objeto gravado
-//$data = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $cod);
-//
-//if (isset($_POST["gravarepublicar"]) && $_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
-//{
-//    $_page->_administracao->PublicarObjeto($_page, 'Objeto publicado durante a '.$palavra, $cod);
-//}
-//elseif (isset($_POST["gravaresolicitar"]))
-//{
-//    $_page->_administracao->SubmeterObjeto($_page, 'Objeto solicitado durante a '.$palavra, $cod);
-//}
-//elseif ($_POST['op']=="edit")
-//{
-//    $_page->_administracao->RemovePendencia($_page, 'Objeto editado ap&oacute;s solicita&ccedil;&atilde;o. Status redefinido pelo sistema.', $cod);
-//}
-//
-//// chama a execução de scripts depois de gravar o objeto
-//$execDepois = $_page->_adminobjeto->ExecutaScript($_page, $_POST['cod_classe'], $_POST['cod_pele'], 'depois');
-//
-//$local = _URL."/".$data["url_amigavel"];
-////xd($local);
-//
-//if (isset($_POST["gravaroutro"]))
-//{
-//    $local = _URL."/manage/new_".$data['prefixoclasse']."/".$data['cod_pai'].".html";
-//}
+if (isset($_POST["gravaroutro"]))
+{
+    $local = _URL."/manage/new_".$obj["obj"]->Valor($_page, 'prefixoclasse')."/".$obj["obj"]->Valor($_page, 'cod_pai').".html";
+}
 
 header("Location: ".$local);
 exit();

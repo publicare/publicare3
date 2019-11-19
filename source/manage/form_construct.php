@@ -39,6 +39,7 @@ $edit = false;
 if (strpos($action,"edit") === false)
 {
     $classname = substr($action,strpos($action,'_')+1);
+//    xd($action);
     $classe = $_page->_administracao->PegaInfoDaClasse($_page, $_page->_administracao->CodigoDaClasse($_page, $classname));
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
@@ -264,7 +265,7 @@ foreach ($classe["prop"] as $prop)
                                         "insertImageAsBase64URI": true
                                     },
                                     "language": "pt_br",
-                                    "direction": "ltr"
+                                    "height": 350
                                 });
 //                                CKEDITOR.replace('property___<?php echo($prop["nome"]); ?>');
                             </script>

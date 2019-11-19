@@ -65,6 +65,7 @@ if ($usuario != "" && $senha != "") {
 
     // se não tiver estourado o maximo de tentativas, envia dados para login
     else {
+//        xd("parou");
         if (!$_page->_usuario->Login($_page, $usuario, $senha)) {
             $_SESSION['_LOGIN_TENTATIVAS'] ++;
             $_SESSION['_LOGIN_DATA'] = date("Y-m-d H:i:s");

@@ -550,7 +550,7 @@ class Usuario
      * @param int $cod_usuario - Codigo do usuario, caso seja update
      * @return bool
      */
-    function ExisteOutroUsuario(&$_page, $login, $cod_usuario)
+    function ExisteOutroUsuario(&$_page, $login, $cod_usuario=false)
     {
         $sql = "select cod_usuario "
 			."from usuario "
