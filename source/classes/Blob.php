@@ -923,7 +923,7 @@ class Blob
            $newim = ImageCreateTrueColor($width, $height);
            ImageCopyResized($newim, $im, 0, 0, 0, 0, $width, $height, $x, $y);
            $im = $newim;
-           ImageJpeg($im, _THUMBDIR.$name.'.'.$filetype, 100);
+           ImageJpeg($im, _BLOBDIR."/cache/".$name.'.'.$filetype, 100);
        }
 
        unlink($path_arquivo.$arquivo_temp);
