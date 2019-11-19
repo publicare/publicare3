@@ -348,12 +348,16 @@ class AdminObjeto
                             $join[] = " left join objeto as ".$tabela."_objeto on (".$tabela.".valor=".$tabela."_objeto.cod_objeto)";
                             $campos[] = $tabela."_objeto.".$row['campo_ref']." as ".$row['nome'];
                             $campos[] = $tabela."_objeto.cod_objeto as ".$row['nome']."_referencia";
+                            $campos[] = "'".$row["campo_ref"]."' as ".$row['nome']."_campo";
                         }
                         else
                         {
                             $tipo[] = 'ref_prop';
-                            $campos[] = "'".$row['valor_saida']."' as ".$row['nome'];
-                            $campos[] = $row['valor']." as ".$row['nome']."_referencia";
+                            $join[] = " left join tbl_objref as ".$tabela." on (".$tabela.".cod_propriedade = ". $row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto) ";
+                            $join[] = " left join ".$row["valor_saida"]["tipo"]." as ".$tabela."_prop on (".$tabela.".valor=".$tabela."_prop.cod_objeto)";
+                            $campos[] = $tabela."_prop.valor as ".$row['nome'];
+                            $campos[] = $tabela.".cod_objeto as ".$row['nome']."_referencia";
+                            $campos[] = "'".$row["campo_ref"]."' as ".$row['nome']."_campo";
                         }
                         break;
                     case 'tbl_blob':
@@ -389,6 +393,7 @@ class AdminObjeto
                         case 'ref_prop':
                             $result[$array_nomes[$key]]['valor'] = $dados[$array_nomes[$key]];
                             $result[$array_nomes[$key]]['referencia'] = $dados[$array_nomes[$key].'_referencia'];
+                            $result[$array_nomes[$key]]['campo'] = $dados[$array_nomes[$key].'_campo'];
                             break;
                         case 'blob':
                             $result[$array_nomes[$key]]['valor'] = $dados[$array_nomes[$key].'_arquivo'];
