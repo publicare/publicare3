@@ -1,8 +1,55 @@
-## Welcome to GitHub Pages
+# Publicare 3
 
-You can use the [editor on GitHub](https://github.com/publicare/publicare3/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+O Publicare é um Sistema Gerenciador de Conteúdo livre e de código aberto, utilizado na criação e gerenciamento de conteúdos de sites dinâmicos.
+Ideal para websites e portais com grande volume de conteúdo, onde existem inúmeros departamentos envolvidos com a tarefa de administração de conteúdos na Internet.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+O conteúdo do website pode ser modificado de forma rápida e segura por usuários em diversos locais.
+
+O conteúdo de uma página é inserido através de um editor próprio e mostrado através de moldes (templates) pré definidos do site. 
+Isto resulta em um estilo corporativo mais consistente. 
+Assim, até mesmo o número de pessoas produzindo páginas para publicação direta pode ser grande, a consistência de estilo, e o mais importante, a consistência na estrutura do conteúdo estão garantidas.
+
+### O que é um Sistema de Gerenciamento de Conteúdo?
+Um gerenciador de conteúdo é uma ferramenta que permite integrar e automatizar todos os processos relacionados à criação, personalização, controle de acesso e disponibilização de conteúdos em portais web.
+Entende-se aqui por conteúdo não somente as informações que estão estruturadas nos bancos de dados da organização, como também aquelas não ou semi-estruturadas, não se limitando apenas a textos HTML, mas também áudio, vídeo, etc.
+
+## Conceitos
+
+### Classe
+
+É um modelo ou especificação que define o tipo de objeto a ser criado. Através da definição de uma classe, descreve-se que propriedades o objeto terá.
+As classes são usadas para criar objetos.
+
+### Objeto
+
+Um objeto nada mais é do que uma página que possui atributos distintos, herdados através da classe escolhida na hora de sua criação.
+Um objeto pode conter outros objetos, sendo estes chamados de objetos filhos.
+
+### Objeto Pai
+
+O objeto no qual outro objeto reside. 
+Um objeto pai implica relação. 
+Por exemplo, uma pasta é um objeto pai no qual um arquivo, ou objeto filho, reside. 
+
+Um objeto pode ser um objeto pai e também um objeto filho. 
+Por exemplo, uma subpasta que contém arquivos é a pasta filho da pasta pai e a pasta pai dos arquivos.
+
+### Objeto Filho
+
+Objeto que reside em outro objeto. 
+Um objeto filho implica relação. 
+Por exemplo, um arquivo é um objeto filho que reside em uma pasta, que é o objeto pai. 
+
+### Pele
+
+Pele é um conjunto de templates
+
+### Template
+
+Template, ou script de exibição, é o modelo de exibição de um objeto.
+Define onde e como as propriedades serão exibidas.
+Cada classe tem o seu próprio template.
+Todo portal criado com o Publicare tem um template padrão, o ```<portal_root>/html/template/view_basic.php```, utilizado para exibir todas as propriedades do objeto.
 
 ### Markdown
 
