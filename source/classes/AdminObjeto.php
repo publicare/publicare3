@@ -67,7 +67,7 @@ class AdminObjeto
      * @param int $paginacao - Numero de registros por página
      * @return array - Lista com resultado da busca
      */
-    function Search(&$_page, $query, $excecoes="", $parentesco_excecoes="", $pagina=1, $paginacao=20)
+    function Search(&$_page, $query, $excecoes="", $parentesco_excecoes="", $pagina=1, $paginacao=20, $classe=0)
     {
         $retorno = array("total"=>0,
                         "paginas"=>0,
@@ -77,7 +77,7 @@ class AdminObjeto
                         "fim"=>0,
                         "query"=>$query,
                         "resultados"=>array());
-
+        
         if ((isset($query) && strlen($query)>1))
         {
             $query = addslashes($query);
@@ -95,16 +95,15 @@ class AdminObjeto
                                 left join tbl_text txt on o.cod_objeto = txt.cod_objeto
                                 left join tbl_string str on o.cod_objeto = str.cod_objeto 
                     where
-                                o.cod_status = 2
-                                and o.apagado = 0 ";
-            if ($excecoes!="") $sql .= "and c.cod_classe not in (".$excecoes.") ";
-            if ($parentesco_excecoes!="") $sql .= "and o.cod_objeto not in (select distinct(pa2.cod_objeto) from parentesco pa2 where pa2.cod_pai in (".$parentesco_excecoes.")) ";
+                                o.apagado = 0 ";
+            if ($PERFIL > _PERFIL_AUTOR) { $sql .= " and o.cod_status = 2 and (o.data_publicacao <= ".date("YmdHi")."00 and o.data_validade >= ".date("YmdHi")."00) "; }
+            if ($excecoes!="") { $sql .= "and c.cod_classe not in (".$excecoes.") "; }
+            if ($parentesco_excecoes!="") { $sql .= "and o.cod_objeto not in (select distinct(pa2.cod_objeto) from parentesco pa2 where pa2.cod_pai in (".$parentesco_excecoes.")) "; }
             $sql .= "and (o.titulo ilike ('%".$query."%')
                                     or o.descricao ilike ('%".$query."%')
                                     or txt.valor ilike ('%".$query."%')
                                     or str.valor ilike ('%".$query."%'))
                                 and c.indexar = 1
-                                and (o.data_publicacao <= ".date("YmdHi")."00 and o.data_validade >= ".date("YmdHi")."00) 
                     order by o.titulo";
             
             $sqlCont = "select count(*) as total from (" . $sql . ") as sqlbusca";
@@ -122,9 +121,9 @@ class AdminObjeto
            {
                $retorno["inicio"] = ($retorno["pagina"] > 1) ? (($retorno["paginacao"] * ($retorno["pagina"] - 1)) + 1) : 1;
                $retorno["fim"] = ($retorno["inicio"] + $retorno["paginacao"]) - 1;
-               if ($retorno["fim"] > $retorno["total"]) $retorno["fim"] = $retorno["total"];
+               if ($retorno["fim"] > $retorno["total"]) { $retorno["fim"] = $retorno["total"]; }
                $retorno["paginas"] = intval($retorno["total"] / $retorno["paginacao"]);
-               if ($retorno["total"] % $retorno["paginacao"] > 0) $retorno["paginas"]++;
+               if ($retorno["total"] % $retorno["paginacao"] > 0) { $retorno["paginas"]++; }
                
                $rs = $_page->_db->ExecSQL($sql, $retorno["inicio"]-1, $retorno["paginacao"]);
                if ($rs->_numOfRows > 0)
@@ -620,12 +619,12 @@ class AdminObjeto
         if ($classe=='*')
         {
             $todas_as_classes = true;
-            $multiclasse = true;  //Classe unica e falso. Nesse caso e preciso cria a temp table
+            $multiclasse = true; // usa temp table
         }
         else
         {
             if (!is_array($classe)) $classe = explode (",",strtolower($classe));
-            if (count($classe)>1) $multiclasse = true; //Classe unica e falso. Nesse caso e preciso cria a temp table
+            if (count($classe)>1) $multiclasse = true; // usa temp table
         }
         $classes = $this->CodigoDasClasses($_page, $classe);
 
@@ -1042,6 +1041,46 @@ class AdminObjeto
 
         return $sql_condicao;
     }
+    
+    /**
+     * Retorna array com codigos, titulos e url_amigavel dos objetos até o root
+     * @param object $_page - Referencia do objeto Pagina
+     * @param int $cod_objeto - Codigo do objeto 
+     * @param int $nivel
+     * @param array $excecoes - codigos dos objetos que não devem vir no array
+     * @param array $excecoes_classes - codigos das classes que não devem vir no array
+     * @param boolean $desc - informa se o array deve ser ordenado de forma descendente
+     * @return array
+     */
+    function PegaIDPai(&$_page, $cod_objeto, $nivel, $excecoes=array(), $excecoes_classes=array(), $desc=false)
+    {
+        $rtnLista = array();
+        $contador = 0;
+        
+        $sql = "SELECT ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai, "
+                .$_page->_db->nomes_tabelas["objeto"].".titulo, "
+                .$_page->_db->nomes_tabelas["objeto"].".url_amigavel "
+                . "FROM parentesco ".$_page->_db->nomes_tabelas["parentesco"]." "
+                . "INNER JOIN objeto ".$_page->_db->nomes_tabelas["objeto"]." "
+                . "ON ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto = ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai "
+                . "WHERE ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = ".$cod_objeto." ";
+        if (count($excecoes_classes)>0) { $sql .= "AND ".$_page->_db->nomes_tabelas["objeto"].".cod_classe NOT IN (". implode(",", $excecoes_classes).") "; }
+        $sql .= "ORDER BY ".$_page->_db->nomes_tabelas["parentesco"].".ordem";
+        if ($desc) { $sql .= " DESC"; }
+        
+        $res = $_page->_db->ExecSQL($sql);
+        while ($row = $res->FetchRow())
+        {
+            $arrCodeTitulo = array($row['cod_pai'] => array($row['titulo'], $row['url_amigavel']));
+            if (($contador < $nivel) && !(in_array($row['cod_pai'], $excecoes)))
+            {
+                array_push_associative($rtnLista, $arrCodeTitulo);
+                $contador = $contador + 1;
+            }
+        }
+
+        return $rtnLista;
+    }
 
 	function CriaClasseInfo(&$_page, $classe)
 	{
@@ -1332,30 +1371,7 @@ class AdminObjeto
 		return $list;
 	}
 	
-	function PegaIDPai(&$_page, $cod_objeto, $nivel, $excecoes, $desc=false)
-	{
-		$rtnLista = array();
-		$contador = 0;
-		$sql = "select ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai, 
-		".$_page->_db->nomes_tabelas["objeto"].".titulo from parentesco ".$_page->_db->nomes_tabelas["parentesco"]." 
-		inner join objeto ".$_page->_db->nomes_tabelas["objeto"]." on ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto = ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai 
-		where ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = $cod_objeto 
-		order by ".$_page->_db->nomes_tabelas["parentesco"].".ordem";
-		if ($desc)
-			$sql .= " desc";
-		$res = $_page->_db->ExecSQL($sql);
-		while ($row = $res->FetchRow())
-		{
-			$arrCodeTitulo = array($row['cod_pai'] => $row['titulo']);
-			if (($contador < $nivel) && !(in_array($row['cod_pai'],$excecoes)))
-			{
-			array_push_associative($rtnLista, $arrCodeTitulo);
-			$contador = $contador + 1;
-			}
-		}
-		//array_flip($rtnLista);
-		return $rtnLista;
-	}
+    
 	
 	function PegaNumFilhos(&$_page, $pai)
 	{

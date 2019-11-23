@@ -546,7 +546,7 @@ class Administracao
      * @param array $proplist - Lista de propriedades
      * @param array $array_files - Array com arquivos de upload
      */
-    function GravarPropriedades(&$_page, $cod_objeto, $cod_classe, $proplist, $array_files='')
+    function GravarPropriedades(&$_page, $cod_objeto, $cod_classe, $proplist, $array_files=array())
     {
         if (!is_array($array_files))
         {
@@ -644,8 +644,13 @@ class Administracao
                                     " and cod_objeto=$cod_objeto";
                     $_page->_db->ExecSQL($sql);
                     
+//                    xd($valor);
+                    
                     if ($source=='post') $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
-                    else $data = stripslashes($valor['data']);
+                    else {
+                        if (isset($valor['data'])) $data = stripslashes($valor['data']);
+                        else $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
+                    }
 
                     // caso seja gravação do blob no banco
                     if (!defined ("_BLOBDIR"))
@@ -683,7 +688,7 @@ class Administracao
      * @param array $array_files - Lista de arquivos
      * @return int - Codigo do objeto criado
      */
-    function CriarObjeto(&$_page, $dados, $log = true, $array_files = '')
+    function CriarObjeto(&$_page, $dados, $log = true, $array_files = array())
     {
         $fieldlist = array();
         $valuelist = array();
@@ -1020,10 +1025,10 @@ class Administracao
                 $objetoPublicado = new Objeto($_page, $cod_objeto);
                 $array_objeto = null;
                 $array_objeto[] = array($objetoPublicado->metadados["cod_objeto"], $objetoPublicado->metadados["titulo"]);
-                $caminhoObjeto = $_page->_adminobjeto->PegaIDPai($_page, $cod_objeto, 100, array(0));
+                $caminhoObjeto = $_page->_adminobjeto->PegaIDPai($_page, $cod_objeto, 100, array(0), array(), false);
                 foreach ($caminhoObjeto as $codigo=>$titulo) 
                 {
-                    $array_objeto[] = array($codigo, $titulo);
+                    $array_objeto[] = array($codigo, $titulo[0]);
                 }
 
                 $mensagemEmail = "<html><head><title>Objeto Publicado</title></head>

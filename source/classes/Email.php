@@ -27,6 +27,7 @@ class Email
 	public $_assunto = "";
 	public $_corpo = "";
 	public $_headers = "";
+        public $_anexos = array();
 	
 	function __construct($rem="", $des="", $ass="", $cor="")
 	{

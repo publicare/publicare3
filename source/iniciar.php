@@ -124,7 +124,15 @@ if (isset($arrUrl[1]))
                 {
                     $tempFile .= "/" . $arrUrl[$i];
                 }
-                $incluir = $path . "/html/objects" . $tempFile;
+                if (file_exists($path . "/html/objects" . $tempFile))
+                {
+                    $incluir = $path . "/html/objects" . $tempFile;
+                }
+                if (file_exists($path . "/html/objects" . $tempFile.".php"))
+                {
+                    $incluir = $path . "/html/objects" . $tempFile.".php";
+                }
+//                xd($incluir);
             }
             break;
 
