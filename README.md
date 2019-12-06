@@ -20,6 +20,19 @@ Entende-se aqui por conteúdo não somente as informações que estão estrutura
 É um modelo ou especificação que define o tipo de objeto a ser criado. Através da definição de uma classe, descreve-se que propriedades o objeto terá.
 As classes são usadas para criar objetos.
 
+### Metadados
+
+São os dados que todos os objetos possuem, independente da classe que pertencem.
+Os metadados são:
+- titulo
+- descricao
+- data_publicacao
+- data_validade
+- peso
+- cod_pele
+- cod_classe
+- prefixo_classe 
+
 ### Objeto
 
 Um objeto nada mais é do que uma página que possui atributos distintos, herdados através da classe escolhida na hora de sua criação.
@@ -42,7 +55,8 @@ Por exemplo, um arquivo é um objeto filho que reside em uma pasta, que é o obj
 
 ### Pele
 
-Pele é um conjunto de templates
+Pele é um conjunto de templates com header e footer próprios.
+Ao ser aplicado a um objeto, todos os filhos recebem a mesma pele, recursivamente.
 
 ### Template
 
@@ -50,6 +64,14 @@ Template, ou script de exibição, é o modelo de exibição de um objeto.
 Define onde e como as propriedades serão exibidas.
 Cada classe tem o seu próprio template.
 Todo portal criado com o Publicare tem um template padrão, o ```<portal_root>/html/template/view_basic.php```, utilizado para exibir todas as propriedades do objeto.
+
+
+
+
+
+
+
+
 
 ### Markdown
 
