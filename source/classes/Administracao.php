@@ -1537,26 +1537,37 @@ class Administracao
      */
     function PegaInfoDaClasse(&$_page, $cod_classe)
     {
-        $sql = "select * from classe where cod_classe=$cod_classe order by classe.nome";
+        $sql = "SELECT * "
+                . "FROM classe "
+                . "WHERE cod_classe=".$cod_classe." "
+                . "ORDER BY nome";
 //        xd($sql);
         $rs = $_page->_db->ExecSQL($sql);
         $result['classe'] = $rs->fields;
+        
 
-        $sql = "select cod_classe,nome from classe order by nome";
+        $sql = "SELECT cod_classe, "
+                . "nome "
+                . "FROM classe "
+                . "ORDER BY nome";
         $rs = $_page->_db->ExecSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
             $result['todas'][$row[$i]['cod_classe']]=$row[$i];
         }
+        
 
-        $sql = "select cod_classe_filho from classexfilhos where cod_classe=$cod_classe";
+        $sql = "SELECT cod_classe_filho "
+                . "FROM classexfilhos "
+                . "WHERE cod_classe = ".$cod_classe;
         $rs = $_page->_db->ExecSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
             $result['todas'][$row[$i]['cod_classe_filho']]['permitido']=true;
         }
+        xd($result['todas']);
 
         $sql = "select cod_classe from classexfilhos where cod_classe_filho=$cod_classe";
         $rs = $_page->_db->ExecSQL($sql);

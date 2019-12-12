@@ -31,6 +31,7 @@ elseif ($acao=="edit" || $acao=="del")
 {
     $cod_classe = isset($_REQUEST['cod_classe'])?htmlspecialchars($_REQUEST["cod_classe"], ENT_QUOTES, "UTF-8"):0;
     if ((int)$cod_classe > 0) $classinfo = $_page->_administracao->PegaInfoDaClasse($_page, $cod_classe);
+    xd($classinfo);
 }
 
 //xd("classes");
@@ -262,7 +263,8 @@ elseif ($acao == "edit" || $acao=="new")
                                     <ul>
     <?php
     $classes = isset($classinfo['todas'])?$classinfo['todas']:$_page->_administracao->PegaListaDeClasses($_page);
-    $temfilhos = $cod_classe==0?0:isset($classinfo['classe']['temfilhos'])?$classinfo['classe']['temfilhos']:0;
+//    xd($_page->_administracao->PegaListaDeClasses($_page));
+    $temfilhos = $cod_classe==0?0:(isset($classinfo['classe']['temfilhos'])?$classinfo['classe']['temfilhos']:0);
     foreach ($classes as $list)
     {
         echo "<li><label><input type='checkbox' value='".(isset($list["cod_classe"])?$list["cod_classe"]:$list["codigo"])."' name='podeconter[]' ".((isset($list["permitido"])&&$list["permitido"]=="1")?"checked":"")." ".(($temfilhos=="1")?"":"disabled")." /> ".(isset($list["nome"])?$list["nome"]:$list["texto"])."</label></li>";
@@ -280,9 +282,12 @@ elseif ($acao == "edit" || $acao=="new")
                                 <div id="list-conter-classe">
                                     <ul>
     <?php
+    xd($classes);
     foreach ($classes as $list)
     {
-        echo "<li><label><input type='checkbox' value='".(isset($list["cod_classe"])?$list["cod_classe"]:$list["codigo"])."' name='criadoem[]' ".((isset($list["criadoem"])&&$list["criadoem"]=="1")?"checked":"")." /> ".(isset($list["nome"])?$list["nome"]:$list["texto"])."</label></li>";
+        $codigo = isset($list["cod_classe"])?$list["cod_classe"]:(isset($list["codigo"])?$list["codigo"]:"");
+        $texto = isset($list["nome"])?$list["nome"]:(isset($list["texto"])?$list["texto"]:"");
+        echo "<li><label><input type='checkbox' value='".$codigo."' name='criadoem[]' ".((isset($list["criadoem"])&&$list["criadoem"]=="1")?"checked":"")." /> ".$texto."</label></li>";
     }
     ?>
                                     </ul>

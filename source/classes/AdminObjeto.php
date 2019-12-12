@@ -915,7 +915,7 @@ class AdminObjeto
             }
             $result['from']=$saida_from;
         }
-        if (is_array($result['ordem'])) $result['ordem']=' order by '.implode($result['ordem'],',');
+        if (is_array($result['ordem'])) $result['ordem']=' order by '.implode(',', $result['ordem']);
         return $result;
     }
 

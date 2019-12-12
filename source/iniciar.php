@@ -166,7 +166,7 @@ if (isset($arrUrl[1]))
             $arrUrl[1] = limpaString($arrUrl[1]);
             // tudo para minusculo
             $arrUrl[1] = strtolower($arrUrl[1]);
-            $amigavel = $arrUrl[1];
+            $amigavel = filter_var($arrUrl[1], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             break;
     }
 }
