@@ -1,14 +1,9 @@
 <?php
 /**
  * Publicare - O CMS Público Brasileiro
- * @description Arquivo gerusuario_post.php é receber os dados de usuarios e gravar e/ou apagar
+ * @description Arquivo
  * @copyright GPL © 2007
- * @package publicare/manage
- *
- * MCTI - Ministério da Ciência, Tecnologia e Inovação - www.mcti.gov.br
- * ANTT - Agência Nacional de Transportes Terrestres - www.antt.gov.br
- * EPL - Empresa de Planejamento e Logística - www.epl.gov.br
- * LogicBSB - LogicBSB Sistemas Inteligentes - www.logicbsb.com.br
+ * @package publicare
  *
  * Este arquivo é parte do programa Publicare
  * Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU 

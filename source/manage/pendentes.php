@@ -1,14 +1,9 @@
 <?php 
 /**
  * Publicare - O CMS Público Brasileiro
- * @description Arquivo classes.php é responsável pela montagem do formulário para administração das classes
+ * @description Arquivo
  * @copyright GPL © 2007
  * @package publicare
- *
- * MCTI - Ministério da Ciência, Tecnologia e Inovação - www.mcti.gov.br
- * ANTT - Agência Nacional de Transportes Terrestres - www.antt.gov.br
- * EPL - Empresa de Planejamento e Logística - www.epl.gov.br
- * LogicBSB - LogicBSB Sistemas Inteligentes - www.logicbsb.com.br
  *
  * Este arquivo é parte do programa Publicare
  * Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU 
