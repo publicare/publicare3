@@ -1562,7 +1562,7 @@ class Administracao
         {
             $result['todas'][$row[$i]['cod_classe_filho']]['permitido']=true;
         }
-        xd($result['todas']);
+//        xd($result['todas']);
 
         $sql = "select cod_classe from classexfilhos where cod_classe_filho=$cod_classe";
         $rs = $_page->_db->ExecSQL($sql);

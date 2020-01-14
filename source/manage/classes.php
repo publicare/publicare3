@@ -26,7 +26,7 @@ elseif ($acao=="edit" || $acao=="del")
 {
     $cod_classe = isset($_REQUEST['cod_classe'])?htmlspecialchars($_REQUEST["cod_classe"], ENT_QUOTES, "UTF-8"):0;
     if ((int)$cod_classe > 0) $classinfo = $_page->_administracao->PegaInfoDaClasse($_page, $cod_classe);
-    xd($classinfo);
+//    xd($classinfo);
 }
 
 //xd("classes");
@@ -277,7 +277,7 @@ elseif ($acao == "edit" || $acao=="new")
                                 <div id="list-conter-classe">
                                     <ul>
     <?php
-    xd($classes);
+//    xd($classes);
     foreach ($classes as $list)
     {
         $codigo = isset($list["cod_classe"])?$list["cod_classe"]:(isset($list["codigo"])?$list["codigo"]:"");

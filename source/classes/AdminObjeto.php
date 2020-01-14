@@ -832,9 +832,9 @@ class AdminObjeto
                 }
             }
 			//fim
-            $campos=','.implode($temp_campos,',');
-            $from = implode($temp_from,' ');
-            $where = implode($temp_where,' and ');
+            $campos=','.implode(',', $temp_campos);
+            $from = implode(' ', $temp_from);
+            $where = implode(' and ', $temp_where);
 			
             $sqls_insert[] = 'insert into '.$tbl["nome"].
                     " select ".$_page->_db->sqlobjsel.$campos.$_page->_db->sqlobjfrom.$pai_join.$from.' where (1=1) and '.$where.$default_where;
@@ -851,7 +851,7 @@ class AdminObjeto
         }
 
         $result['tbl']=$tbl["nome"];
-        $result['ordem']=' order by '.implode($ordem_temporaria,',');
+        $result['ordem']=' order by '.implode(',', $ordem_temporaria);
 			
         return $result;
     }
@@ -891,10 +891,10 @@ class AdminObjeto
 
         if (isset($result['where']) && is_array($result['where']))
         {
-            $result['where']=' and '.implode($result['where'],' and ');
+            $result['where']=' and '.implode(' and ', $result['where']);
         }
 
-        if (isset($result['campos']) && is_array($result['campos'])) $result['campos']=implode($result['campos'],',');
+        if (isset($result['campos']) && is_array($result['campos'])) $result['campos']=implode(',',$result['campos']);
 
         if (isset($result['from']) && is_array($result['from']))
         {
