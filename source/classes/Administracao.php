@@ -134,6 +134,8 @@ class Administracao
                 }
             }
         }
+        
+//        xd($proplist);
 
         // Verifica se teve mudança na pele e caso positivo altera a pele de todos os filhos
         $sql_pele = "SELECT cod_pele "
@@ -543,7 +545,7 @@ class Administracao
      */
     function GravarPropriedades(&$_page, $cod_objeto, $cod_classe, $proplist, $array_files=array())
     {
-        if (!is_array($array_files))
+        if (isset($_FILES) && is_array($_FILES) && count($_FILES)>0)
         {
             $array_files = $_FILES;
             $source = 'post';
@@ -552,6 +554,8 @@ class Administracao
         {
             $source = 'string';
         }
+        
+//        xd($array_files);
 
         // Se tiver array de propriedades
         if (is_array($proplist))
@@ -632,7 +636,10 @@ class Administracao
                 if (isset($valor['size']) && $valor['size'] > 0)
                 {
                     $ar_fld = preg_split("[___]", $key);
-                    $info = $_page->_adminobjeto->PegaInfoSobrePropriedade($_page, $cod_classe, $ar_fld[1]);
+                    if (count($ar_fld)>1) { $prop = $ar_fld[1]; }
+                    else { $prop = $key; }
+                    $info = $_page->_adminobjeto->PegaInfoSobrePropriedade($_page, $cod_classe, $prop);
+//                    xd($info);
                     
                     // Apaga registro, caso já exista
                     $sql = "delete from ".$info['tabela']." where cod_propriedade=".$info['cod_propriedade'].
@@ -2227,6 +2234,8 @@ $str .= "*  <hr /> \r\n"
         $retorno = array();
         // executa scripts antes da gravacao do objeto
         $execAntes = $_page->_adminobjeto->ExecutaScript($_page, $post['cod_classe'], $post['cod_pele'], 'antes');
+        
+//        xd($_POST);
         
         $executa = false;
         $cod = 0;

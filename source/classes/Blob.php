@@ -861,6 +861,7 @@ class Blob
    //    error_log("Gerando imagem - Objeto: " . $cod_objeto . " - PDF: " . $prop_pdf . " - IMG: " . $prop_capa);
        // carregando objeto
        $objeto = new Objeto($_page, $cod_objeto);
+       
        // carregando propriedades
        $objeto->Valor($_page, $prop_pdf);
        // definindo variaveis como path e nomes dos arquivos
@@ -882,6 +883,7 @@ class Blob
        }
        // pega infos da propriedade
        $info = $_page->_adminobjeto->PegaInfoSobrePropriedade($_page, $cod_classe, $prop_capa);
+       
 
        if ($info && is_array($info))
        {
@@ -901,6 +903,7 @@ class Blob
            $campos['tamanho'] = filesize($path_arquivo . $arquivo_temp);
            $name = $_page->_db->Insert($info['tabela'], $campos);
            $filetype = Blob::PegaExtensaoArquivo($arquivo_temp);
+           
 
            $subpasta = Blob::identificaPasta($name);  //Pega o nome da subpasta
            if (!$resultado = is_dir(_BLOBDIR . "/" . $subpasta . "/"))
@@ -922,6 +925,7 @@ class Blob
        }
 
        unlink($path_arquivo.$arquivo_temp);
+//           xd($campos);
 
        $_page->_administracao->cacheFlush($_page);
    }
