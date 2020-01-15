@@ -495,7 +495,7 @@ class Pagina
 //        xd($incluir);
         
         $this->TempoDeExecucao = $this->getmicrotime() - $this->inicio;
-        $buffer .= "\n<!-- TEMPO DE EXECUCAO: ".$this->TempoDeExecucao." -->";
+//        $buffer .= "\n<!-- TEMPO DE EXECUCAO: ".$this->TempoDeExecucao." -->";
         
         if ($buffer != "") $this->_parser->Start($buffer, 1);
         
