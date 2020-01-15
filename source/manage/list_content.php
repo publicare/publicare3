@@ -15,6 +15,8 @@
 global $_page;
 
 $_page->_objeto->PegaListaDeFilhos($_page, '*');
+
+$lstStatus = array("", "Privado", "Publicado", "Rejeitado", "Submetido");
 ?>
 <style>trMouseAction1:hover { background: #fff; }</style>
 <ul class="nav nav-tabs">
@@ -128,6 +130,7 @@ if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
                                 <th>Classe</th>
                                 <th>Peso</th>
                                 <th>Data publicação</th>
+                                <th>Status</th>
                                 <th>A&ccedil;&otilde;es</th>
                             </tr>
                         </thead>
@@ -160,6 +163,7 @@ for ($i=0; $i < $_page->_objeto->quantidade; $i++)
                                 $vdata = preg_split("[ - ]", $obj->Valor($_page, "data_publicacao"));
                                 echo($vdata[0]); 
                                 ?></td>
+                                <td><?php echo($lstStatus[$obj->Valor($_page, "cod_status")]); ?></td>
                                 <td>
 <?php
     if ($_SESSION['usuario']['perfil']<=_PERFIL_AUTOR || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor($_page, "cod_usuario")==$_SESSION['usuario']['cod_usuario']))
@@ -184,17 +188,6 @@ for ($i=0; $i < $_page->_objeto->quantidade; $i++)
 }
 ?>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>#</th>
-                                <th>Código</th>
-                                <th>T&iacute;tulo</th>
-                                <th>Classe</th>
-                                <th>Peso</th>
-                                <th>Data publicação</th>
-                                <th>Op&ccedil;&otilde;es</th>
-                            </tr>
-                        </tfoot>
                     </table>
                     <!-- === Final === Tabela Listar Conteúdo (DATATABLE) === -->
 
