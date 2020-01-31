@@ -31,7 +31,7 @@ class DBLayer
     public $page_size=25;
     public $contador;
 
-    public $nomes_tabelas;
+    public $tabelas;
     public $metadados;
     public $tipodados;
 
@@ -45,6 +45,9 @@ class DBLayer
      */
     function __construct()
     {
+        global $cfgbanco;
+        
+        
         // pegando dados de conexao ao banco
         $this->contador = 0;
         $this->server = _DBSERVERTYPE;
@@ -55,34 +58,357 @@ class DBLayer
         $this->password = _DBPWD;
 
 	// criando alias para as tabelas
-        $this->nomes_tabelas = array("classe"=>"t1",
-        "classexfilhos"=>"t2",
-        "classexobjeto"=>"t3",
-        "infoperfil"=>"t6",
-        "logobjeto"=>"t7",
-        "logworkflow"=>"t9",
-        "objeto"=>"t10", 
-        "parentesco"=>"t11",
-        "pele"=>"t12", 
-        "pendencia"=>"t13", 
-        "perfil"=>"t14",
-        "pilha"=>"t15",
-        "propriedade"=>"t16",
-        "status"=>"t17", 
-        "tag"=>"t18",
-        "tagxobjeto"=>"t19",  
-        "tbl_blob"=>"t20", 
-        "tbl_boolean"=>"t21", 
-        "tbl_date"=>"t22", 
-        "tbl_float"=>"t23", 
-        "tbl_integer"=>"t24",
-        "tbl_objref"=>"t25", 
-        "tbl_string"=>"t26", 
-        "tbl_text"=>"t27", 
-        "tipodado"=>"t28", 
-        "unlock_table"=>"t29", 
-        "usuario"=>"t30", 
-        "usuarioxobjetoxperfil"=>"t31");
+        $this->tabelas = array(
+            
+            "classe" => array(
+                "nome" => "classe", 
+                "nick" => "t1", 
+                "colunas" => array(
+                    "cod_classe" => "cod_classe",
+                    "nome" => "nome",
+                    "prefixo" => "prefixo",
+                    "descricao" => "descricao",
+                    "temfilhos" => "temfilhos",
+                    "sistema" => "sistema",
+                    "indexar" => "indexar"
+                )
+            ),
+            
+            "classexfilhos" => array(
+                "nome" => "classexfilhos", 
+                "nick" => "t2",
+                "colunas" => array(
+                    "cod_classe" => "cod_classe",
+                    "cod_classe_filho" => "cod_classe_filho"
+                )
+            ),
+            
+            "classexobjeto" => array(
+                "nome" => "classexobjeto", 
+                "nick" => "t3",
+                "colunas" => array(
+                    "cod_classe" => "cod_classe",
+                    "cod_objeto" => "cod_objeto"
+                )
+            ),
+            
+            "infoperfil" => array(
+                "nome" => "infoperfil", 
+                "nick" => "t4",
+                "colunas" => array(
+                    "cod_infoperfil" => "cod_infoperfil",
+                    "cod_perfil" => "cod_perfil",
+                    "acao" => "acao",
+                    "script" => "script",
+                    "donooupublicado" => "donooupublicado",
+                    "sopublicado" => "sopublicado",
+                    "sodono" => "sodono",
+                    "naomenu" => "naomenu",
+                    "ordem" => "ordem",
+                    "icone" => "icone"
+                )
+            ),
+            
+            "logobjeto" => array(
+                "nome" => "logobjeto", 
+                "nick" => "t5",
+                "colunas" => array(
+                    "cod_logobjeto" => "cod_logobjeto",
+                    "cod_objeto" => "cod_objeto",
+                    "estampa" => "estampa",
+                    "cod_usuario" => "cod_usuario",
+                    "cod_operacao" => "cod_operacao"
+                )
+            ),
+            
+            "logworkflow" => array(
+                "nome" => "logworkflow", 
+                "nick" => "t6",
+                "colunas" => array(
+                    "cod_logworkflow" => "cod_logworkflow",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_usuario" => "cod_usuario",
+                    "mensagem" => "mensagem",
+                    "cod_status" => "cod_status",
+                    "estampa" => "estampa"
+                )
+            ),
+            
+            "objeto" => array(
+                "nome" => "objeto", 
+                "nick" => "t7",
+                "colunas" => array(
+                    "cod_objeto" => "cod_objeto",
+                    "cod_pai" => "cod_pai",
+                    "cod_classe" => "cod_classe",
+                    "cod_usuario" => "cod_usuario",
+                    "cod_pele" => "cod_pele",
+                    "cod_status" => "cod_status",
+                    "titulo" => "titulo",
+                    "descricao" => "descricao",
+                    "data_publicacao" => "data_publicacao",
+                    "data_validade" => "data_validade",
+                    "script_exibir" => "script_exibir",
+                    "apagado" => "apagado",
+                    "objetosistema" => "objetosistema",
+                    "peso" => "peso",
+                    "data_exclusao" => "data_exclusao",
+                    "url_amigavel" => "url_amigavel",
+                    "versao" => "versao",
+                    "versao_publicada" => "versao_publicada"
+                )
+            ),
+            
+            "parentesco" => array(
+                "nome" => "parentesco", 
+                "nick" => "t8",
+                "colunas" => array(
+                    "cod_objeto" => "cod_objeto",
+                    "cod_pai" => "cod_pai",
+                    "ordem" => "ordem"
+                )
+            ),
+            
+            "pele" => array(
+                "nome" => "pele", 
+                "nick" => "t9",
+                "colunas" => array(
+                    "cod_pele" => "cod_pele",
+                    "nome" => "nome",
+                    "prefixo" => "prefixo",
+                    "publica" => "publica"
+                )
+            ), 
+            
+            "pendencia" => array(
+                "nome" => "pendencia", 
+                "nick" => "t10",
+                "colunas" => array(
+                    "cod_pendencia" => "cod_pendencia",
+                    "cod_usuario" => "cod_usuario",
+                    "cod_objeto" => "cod_objeto"
+                )
+            ), 
+            
+            "perfil" => array(
+                "nome" => "perfil", 
+                "nick" => "t11",
+                "colunas" => array(
+                    "cod_perfil" => "cod_perfil",
+                    "nome" => "nome",
+                    "cod_perfil_pai" => "cod_perfil_pai"
+                )
+            ),
+            
+            "pilha" => array(
+                "nome" => "pilha", 
+                "nick" => "t12",
+                "colunas" => array(
+                    "cod_pilha" => "cod_pilha",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_usuario" => "cod_usuario",
+                    "cod_tipo" => "cod_tipo",
+                    "datahora" => "datahora"
+                )
+            ),
+            
+            "propriedade" => array(
+                "nome" => "propriedade", 
+                "nick" => "t13",
+                "colunas" => array(
+                    "cod_propriedade" => "cod_propriedade",
+                    "cod_classe" => "cod_classe",
+                    "cod_tipodado" => "cod_tipodado",
+                    "cod_referencia_classe" => "cod_referencia_classe",
+                    "campo_ref" => "campo_ref",
+                    "nome" => "nome",
+                    "posicao" => "posicao",
+                    "descricao" => "descricao",
+                    "rotulo" => "rotulo",
+                    "rot1booleano" => "rot1booleano",
+                    "rot2booleano" => "rot2booleano",
+                    "obrigatorio" => "obrigatorio",
+                    "seguranca" => "seguranca",
+                    "valorpadrao" => "valorpadrao"
+                )
+            ),
+            
+            "status" => array(
+                "nome" => "status", 
+                "nick" => "t14",
+                "colunas" => array(
+                    "cod_status" => "cod_status",
+                    "nome" => "nome"
+                )
+            ), 
+            
+            "tag" => array(
+                "nome" => "tag", 
+                "nick" => "t15",
+                "colunas" => array(
+                    "cod_tag" => "cod_tag",
+                    "nome_tag" => "nome_tag"
+                )
+            ),
+            
+            "tagxobjeto" => array(
+                "nome" => "tagxobjeto", 
+                "nick" => "t16",
+                "colunas" => array(
+                    "cod_tagxobjeto" => "cod_tagxobjeto",
+                    "cod_tag" => "cod_tag",
+                    "cod_objeto" => "cod_objeto"
+                )
+            ),
+            
+            "tbl_blob" => array(
+                "nome" => "tbl_blob", 
+                "nick" => "t17", 
+                "colunas" => array(
+                    "cod_blob" => "cod_blob",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "arquivo" => "arquivo",
+                    "tamanho" => "tamanho"
+                )
+            ), 
+            
+            "tbl_boolean" => array(
+                "nome" => "tbl_boolean", 
+                "nick" => "t18", 
+                "colunas" => array(
+                    "cod_boolean" => "cod_boolean",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )
+            ), 
+            
+            "tbl_date" => array(
+                "nome" => "tbl_date", 
+                "nick" => "t19", 
+                "colunas" => array(
+                    "cod_date" => "cod_date",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )), 
+            
+            "tbl_float" => array(
+                "nome" => "tbl_float", 
+                "nick" => "t20",
+                "colunas" => array(
+                    "cod_float" => "cod_float",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )
+            ), 
+            
+            "tbl_integer" => array(
+                "nome" => "tbl_integer", 
+                "nick" => "t21",
+                "colunas" => array(
+                    "cod_integer" => "cod_integer",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )
+            ),
+            
+            "tbl_objref" => array(
+                "nome" => "tbl_objref", 
+                "nick" => "t22",
+                "colunas" => array(
+                    "cod_objref" => "cod_objref",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )
+            ), 
+            
+            "tbl_string" => array(
+                "nome" => "tbl_string", 
+                "nick" => "t23",
+                "colunas" => array(
+                    "cod_string" => "cod_string",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )
+            ), 
+            
+            "tbl_text" => array(
+                "nome" => "tbl_text", 
+                "nick" => "t24",
+                "colunas" => array(
+                    "cod_text" => "cod_text",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_propriedade" => "cod_propriedade",
+                    "valor" => "valor"
+                )
+            ), 
+            
+            "tipodado" => array(
+                "nome" => "tipodado", 
+                "nick" => "t25", 
+                "colunas" => array(
+                    "cod_tipodado" => "cod_tipodado",
+                    "nome" => "nome",
+                    "tabela" => "tabela",
+                    "delimitador" => "delimitador",
+                )
+            ), 
+            
+            "usuario" => array(
+                "nome" => "usuario", 
+                "nick" => "t26",
+                "colunas" => array(
+                    "cod_usuario" => "cod_usuario",
+                    "secao" => "secao",
+                    "nome" => "nome",
+                    "login" => "login",
+                    "email" => "email",
+                    "ramal" => "ramal",
+                    "senha" => "senha",
+                    "chefia" => "chefia",
+                    "valido" => "valido",
+                    "data_atualizacao" => "data_atualizacao",
+                    "altera_senha" => "altera_senha",
+                    "ldap" => "ldap"
+                )
+            ), 
+            
+            "usuarioxobjetoxperfil" => array(
+                "nome" => "usuarioxobjetoxperfil", 
+                "nick" => "t27",
+                "colunas" => array(
+                    "cod_usuario" => "cod_usuario",
+                    "cod_objeto" => "cod_objeto",
+                    "cod_perfil" => "cod_perfil"
+                )
+            ),
+            
+            "versaoobjeto" => array(
+                "nome" => "versaoobjeto", 
+                "nick" => "t28",
+                "colunas" => array(
+                    "cod_versaoobjeto" => "cod_versaoobjeto",
+                    "cod_objeto" => "cod_objeto",
+                    "versao" => "versao",
+                    "conteudo" => "conteudo",
+                    "data_criacao" => "data_criacao",
+                    "cod_usuario" => "cod_usuario",
+                    "ip" => "ip"
+                )
+            )
+            
+        );
+        
+        if (isset($cfgbanco) && is_array($cfgbanco) && count($cfgbanco) > 0)
+        {
+            $this->tabelas = array_merge($this->tabelas, $cfgbanco);
+        }
 		
 	// definindo campos que sao metadados do objeto
         $this->metadados = array ('cod_objeto',
@@ -128,6 +454,7 @@ class DBLayer
             // MySQL
             case "mysql":
             case "mysqli":
+            case "pdo_mysql":
                 $this->tipodados = array("inteiro"=>"int",
                 "inteirogde"=>"bigint(14)",
                 "inteiropqn"=>"tinyint",
@@ -150,41 +477,55 @@ class DBLayer
                 "temp"=>"CREATE TABLE",
                 "temp2"=>"#");
                 break;
+            case "oracle":
+                $this->tipodados = array("inteiro"=>"[int]",
+                "inteirogde"=>"[numeric](18, 0)",
+                "inteiropqn"=>"[tinyint]",
+                "float"=>"[numeric](18, 5)",
+                "texto"=>"[varchar](255)", 
+                "textogde"=>"[text]", 
+                "coluna"=>"",
+                "temp"=>"CREATE TABLE",
+                "temp2"=>"#");
+                break;
         }
 		
 	// definindo sql geral de consulta
-        $this->sqlobjsel = " ".$this->nomes_tabelas["objeto"].".cod_objeto,"
-                . " ".$this->nomes_tabelas["objeto"].".cod_pai,"
-                . " ".$this->nomes_tabelas["objeto"].".cod_classe,"
-                . " ".$this->nomes_tabelas["classe"].".nome as classe,"
-                . " ".$this->nomes_tabelas["classe"].".temfilhos,"
-                . " ".$this->nomes_tabelas["classe"].".prefixo as prefixoclasse,"
-                . " ".$this->nomes_tabelas["objeto"].".cod_usuario,"
-                . " ".$this->nomes_tabelas["objeto"].".cod_pele,"
-                . " ".$this->nomes_tabelas["pele"].".nome as pele,"
-                . " ".$this->nomes_tabelas["pele"].".prefixo as prefixopele,"
-                . " ".$this->nomes_tabelas["objeto"].".cod_status,"
-                . " ".$this->nomes_tabelas["status"].".nome as status,"
-                . " ".$this->nomes_tabelas["objeto"].".titulo,"
-                . " ".$this->nomes_tabelas["objeto"].".descricao,"
-                . " ".$this->nomes_tabelas["objeto"].".data_publicacao,"
-                . " ".$this->nomes_tabelas["objeto"].".data_validade,"
-                . " ".$this->nomes_tabelas["objeto"].".script_exibir,"
-                . " ".$this->nomes_tabelas["objeto"].".apagado,"
-                . " ".$this->nomes_tabelas["objeto"].".objetosistema,"
-                . " ".$this->nomes_tabelas["objeto"].".peso,"
-                . "  ".$this->nomes_tabelas["objeto"].".url_amigavel,"
-                . " ".$this->nomes_tabelas["objeto"].".versao,"
-                . " ".$this->nomes_tabelas["objeto"].".versao_publicada ";
+        $this->sqlobjsel = " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . $this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_pai"]." AS cod_pai, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_classe"]." AS cod_classe, "
+                . " ".$this->tabelas["classe"]["nick"].".".$this->tabelas["classe"]["colunas"]["nome"]." AS classe, "
+                . " ".$this->tabelas["classe"]["nick"].".".$this->tabelas["classe"]["colunas"]["temfilhos"]." AS temfilhos, "
+                . " ".$this->tabelas["classe"]["nick"].".".$this->tabelas["classe"]["colunas"]["prefixo"]." AS prefixoclasse, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_pele"]." AS cod_pele, "
+                . " ".$this->tabelas["pele"]["nick"].".".$this->tabelas["pele"]["colunas"]["nome"]." AS pele, "
+                . " ".$this->tabelas["pele"]["nick"].".".$this->tabelas["pele"]["colunas"]["prefixo"]." AS prefixopele, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_status"]." AS cod_status, "
+                . " ".$this->tabelas["status"]["nick"].".".$this->tabelas["status"]["colunas"]["nome"]." AS status, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["descricao"]." AS descricao, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["data_publicacao"]." AS data_publicacao, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["data_validade"]." AS data_validade, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["script_exibir"]." AS script_exibir, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["apagado"]." AS apagado, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["objetosistema"]." AS objetosistema, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["peso"]." AS peso, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["versao"]." AS versao, "
+                . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["versao_publicada"]." AS versao_publicada ";
 	
 	// definindo clausula from do sql geral de consulta
-        $this->sqlobjfrom = " from objeto ".$this->nomes_tabelas["objeto"]." 
-        left join classe ".$this->nomes_tabelas["classe"]." on ".$this->nomes_tabelas["classe"].".cod_classe = ".$this->nomes_tabelas["objeto"].".cod_classe 
-        left join pele ".$this->nomes_tabelas["pele"]." on ".$this->nomes_tabelas["pele"].".cod_pele = ".$this->nomes_tabelas["objeto"].".cod_pele 
-        left join status ".$this->nomes_tabelas["status"]." on ".$this->nomes_tabelas["status"].".cod_status = ".$this->nomes_tabelas["objeto"].".cod_status ";
+        $this->sqlobjfrom = " FROM ".$this->tabelas["objeto"]["nome"]." AS ".$this->tabelas["objeto"]["nick"]." "
+                . "LEFT JOIN ".$this->tabelas["classe"]["nome"]." AS ".$this->tabelas["classe"]["nick"]." "
+                    . "ON ".$this->tabelas["classe"]["nick"].".".$this->tabelas["classe"]["colunas"]["cod_classe"]." = ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_classe"]." "
+                . "LEFT JOIN ".$this->tabelas["pele"]["nome"]." AS ".$this->tabelas["pele"]["nick"]." "
+                    ."ON ".$this->tabelas["pele"]["nick"].".".$this->tabelas["pele"]["colunas"]["cod_pele"]." = ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_pele"]." "
+                . "LEFT JOIN ".$this->tabelas["status"]["nome"]." AS ".$this->tabelas["status"]["nick"]." "
+                    . "ON ".$this->tabelas["status"]["nick"].".".$this->tabelas["status"]["colunas"]["cod_status"]." = ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_status"]." ";
 	
 	// criando sql geral de consulta de objetos
-        $this->sqlobj = "select ".$this->sqlobjsel." ".$this->sqlobjfrom;
+        $this->sqlobj = "SELECT ".$this->sqlobjsel." ".$this->sqlobjfrom;
 		
         try {
             $this->con = ADONewConnection($this->server);
@@ -385,6 +726,8 @@ class DBLayer
         {
             $field['field']=substr($field['field'],0,strpos($field['field'],'.'));
         }
+        $txt = null;
+//        xd($field['type']);
         switch (trim($field['type']))
         {
             case 'data':

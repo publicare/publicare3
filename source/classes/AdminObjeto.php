@@ -27,7 +27,7 @@ class AdminObjeto
      */
     function CondicaoPublicado(&$_page)
     {
-        return " and ".$_page->_db->nomes_tabelas["objeto"].".cod_status="._STATUS_PUBLICADO;
+        return " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_status"]." = "._STATUS_PUBLICADO;
     }
 
     /**
@@ -38,8 +38,8 @@ class AdminObjeto
      */
     function CondicaoAutor(&$_page)
     {
-        return " and ((".$_page->_db->nomes_tabelas["objeto"].".cod_status="._STATUS_PUBLICADO.$this->CondicaoData($_page).") "
-                . "or ".$_page->_db->nomes_tabelas["objeto"].".cod_usuario=".$_SESSION['usuario']['cod_usuario'].')';
+        return " AND ((".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_status"]." = "._STATUS_PUBLICADO.$this->CondicaoData($_page).") "
+                . " OR ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'].') ';
     }
 
     /**
@@ -49,7 +49,8 @@ class AdminObjeto
      */
     function CondicaoData(&$_page)
     {
-        return " and (".$_page->_db->nomes_tabelas["objeto"].".data_publicacao<=".date("YmdH")."0000 and ".$_page->_db->nomes_tabelas["objeto"].".data_validade>=".date("YmdH")."0000)";
+        return " AND (".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["data_publicacao"]." <= ".date("YmdH")."0000 "
+                . " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["data_validade"]." >= ".date("YmdH")."0000) ";
     }
 
     /**
@@ -73,35 +74,54 @@ class AdminObjeto
                         "query"=>$query,
                         "resultados"=>array());
         
+        $PERFIL = $_page->_usuario->cod_perfil;
+        
         if ((isset($query) && strlen($query)>1))
         {
             $query = addslashes($query);
             
-            $sql = "select distinct(o.cod_objeto), 
-                                o.cod_pai,
-                                o.cod_classe,
-                                o.titulo,
-                                o.descricao,
-                                o.url_amigavel,
-                                o.peso,
-                                c.nome as nome_classe
-                    from objeto o 
-                                inner join classe c on o.cod_classe = c.cod_classe
-                                left join tbl_text txt on o.cod_objeto = txt.cod_objeto
-                                left join tbl_string str on o.cod_objeto = str.cod_objeto 
-                    where
-                                o.apagado = 0 ";
-            if ($PERFIL > _PERFIL_AUTOR) { $sql .= " and o.cod_status = 2 and (o.data_publicacao <= ".date("YmdHi")."00 and o.data_validade >= ".date("YmdHi")."00) "; }
-            if ($excecoes!="") { $sql .= "and c.cod_classe not in (".$excecoes.") "; }
-            if ($parentesco_excecoes!="") { $sql .= "and o.cod_objeto not in (select distinct(pa2.cod_objeto) from parentesco pa2 where pa2.cod_pai in (".$parentesco_excecoes.")) "; }
-            $sql .= "and (o.titulo ilike ('%".$query."%')
-                                    or o.descricao ilike ('%".$query."%')
-                                    or txt.valor ilike ('%".$query."%')
-                                    or str.valor ilike ('%".$query."%'))
-                                and c.indexar = 1
-                    order by o.titulo";
+            $sql = "SELECT DISTINCT(".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]."), "
+                        ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_pai"]." AS cod_pai, "
+                        ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." AS cod_classe, "
+                        ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
+                        ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["descricao"]." AS descricao, "
+                        ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel, "
+                        ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["peso"]." AS peso, "
+                        ." ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"]." AS nome_classe "
+                    . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " INNER JOIN ".$_page->_db->tabelas["classe"]["nome"]." AS ".$_page->_db->tabelas["classe"]["nick"]." "
+                        . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." "
+                    . " LEFT JOIN ".$_page->_db->tabelas["tbl_text"]["nome"]." AS ".$_page->_db->tabelas["tbl_text"]["nick"]." "
+                        . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["tbl_text"]["nick"].".".$_page->_db->tabelas["tbl_text"]["colunas"]["cod_objeto"]." "
+                    . " LEFT JOIN ".$_page->_db->tabelas["tbl_string"]["nome"]." AS ".$_page->_db->tabelas["tbl_string"]["nick"]." "
+                        . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["tbl_string"]["nick"].".".$_page->_db->tabelas["tbl_string"]["colunas"]["cod_objeto"]." "
+                    . " WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 0 ";
+
+            if ($PERFIL > _PERFIL_AUTOR) { 
+                $sql .= " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_status"]." = 2 "
+                        . " AND (".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["data_publicacao"]." <= ".date("YmdHi")."00 "
+                        . " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["data_validade"]." >= ".date("YmdHi")."00) "; 
+            }
             
-            $sqlCont = "select count(*) as total from (" . $sql . ") as sqlbusca";
+            if ($excecoes != "") { 
+                $sql .= " AND ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." NOT IN (".$excecoes.") "; 
+            }
+            
+            if ($parentesco_excecoes!="") { 
+                $sql .= " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
+                        . " NOT IN (SELECT DISTINCT(pa2.".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"].") "
+                        . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS pa2 "
+                        . " WHERE pa2.".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." in (".$parentesco_excecoes.")) "; 
+            }
+            
+            $sql .= " AND (".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." LIKE ('%".$query."%') "
+                    . " OR ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["descricao"]." LIKE ('%".$query."%') "
+                    . " OR ".$_page->_db->tabelas["tbl_text"]["nick"].".".$_page->_db->tabelas["tbl_text"]["colunas"]["valor"]." LIKE ('%".$query."%') "
+                    . " OR ".$_page->_db->tabelas["tbl_string"]["nick"].".".$_page->_db->tabelas["tbl_string"]["colunas"]["valor"]." LIKE ('%".$query."%')) "
+                    . " AND ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["indexar"]." = 1 "
+                    . " ORDER BY ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"];
+            
+            $sqlCont = "SELECT COUNT(*) AS total FROM (" . $sql . ") AS sqlbusca";
             
             $rs = $_page->_db->ExecSQL($sqlCont);
             if ($rs->_numOfRows>0)
@@ -140,7 +160,11 @@ class AdminObjeto
     function PegaTags(&$_page, $cod_objeto)
     {
         $tags = "";
-        $sql = "select nome_tag from tag t1 inner join tagxobjeto t2 on t1.cod_tag=t2.cod_tag where t2.cod_objeto=".$cod_objeto;
+        $sql = "SELECT ".$_page->_db->tabelas["tag"]["nick"].".".$_page->_db->tabelas["tag"]["colunas"]["nome_tag"]." AS nome_tag "
+                . "FROM ".$_page->_db->tabelas["tag"]["nome"]." AS ".$_page->_db->tabelas["tag"]["nick"]." "
+                . "INNER JOIN ".$_page->_db->tabelas["tagxobjeto"]["nome"]." AS ".$_page->_db->tabelas["tagxobjeto"]["nick"]." "
+                    . "ON ".$_page->_db->tabelas["tag"]["nick"].".".$_page->_db->tabelas["tag"]["colunas"]["cod_tag"]." = ".$_page->_db->tabelas["tagxobjeto"]["nick"].".".$_page->_db->tabelas["tagxobjeto"]["colunas"]["cod_tag"]." "
+                . "WHERE ".$_page->_db->tabelas["tagxobjeto"]["nick"].".".$_page->_db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto.";";
         $rs = $_page->_db->ExecSQL($sql);
         if ($rs->_numOfRows>0)
         {
@@ -164,7 +188,7 @@ class AdminObjeto
      */
     function PegaDadosObjetoPeloTitulo(&$_page, $titulo)
     {
-        $sql = $_page->_db->sqlobj." where ".$_page->_db->nomes_tabelas["objeto"].".titulo = '".$titulo."'";
+        $sql = $_page->_db->sqlobj." WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." = '".$titulo."' ";
         $rs = $_page->_db->ExecSQL($sql);
         $dados = $rs->fields;
         return $dados;
@@ -180,7 +204,7 @@ class AdminObjeto
     {
         if (is_numeric($cod_objeto))
         {
-            $sql = $_page->_db->sqlobj." where ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto=".$cod_objeto;
+            $sql = $_page->_db->sqlobj." WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
             $rs = $_page->_db->ExecSQL($sql);
             $dados = $rs->fields;
             return $dados;
@@ -222,10 +246,10 @@ class AdminObjeto
     function RecursivaCaminhoObjeto(&$_page, $cod_objeto)
     {
         $result = array();
-        $sql = "select cod_pai 
-        from parentesco 
-        where cod_objeto=".$cod_objeto." 
-        order by ordem desc";
+        $sql = "SELECT ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai "
+                ." FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                ." WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " ORDER BY ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." DESC";
         $rs = $_page->_db->ExecSQL($sql);
 
         if ($rs->_numOfRows>0)
@@ -251,18 +275,20 @@ class AdminObjeto
      */
     function PegaCaminhoObjetoComTitulo(&$_page, $cod_objeto)
     {
-        $result=array();
+        $result = array();
 
-        $sql = "select
-        ".$_page->_db->nomes_tabelas["parentesco"].".ordem,
-        ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto,
-        ".$_page->_db->nomes_tabelas["objeto"].".titulo
-        from objeto ".$_page->_db->nomes_tabelas["objeto"]." 
-        inner join parentesco ".$_page->_db->nomes_tabelas["parentesco"]." on ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto=".$_page->_db->nomes_tabelas["parentesco"].".cod_pai
-        where ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto=$cod_objeto
-        group by ".$_page->_db->nomes_tabelas["parentesco"].".ordem, 
-        ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto, ".$_page->_db->nomes_tabelas["objeto"].".titulo
-        order by ".$_page->_db->nomes_tabelas["parentesco"].".ordem desc";
+        $sql = "SELECT "
+                . " ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." AS ordem, "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo "
+                . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
+                . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " GROUP BY ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"].", "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].", "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." "
+                . " ORDER BY ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." DESC";
 
         $res = $_page->_db->ExecSQL($sql);
         $row = $res->GetRows();
@@ -285,17 +311,19 @@ class AdminObjeto
         $result=array();
         
         // Busca lista de propriedades da classe
-        $sql = "select ".$_page->_db->nomes_tabelas["propriedade"].".cod_tipodado, 
-                ".$_page->_db->nomes_tabelas["propriedade"].".cod_propriedade,
-                ".$_page->_db->nomes_tabelas["propriedade"].".nome,
-                ".$_page->_db->nomes_tabelas["tipodado"].".tabela, 
-                ".$_page->_db->nomes_tabelas["tipodado"].".nome as tipodado,
-                ".$_page->_db->nomes_tabelas["propriedade"].".cod_referencia_classe, 
-                ".$_page->_db->nomes_tabelas["propriedade"].".campo_ref
-                from objeto ".$_page->_db->nomes_tabelas["objeto"]." 
-                inner join propriedade ".$_page->_db->nomes_tabelas["propriedade"]." on ".$_page->_db->nomes_tabelas["propriedade"].".cod_classe = ".$_page->_db->nomes_tabelas["objeto"].".cod_classe
-                inner join tipodado ".$_page->_db->nomes_tabelas["tipodado"]." on ".$_page->_db->nomes_tabelas["propriedade"].".cod_tipodado = ".$_page->_db->nomes_tabelas["tipodado"].".cod_tipodado 
-                where cod_objeto=".$cod_objeto;
+        $sql = "SELECT ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." AS cod_tipodado, "
+                . " ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
+                . " ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["nome"]." AS nome, "
+                . " ".$_page->_db->tabelas["tipodado"]["nick"].".".$_page->_db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela, "
+                . " ".$_page->_db->tabelas["tipodado"]["nick"].".".$_page->_db->tabelas["tipodado"]["colunas"]["nome"]." AS tipodado, "
+                . " ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
+                . " ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref "
+                . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["propriedade"]["nome"]." AS ".$_page->_db->tabelas["propriedade"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["tipodado"]["nome"]." AS ".$_page->_db->tabelas["tipodado"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$_page->_db->tabelas["tipodado"]["nick"].".".$_page->_db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
+                . " WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $res = $_page->_db->ExecSQL($sql);
         
         $join = array();
@@ -303,6 +331,8 @@ class AdminObjeto
         $tipo = array();
 
         $row = $res->GetRows();
+        
+//        xd($row);
 
         // Adiciona propriedades ao array props[]
         for ($i=0; $i<sizeof($row); $i++)
@@ -310,11 +340,16 @@ class AdminObjeto
             // caso propriedade seja obj_ref busca codigo do objeto referenciado
             if (($row[$i]["tabela"]=="tbl_objref") && (!$this->EMetadado($_page, $row[$i]["campo_ref"])))
             {
-                $sql = "select ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto 
-                        from tbl_objref ".$_page->_db->nomes_tabelas["tbl_objref"]."
-                        inner join objeto ".$_page->_db->nomes_tabelas["objeto"]." on ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto=".$_page->_db->nomes_tabelas["tbl_objref"].".valor
-                        where ".$_page->_db->nomes_tabelas["tbl_objref"].".cod_propriedade=".$row[$i]["cod_propriedade"]." 
-                        and ".$_page->_db->nomes_tabelas["tbl_objref"].".cod_objeto=".$cod_objeto;
+                $sql = "SELECT ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                        . " FROM ".$_page->_db->tabelas["tbl_objref"]["nome"]." AS ".$_page->_db->tabelas["tbl_objref"]["nick"]." "
+                        . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                            . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["tbl_objref"]["nick"].".".$_page->_db->tabelas["tbl_objref"]["colunas"]["valor"]." "
+                        . " WHERE ".$_page->_db->tabelas["tbl_objref"]["nick"].".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_propriedade"]." = ".$row[$i]["cod_propriedade"]." "
+                        . " AND ".$_page->_db->tabelas["tbl_objref"]["nick"].".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+//                        from tbl_objref ".$_page->_db->nomes_tabelas["tbl_objref"]."
+//                        inner join objeto ".$_page->_db->nomes_tabelas["objeto"]." on ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto=".$_page->_db->nomes_tabelas["tbl_objref"].".valor
+//                        where ".$_page->_db->nomes_tabelas["tbl_objref"].".cod_propriedade=".$row[$i]["cod_propriedade"]." 
+//                        and ".$_page->_db->nomes_tabelas["tbl_objref"].".cod_objeto=".$cod_objeto;
                 $res2 = $_page->_db->ExecSQL($sql);
                 $propriedade = $res2->fields;
                 if ($propriedade["cod_objeto"]) $dados = $this->PegaPropriedades($_page, $propriedade["cod_objeto"]);
@@ -323,7 +358,7 @@ class AdminObjeto
             $props[] = $row[$i];
         }
 
-        // Monta SQLs para busca dos valroes das propriedades em suas respectivas tabelas
+        // Monta SQLs para busca dos valores das propriedades em suas respectivas tabelas
         if (isset($props) && is_array($props))
         {
             foreach ($props as $row)
@@ -338,44 +373,60 @@ class AdminObjeto
                         if ($this->EMetadado($_page, $row['campo_ref']))
                         {
                             $tipo[] = 'ref';
-                            $join[] = " left join tbl_objref as ".$tabela." on (".$tabela.".cod_propriedade = ". $row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto) ";
-                            $join[] = " left join objeto as ".$tabela."_objeto on (".$tabela.".valor=".$tabela."_objeto.cod_objeto)";
-                            $campos[] = $tabela."_objeto.".$row['campo_ref']." as ".$row['nome'];
-                            $campos[] = $tabela."_objeto.cod_objeto as ".$row['nome']."_referencia";
-                            $campos[] = "'".$row["campo_ref"]."' as ".$row['nome']."_campo";
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_objref"]["nome"]." AS ".$tabela." "
+                                    . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_propriedade"]." = ". $row['cod_propriedade']." "
+                                    . " AND ".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$tabela."_objeto "
+                                    . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["valor"]." = ".$tabela."_objeto.".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
+                            $campos[] = " ".$tabela."_objeto.".$_page->_db->tabelas["objeto"]["colunas"][$row['campo_ref']]." AS ".$row['nome'];
+                            $campos[] = " ".$tabela."_objeto.".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS ".$row['nome']."_referencia";
+                            $campos[] = " '".$row["campo_ref"]."' AS ".$row['nome']."_campo";
                         }
                         else
                         {
                             $tipo[] = 'ref_prop';
-                            $join[] = " left join tbl_objref as ".$tabela." on (".$tabela.".cod_propriedade = ". $row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto) ";
-                            $join[] = " left join ".$row["valor_saida"]["tipo"]." as ".$tabela."_prop on (".$tabela.".valor=".$tabela."_prop.cod_objeto)";
-                            $campos[] = $tabela."_prop.valor as ".$row['nome'];
-                            $campos[] = $tabela.".cod_objeto as ".$row['nome']."_referencia";
-                            $campos[] = "'".$row["campo_ref"]."' as ".$row['nome']."_campo";
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_objref"]["nome"]." AS ".$tabela." "
+                                    . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_propriedade"]." = ". $row['cod_propriedade']." "
+                                    . " AND ".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["nome"]." AS ".$tabela."_prop "
+                                    . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["valor"]." = ".$tabela."_prop.".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["colunas"]["cod_objeto"].") ";
+                            $campos[] = $tabela."_prop.".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["colunas"]["valor"]." AS ".$row['nome'];
+                            $campos[] = $tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." AS ".$row['nome']."_referencia";
+                            $campos[] = "'".$row["campo_ref"]."' AS ".$row['nome']."_campo";
                         }
                         break;
                     case 'tbl_blob':
                         $tipo[] = 'blob';
-                        $join[] = " left join tbl_blob as ".$tabela." on (".$tabela.".cod_propriedade = ". $row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto) ";
-                        $campos[] = $tabela.".cod_blob as ".$row['nome']."_cod_blob";
-                        $campos[] = $tabela.".arquivo as ".$row['nome']."_arquivo";
-                        $campos[] = $tabela.".tamanho as ".$row['nome']."_tamanho";
+                        $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_blob"]["nome"]." AS ".$tabela." "
+                                . " ON (".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_propriedade"]." = ". $row['cod_propriedade']." "
+                                . " AND ".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
+                        $campos[] = " ".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS ".$row['nome']."_cod_blob";
+                        $campos[] = " ".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["arquivo"]." AS ".$row['nome']."_arquivo";
+                        $campos[] = " ".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["tamanho"]." AS ".$row['nome']."_tamanho";
                         break;
                     case 'tbl_date':
                         $tipo[] = 'date';
-                        $join[] = " left join tbl_date as ".$tabela." on (".$tabela.".cod_propriedade=".$row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto)";
-                        $campos[] = $tabela.".valor as ".$row['nome'];
+                        $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_date"]["nome"]." AS ".$tabela." "
+                                . " ON (".$tabela.".".$_page->_db->tabelas["tbl_date"]["colunas"]["cod_propriedade"]." = ".$row['cod_propriedade']." "
+                                . " AND ".$tabela.".".$_page->_db->tabelas["tbl_date"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
+                        $campos[] = $tabela.".".$_page->_db->tabelas["tbl_date"]["colunas"]["valor"]." AS ".$row['nome'];
                         break;
                     default:
                         $tipo[] = 'default';
-                        $join[] = " left join ".$row['tabela']." as ".$tabela." on (".$tabela.".cod_propriedade=".$row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto )";
-                        $campos[] = $tabela.".valor as ".$row['nome'];
+                        $join[] = " LEFT JOIN ".$_page->_db->tabelas[$row['tabela']]["nome"]." AS ".$tabela." "
+                                . " ON (".$tabela.".".$_page->_db->tabelas[$row['tabela']]["colunas"]["cod_propriedade"]." = ".$row['cod_propriedade']." "
+                                . " AND ".$tabela.".".$_page->_db->tabelas[$row['tabela']]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
+//                        $join[] = " left join ".$row['tabela']." as ".$tabela." on (".$tabela.".cod_propriedade=".$row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto )";
+                        $campos[] = " ".$tabela.".".$_page->_db->tabelas[$row['tabela']]["colunas"]["valor"]." AS ".$row['nome'];
                         break;
                 }
             }
 		
             // Monta SQL com dados dos arrays de montagem
-            $sql = "select ".implode(',',$campos)." from objeto ".$_page->_db->nomes_tabelas["objeto"]." ".implode(' ',$join)." where ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto=".$cod_objeto;
+            $sql = "SELECT ".implode(',',$campos)." "
+                    . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " ".implode(' ',$join)." "
+                    . " WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
             $res = $_page->_db->ExecSQL($sql);
             if($dados = $res->fields)
             {
@@ -452,12 +503,14 @@ class AdminObjeto
     {
         $result = array();
         if ($str == '') return $result;
+        
         while (preg_match ("%(.*?)(&&|\|\|)(.*)%", $str, $passo_um))
         {
             $str = $passo_um[3];
             $array_exp[] = $passo_um[1];
             $array_exp[] = $passo_um[2];
         }
+        
         $array_exp[] = $str;
         foreach ($array_exp as $exp)
         {
@@ -469,12 +522,13 @@ class AdminObjeto
                 $passo_dois[3] = trim ($passo_dois[3]);
                 if ($this->EMetadado($_page, $passo_dois[1]))
                 {
+                    // TODO: CORRIGIR CAONSULTA COM FILTRO DE DATA
                     if ($passo_dois[1] == 'data_publicacao' || $passo_dois[1] == 'data_validade')
                     {
-                        $passo_dois[1] = $_page->_db->Day($_page->_db->nomes_tabelas["objeto"].'.'.$passo_dois[1]);
-                        $passo_dois[3] = ConverteData($passo_dois[3],16);
+//                        $passo_dois[1] = $_page->_db->Day($_page->_db->tabelas["objeto"]["nick"].'.'.$passo_dois[1]);
+                        $passo_dois[3] = str_pad(ConverteData($passo_dois[3],16), 14, "0", STR_PAD_RIGHT);
                     }
-                    $passo_dois[1] = $_page->_db->nomes_tabelas["objeto"].'.'.$passo_dois[1];
+                    $passo_dois[1] = $_page->_db->tabelas["objeto"]["nick"].'.'.$passo_dois[1];
                 }
                 if (preg_match("/\d{1,2}\/\d{1,2}\/\d{2,4}/", $passo_dois[3]))
                 {
@@ -516,7 +570,7 @@ class AdminObjeto
         }
         if (in_array($teste,$_page->_db->metadados)) return true;
 
-        if (strpos($teste,'objeto.') || strpos($teste,$_page->_db->nomes_tabelas['objeto'].".")) return true;
+        if (strpos($teste,'objeto.') || strpos($teste, $_page->_db->tabelas['objeto']["nick"].".")) return true;
         return false;
     }
 
@@ -547,22 +601,24 @@ class AdminObjeto
         $tags_where = "";
         $tags_temp = "";
 
-        if ($tags!="")
+        if ($tags != "")
         {
             $array_tags = preg_split("[,]", $tags);
-            $tags_join .= " inner join tagxobjeto ".$_page->_db->nomes_tabelas['tagxobjeto']." on ".$_page->_db->nomes_tabelas['objeto'].".cod_objeto=".$_page->_db->nomes_tabelas['tagxobjeto'].".cod_objeto 
-            inner join tag ".$_page->_db->nomes_tabelas['tag']." on ".$_page->_db->nomes_tabelas['tagxobjeto'].".cod_tag=".$_page->_db->nomes_tabelas['tag'].".cod_tag ";
-            $tags_where .= " and (";
+            $tags_join .= " INNER JOIN ".$_page->_db->tabelas['tagxobjeto']["nome"]." AS ".$_page->_db->nomes_tabelas['tagxobjeto']['nick']." "
+                    . " ON ".$_page->_db->tabelas['objeto']["nick"].".".$_page->_db->tabelas['objeto']["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas['tagxobjeto']["nick"].".".$_page->_db->tabelas['tagxobjeto']["colunas"]["cod_objeto"]." "
+                    . " INNER JOIN ".$_page->_db->tabelas['tag']["nome"]." AS ".$_page->_db->tabelas['tag']["nick"]." "
+                        . " ON ".$_page->_db->tabelas['tagxobjeto']['nick'].".".$_page->_db->tabelas['tagxobjeto']['colunas']["cod_tag"]." = ".$_page->_db->tabelas['tag']["nick"].".".$_page->_db->tabelas['tag']['colunas']["cod_tag"]." ";
+            $tags_where .= " AND ( ";
             foreach ($array_tags as $tag)
             {
-                $tags_temp .= " or ".$_page->_db->nomes_tabelas['tag'].".nome_tag='".trim($tag)."'";
+                $tags_temp .= " OR ".$_page->_db->tabelas['tag']["nick"].".".$_page->_db->tabelas['tag']["colunas"]["nome_tag"]." = '".trim($tag)."' ";
             }
             $tags_where .= substr($tags_temp, 3);
-            $tags_where .= ")";
+            $tags_where .= ") ";
         }
 	
         // Deve buscar objetos apagados?
-        if (!$apagados) $apagado_where = " and (".$_page->_db->nomes_tabelas['objeto'].".apagado<>1)";
+        if (!$apagados) $apagado_where = " AND (".$_page->_db->tabelas['objeto']["nick"].".".$_page->_db->tabelas['objeto']["colunas"]["apagado"]." <> 1) ";
 
         $cod_classe_array = array();
 
@@ -575,16 +631,16 @@ class AdminObjeto
 
         if(!$likeas=='')
         {
-            $like_as = " and ".$_page->_db->nomes_tabelas['objeto'].".titulo LIKE '".$likeas."'";
+            $like_as = " AND ".$_page->_db->tabelas['objeto']["nick"].".".$_page->_db->tabelas['objeto']["colunas"]["titulo"]." LIKE '".$likeas."' ";
         }
         // Além de perguntar sobre 'ilike', também garante que só um LIKE será usado na Query (caso programador tente usar LIKE e iLIKE na mesma chamada)
         if((!$likenocase=='') || ((!$likeas=='') && (!$likenocase=='')))
         {
-            $like_as = " and ".$_page->_db->nomes_tabelas['objeto'].".titulo ILIKE '".strtolower($likenocase)."'";
+            $like_as = " AND ".$_page->_db->tabelas['objeto']["nick"].".".$_page->_db->tabelas['objeto']["colunas"]["titulo"]." ILIKE '".strtolower($likenocase)."' ";
         }
         
         // Verifica se tem propriedade na ordem
-        $tem_propriedade_na_ordem=false;
+        $tem_propriedade_na_ordem = false;
         foreach ($ordem as $key=>$item)
         {
             if ($item[0]=='-')
@@ -635,7 +691,7 @@ class AdminObjeto
             $classes_where = "";
             if (isset($sql_out['classes']) && is_array($sql_out['classes']))
             {
-                $classes_where = ' and '.$_page->_db->CreateTest($_page->_db->nomes_tabelas['objeto'].'.cod_classe',$sql_out['classes']);
+                $classes_where = ' and '.$_page->_db->CreateTest($_page->_db->tabelas['objeto']["nick"].'.'.$_page->_db->tabelas['objeto']["colunas"]["cod_classe"], $sql_out['classes']);
             }
             $sqlfinal = "select ".$_page->_db->sqlobjsel;
             if (isset($sql_out['campos'])) $sqlfinal .= $sql_out['campos'];
@@ -709,14 +765,14 @@ class AdminObjeto
     {
         if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0 || ($_page->_usuario->EstaLogado()))
         {
-            $sql = "select cod_classe, 
-            prefixo, 
-            nome, 
-            indexar,
-            descricao,
-            sistema 
-            from classe 
-            order by nome";
+            $sql = "SELECT ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
+                    . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo, "
+                    . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"]." AS nome, "
+                    . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["indexar"]." AS indexar, "
+                    . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["descricao"]." AS descricao, "
+                    . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["sistema"]." AS sistema "
+                    . " FROM ".$_page->_db->tabelas["classe"]["nome"]." AS ".$_page->_db->tabelas["classe"]["nick"]." "
+                    . " ORDER BY ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"];
             $rs = $_page->_db->ExecSQL($sql);
 
             if ($rs->_numOfRows > 0){
@@ -768,7 +824,7 @@ class AdminObjeto
             //Constroi SQL para casos em que existem propriedades na ordem
             foreach ($array_ordem as $item)
             {
-                if (!isset($item['orientacao'])) $item['orientacao'] = "asc";
+                if (!isset($item['orientacao'])) $item['orientacao'] = "ASC";
                 
                 if (!$this->EMetadado($_page, $item['campo']))
                 {
@@ -814,9 +870,9 @@ class AdminObjeto
                     else
                     {
                         $info = $this->CriaSQLPropriedade($_page, $condicao[0],"", $cod_classe);
-                        if (!in_array($info['field'],$campo_incluido_natabela))
+                        if (!in_array($info['field'], $campo_incluido_natabela))
                         {
-                            $tbl["colunas"][] = $_page->_db->AddFieldToTempTable($tbl,$info);
+                            $tbl["colunas"][] = $_page->_db->AddFieldToTempTable($tbl, $info);
                             $campo_incluido_natabela[]=$info['field'];
                         }
                         if (!in_array($info['field'],$campo_incluido))
@@ -834,10 +890,10 @@ class AdminObjeto
 			//fim
             $campos=','.implode(',', $temp_campos);
             $from = implode(' ', $temp_from);
-            $where = implode(' and ', $temp_where);
+            $where = implode(' AND ', $temp_where);
 			
-            $sqls_insert[] = 'insert into '.$tbl["nome"].
-                    " select ".$_page->_db->sqlobjsel.$campos.$_page->_db->sqlobjfrom.$pai_join.$from.' where (1=1) and '.$where.$default_where;
+            $sqls_insert[] = 'INSERT INTO '.$tbl["nome"].
+                    " SELECT ".$_page->_db->sqlobjsel.$campos.$_page->_db->sqlobjfrom.$pai_join.$from.' WHERE (1=1) AND '.$where.$default_where;
 			//$_page->_db->ExecSQL($sql);
 
         }
@@ -850,8 +906,8 @@ class AdminObjeto
             $_page->_db->ExecSQL($sqls);
         }
 
-        $result['tbl']=$tbl["nome"];
-        $result['ordem']=' order by '.implode(',', $ordem_temporaria);
+        $result['tbl'] = $tbl["nome"];
+        $result['ordem']=' ORDER BY '.implode(',', $ordem_temporaria);
 			
         return $result;
     }
@@ -868,7 +924,7 @@ class AdminObjeto
     {
         foreach ($array_ordem as $item)
         {
-            $temp_array = $_page->_db->nomes_tabelas["objeto"].'.'.$item['campo'];
+            $temp_array = $_page->_db->tabelas["objeto"]["nick"].'.'.$_page->_db->tabelas["objeto"]["colunas"][$item['campo']];
             if (isset($item['orientacao'])) $temp_array .= $item['orientacao'];
             $result['ordem'][]= $temp_array;
             if (!$this->EMetadado($_page, $item['campo']))
@@ -891,7 +947,7 @@ class AdminObjeto
 
         if (isset($result['where']) && is_array($result['where']))
         {
-            $result['where']=' and '.implode(' and ', $result['where']);
+            $result['where']=' AND '.implode(' AND ', $result['where']);
         }
 
         if (isset($result['campos']) && is_array($result['campos'])) $result['campos']=implode(',',$result['campos']);
@@ -934,8 +990,9 @@ class AdminObjeto
             {
                 if ($this->EMetadado($_page, $condicao[0]))
                 {
-                    $condicao[0] = str_replace($_page->_db->nomes_tabelas["objeto"].'.(','(',$condicao[0]);
-                    $out['where'].=' '.$condicao[0].' '.$condicao[1]." '".$condicao[2]."'";
+                    $condicao[0] = str_replace($_page->_db->tabelas["objeto"]["nick"].'.(','(',$condicao[0]);
+                    $condicao[0] = str_replace($_page->_db->tabelas["objeto"]["nick"].'.','',$condicao[0]);
+                    $out['where'] .= ' '.$_page->_db->tabelas["objeto"]["nick"].'.'.$_page->_db->tabelas["objeto"]["colunas"][$condicao[0]].' '.$condicao[1]." '".$condicao[2]."'";
                 }
                 else
                 {
@@ -962,13 +1019,17 @@ class AdminObjeto
      */
     function LocalizarPendentes(&$_page, $cod_pai, $cod_usuario, $ord1, $ord2, $inicio=-1, $limite=-1)
     {
-        $sql_pendentes = "SELECT t2.cod_objeto, t2.titulo 
-        from pendencia t1 
-        inner join objeto t2 on t1.cod_objeto=t2.cod_objeto 
-        inner join parentesco t3 on t1.cod_objeto=t3.cod_objeto 
-        where t3.cod_pai=".$cod_pai." 
-        and t2.apagado=0
-        order by t2.".$ord1." ".$ord2;
+        $sql_pendentes = "SELECT "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo "
+                . " FROM ".$_page->_db->tabelas["pendencia"]["nome"]." AS ".$_page->_db->tabelas["pendencia"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["pendencia"]["nick"].".".$_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["pendencia"]["nick"].".".$_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_pai." "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 0 "
+                . " ORDER BY ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"][$ord1]." ".$ord2;
         $rs = $_page->_db->ExecSQL($sql_pendentes, $inicio, $limite);
         return $rs->GetRows(); 
     }
@@ -978,29 +1039,29 @@ class AdminObjeto
      * @param object $_page - Referência de objeto da classe Pagina
      * @return Array com objetos
      */
-    function LocalizarRejeitados(&$_page)
-    {
-        $objetos=array();
-        $usuario_atual = $_SESSION['usuario']["cod_usuario"];
-        $sql_rejeitados = "SELECT cod_objeto,titulo from objeto where cod_status IN ("._STATUS_REJEITADO.") and cod_usuario = ".$usuario_atual." and apagado=0";
-        $rs = $_page->_db->ExecSQL($sql_rejeitados);
-        while ($row_rejeitados=$rs->FetchRow())
-        {
-            $obj[] = $row_rejeitados;
-        }
-        if (count($obj))
-        {
-            foreach ($obj as $obj_atual)
-            {
-                //$perfil_atual = $_page->Administracao->PegaPerfilDoUsuarioNoObjeto($usuario_atual,$obj_atual["cod_objeto"]);
-                //if (($perfil_atual==_PERFIL_ADMINISTRADOR)||$perfil_atual==(_PERFIL_EDITOR)) {
-                $objetos[]=$obj_atual;
-                //}
-            }
-        }
-
-        return $objetos;
-    }
+//    function LocalizarRejeitados(&$_page)
+//    {
+//        $objetos=array();
+//        $usuario_atual = $_SESSION['usuario']["cod_usuario"];
+//        $sql_rejeitados = "SELECT cod_objeto,titulo from objeto where cod_status IN ("._STATUS_REJEITADO.") and cod_usuario = ".$usuario_atual." and apagado=0";
+//        $rs = $_page->_db->ExecSQL($sql_rejeitados);
+//        while ($row_rejeitados=$rs->FetchRow())
+//        {
+//            $obj[] = $row_rejeitados;
+//        }
+//        if (count($obj))
+//        {
+//            foreach ($obj as $obj_atual)
+//            {
+//                //$perfil_atual = $_page->Administracao->PegaPerfilDoUsuarioNoObjeto($usuario_atual,$obj_atual["cod_objeto"]);
+//                //if (($perfil_atual==_PERFIL_ADMINISTRADOR)||$perfil_atual==(_PERFIL_EDITOR)) {
+//                $objetos[]=$obj_atual;
+//                //}
+//            }
+//        }
+//
+//        return $objetos;
+//    }
 
     /**
      * Cria SQL de condição de acordo com nível do usuário
@@ -1052,15 +1113,17 @@ class AdminObjeto
         $rtnLista = array();
         $contador = 0;
         
-        $sql = "SELECT ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai, "
-                .$_page->_db->nomes_tabelas["objeto"].".titulo, "
-                .$_page->_db->nomes_tabelas["objeto"].".url_amigavel "
-                . "FROM parentesco ".$_page->_db->nomes_tabelas["parentesco"]." "
-                . "INNER JOIN objeto ".$_page->_db->nomes_tabelas["objeto"]." "
-                . "ON ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto = ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai "
-                . "WHERE ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = ".$cod_objeto." ";
-        if (count($excecoes_classes)>0) { $sql .= "AND ".$_page->_db->nomes_tabelas["objeto"].".cod_classe NOT IN (". implode(",", $excecoes_classes).") "; }
-        $sql .= "ORDER BY ".$_page->_db->nomes_tabelas["parentesco"].".ordem";
+        $sql = "SELECT ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai, "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
+                . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel "
+                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
+                . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        if (count($excecoes_classes)>0) { 
+            $sql .= " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." NOT IN (". implode(",", $excecoes_classes).") "; 
+        }
+        $sql .= " ORDER BY ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." ";
         if ($desc) { $sql .= " DESC"; }
         
         $res = $_page->_db->ExecSQL($sql);
@@ -1077,63 +1140,78 @@ class AdminObjeto
         return $rtnLista;
     }
 
-	function CriaClasseInfo(&$_page, $classe)
-	{
-		if (!is_array($classe))
-		{
-			if ($classe!='')
-			$classe = explode(',',$classe);
-		}
-		if ((!is_array($classe)) || (!count($classe)))
-		return false;
-		$sql = "select cod_classe from classe where ".$_page->_db->CreateTest('nome',$classe);
-		$rs = $_page->_db->ExecSQL($sql);
-		while ($row=$rs->FetchRow())
-		{
-			$cod_classe_array[]=$row['cod_classe'];
-		}
-		if (count ($cod_classe_array)!=count($classe))
-		{
-			$_page->AdicionarAviso("Uma ou mais classes inexistentes em ".implode(",",$classe).".");
-		}
-		if (count($cod_classe_array))
-		{
-			$whereclasse=$_page->_db->CreateTest('objeto.cod_classe',$cod_classe_array);
-		}
-		else
-		$whereclasse=" 1=0 ";
+//	function CriaClasseInfo(&$_page, $classe)
+//	{
+//		if (!is_array($classe))
+//		{
+//			if ($classe!='')
+//			$classe = explode(',',$classe);
+//		}
+//		if ((!is_array($classe)) || (!count($classe)))
+//		return false;
+//		$sql = "select cod_classe from classe where ".$_page->_db->CreateTest('nome',$classe);
+//		$rs = $_page->_db->ExecSQL($sql);
+//		while ($row=$rs->FetchRow())
+//		{
+//			$cod_classe_array[]=$row['cod_classe'];
+//		}
+//		if (count ($cod_classe_array)!=count($classe))
+//		{
+//			$_page->AdicionarAviso("Uma ou mais classes inexistentes em ".implode(",",$classe).".");
+//		}
+//		if (count($cod_classe_array))
+//		{
+//			$whereclasse=$_page->_db->CreateTest('objeto.cod_classe',$cod_classe_array);
+//		}
+//		else
+//		$whereclasse=" 1=0 ";
+//
+//		$whereclasse = " and ".$whereclasse;
+//		return array("cod_classe_array"=>$cod_classe_array,"sql"=>$whereclasse);
+//	}
 
-		$whereclasse = " and ".$whereclasse;
-		return array("cod_classe_array"=>$cod_classe_array,"sql"=>$whereclasse);
-	}
+    /**
+     * Pega nome da classe com base no código
+     * @param type $_page
+     * @param type $cod_classe
+     * @return type
+     */
+    function PegaNomeClasse(&$_page, $cod_classe)
+    {
+        $sql = "SELECT ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"]." as nome, "
+                . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["prefixo"]." as prefixo "
+                . " FROM ".$_page->_db->tabelas["classe"]["nome"]." AS ".$_page->_db->tabelas["classe"]["nick"]." "
+                . " WHERE ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$cod_classe; 
+        $rs = $_page->_db->ExecSQL($sql);
+        return $rs->fields;
+    }
 
-	function PegaNomeClasse(&$_page, $cod_classe)
-	{
-		$sql = "select nome, 
-		prefixo 
-		from classe 
-		where cod_classe=".$cod_classe;
-		$rs = $_page->_db->ExecSQL($sql);
-		return $rs->fields;
-	}
-
+    /**
+     * Cria SQL para busca de propriedades
+     * @param type $_page
+     * @param type $campo
+     * @param type $direcao
+     * @param type $cod_classe
+     * @return string
+     */
     function CriaSQLPropriedade(&$_page, $campo, $direcao, $cod_classe)
     {
         
         $info = $this->PegaInfoSobrePropriedade($_page, $cod_classe, $campo);
+        $montagem = array();
 		
         if ($info!=null && $info!='')
         {
-            $montagem["tabela"] = $info['tabela'];
-            $montagem['from'] = " left join ".$info['tabela']." as ".$campo." on ";
-            $on = ' '.$_page->_db->nomes_tabelas["objeto"].'.cod_objeto='.$campo.'.cod_objeto';
+            $montagem["tabela"] = $_page->_db->tabelas[$info['tabela']]["nome"];
+            $montagem['from'] = " LEFT JOIN ".$_page->_db->tabelas[$info['tabela']]["nome"]." AS ".$campo." ON ";
+            $on = " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["cod_objeto"]." ";
             $montagem['type'] = $info['nome'];
             $montagem['field'] = "";
             if ($info['tabela']=='tbl_objref')
             {
-                $montagem['from'] .= '(('.$on.') and ('.$campo.'.cod_propriedade='.$info['cod_propriedade'].'))';
-                $montagem['where'] = '(1 = 1) and '.$_page->_db->nomes_tabelas["objeto"].'.cod_classe='.$cod_classe;
-                $montagem['from'] .= " left join objeto as ".$campo."_ref on ".$campo.".valor=".$campo."_ref.cod_objeto";
+                $montagem['from'] .= ' (('.$on.') AND ('.$campo.'.'.$_page->_db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"].' = '.$info['cod_propriedade'].')) ';
+                $montagem['where'] = ' (1 = 1) AND '.$_page->_db->tabelas["objeto"]["nick"].'.'.$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"].' = '.$cod_classe;
+                $montagem['from'] .= " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$campo."_ref ON ".$campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["valor"]." = ".$campo."_ref.".$_page->_db->tabelas["objeto"]["cod_objeto"]." ";
                 if (!$this->EMetadado($_page, $info['campo_ref']))
                 {
                     $propriedade = $this->PegaInfoSobrePropriedade($_page, $info['cod_referencia_classe'], $info['campo_ref']);
@@ -1153,8 +1231,8 @@ class AdminObjeto
             else
             {
                 $montagem['from'] .= $on;
-                $montagem['where'] = $campo.".cod_propriedade=".$info['cod_propriedade'];
-                $montagem['field'] .= $campo.".valor";
+                $montagem['where'] = $campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"]." = ".$info['cod_propriedade'];
+                $montagem['field'] .= $campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["valor"];
                 $montagem['delimitador']="'";
             }
         }
@@ -1166,297 +1244,355 @@ class AdminObjeto
         return $montagem;
     }
 
-	function PegaInfoSobrePropriedade(&$_page, $cod_classe, $prop)
-	{
-		$tabelas = $_page->_db->nomes_tabelas;
-                
-                // Removendo parenteses para verificacao da propriedade
+    /**
+     * Busca no banco de dados informações dobre propriedade
+     * @param type $_page
+     * @param type $cod_classe
+     * @param type $prop
+     * @return type
+     */
+    function PegaInfoSobrePropriedade(&$_page, $cod_classe, $prop)
+    {
+        $tabelas = $_page->_db->tabelas;
+
+        // Removendo parenteses para verificacao da propriedade
 //                $prop = preg_replace("[\(|\)]", "", $prop);
-		
-		$sql = "select ".$tabelas["propriedade"].".cod_propriedade, 
-		".$tabelas["tipodado"].".nome, 
-		".$tabelas["tipodado"].".tabela, 
-		".$tabelas["propriedade"].".cod_referencia_classe, 
-		".$tabelas["propriedade"].".campo_ref, 
-		".$tabelas["tipodado"].".delimitador 
-		from propriedade ".$tabelas["propriedade"]." 
-		inner join tipodado ".$tabelas["tipodado"]." 
-		on ".$tabelas["propriedade"].".cod_tipodado = ".$tabelas["tipodado"].".cod_tipodado
-		where ".$tabelas["propriedade"].".cod_classe=".$cod_classe;
-		
-		if (!intval($prop))
-			$sql .=" and ".$tabelas["propriedade"].".nome='".$prop."'";
-		else
-			$sql .=" and ".$tabelas["propriedade"].".cod_propriedade=".$prop;
-			
-		$rs = $_page->_db->ExecSQL($sql);
-		$return = $rs->fields;
-		return $return;
-	}
 
-	function Limites($inicio,$limite)
-	{
-		if ($limite!="")
-		{
-			$result=" limit ".intval($inicio).",$limite";
-		}
-		else
-		{
-			if ($inicio)
-			$result=" limit $inicio";
-		}
-		return $result;
-	}
+        $sql = "SELECT ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
+                . " ".$tabelas["tipodado"]["nick"].".".$tabelas["tipodado"]["colunas"]["nome"]." AS nome, "
+                . " ".$tabelas["tipodado"]["nick"].".".$tabelas["tipodado"]["colunas"]["tabela"]." AS tabela, "
+                . " ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
+                . " ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref, "
+                . " ".$tabelas["tipodado"]["nick"].".".$tabelas["tipodado"]["colunas"]["delimitador"]." AS delimitador "
+                . " FROM ".$tabelas["propriedade"]["nome"]." AS ".$tabelas["propriedade"]["nick"]." "
+                . " INNER JOIN ".$tabelas["tipodado"]["nome"]." AS ".$tabelas["tipodado"]["nick"]." "
+                    . " ON ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$tabelas["tipodado"]["nick"].".".$tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
+                . " WHERE ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$cod_classe." ";
 
-	function CriaSQLQuery(&$_page, $qry, $cod_classe_array)
-	{
-		//dump ($qry);
-		if ($qry!='')
-		{
-			if (!is_array($qry))
-			{
-				if (strpos($qry,'&&')===false)
-				{
-					$qry=explode('||',$qry);
-					$cola=" OR ";
-				}
-				else
-				{
-					$qry=explode('&&',$qry);
-					$cola=" AND ";
-				}
-			}
-		}
-		else
-		$qry=array();
-		//dump($qry);
-		foreach ($qry as $value)
-		{
-			//dump ($value);
-			preg_match("|(.+?)([=\<\>]{1,2})(.+)|",$value,$item);
-			if ($item[1]!='')
-			{
-				//dump ($item);
-				$item[1]=trim($item[1]);
-				$item[3]=trim($item[3]);
-				if ($this->EMetadado($_page, $item[1]))
-				{
-					if ($result['where']!='')
-					$result['where'].=$cola;
-					if ($item[1]=='data_publicacao' || $item[1]=='data_validade')
-					{
-						if ($item[2]=='=')
-						{
-							$item[1]=$this->db->Day('objeto.'.$item[1]);
-							$data=ConverteData($item[3],16);
-						}
-						else
-						{
-							$data=ConverteData($item[3],15);
-						}
-						$result['where'].=$item[1].$item[2];
-						$result['where'].=$data;
-					}
-					else
-					{
-						$result['where'].=' objeto.'.$item[1].$item[2];
-						if (is_numeric($item[3]))
-						{
-							$result['where'].=$item[3];
-						}
-						else
-						{
-							$result['where'].="'".$item[3]."'";
-						}
-					}
-				}
-				else
-				{
-					if (is_array($cod_classe_array))
-					{
-						//var_dump($cod_classe_array);
-						$sqltoproperty=$this->CriaSQLPropriedade($_page, $cod_classe_array, $item[1], '');
-						if ($sqltoproperty[0]['field'])
-						{
-							$start=true;
-							foreach ($sqltoproperty as $property)
-							{
-								//echo "<br>$property<br>";
-								//dump($property);
-								if ($start)
-								{
-									$field=$property['field'];
-									$result['joined']=$field;
-									if (($result['sort']!='') && ($property['sort']!=''))
-									$result['sort'].=',';
-									$result['sort'].=$property['sort'];
-									$result['join'].=$property['join'];
-									$result['join'].=' and ('.$property['where'];
-									$start=false;
-								}
-								else
-								{
-									$result['join'].=' or '.$property['where'];
-								}
-							}
-							$result['join'].=')';
-							if ($result['where']!='')
-							$result['where'].=$cola;
-							$result['where'].=$field.$item[2];
+        if (!intval($prop))
+        {
+            $sql .=" AND ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["nome"]." = '".$prop."' ";
+        }
+        else
+        {
+            $sql .=" AND ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_propriedade"]." = ".$prop." ";
+        }
 
-							if ($property['type']=='data')
-							{
-								$item[3] = ConverteData($item[3],15);
+        $rs = $_page->_db->ExecSQL($sql);
+        $return = $rs->fields;
+        return $return;
+    }
 
-							}
+//	function Limites($inicio,$limite)
+//	{
+//		if ($limite!="")
+//		{
+//			$result=" limit ".intval($inicio).",$limite";
+//		}
+//		else
+//		{
+//			if ($inicio)
+//			$result=" limit $inicio";
+//		}
+//		return $result;
+//	}
 
-							if (is_numeric($item[3]))
-							{
-								$result['where'].=$item[3];
-							}
-							else
-							{
-								$result['where'].="'".$item[3]."'";
-							}
-							$result['field'].=','.$field;
-						}
-						else
-						{
-							$_page->AdicionarAviso('Erro no processamento de um comando Localizar.<br> Express&atilde;o "'.$value.'" pede um campo n&atilde;o existente.',true);
-						}
-					}
-				}
-			}
-			else
-			{
-				$_page->AdicionarAviso('Erro no processamento de um comando Localizar.<br> Express&atilde;o "'.$value.'" n&atilde;o pode ser analisada.',true);
-			}
-		}
-		if ($result['where']!='')
-		{
-			$result['where'] = ' and ('.$result['where'].')';
-		}
-		return $result;
-	}
+    /**
+     * Cria SQL para condição do localizar
+     * @param type $_page
+     * @param type $qry
+     * @param type $cod_classe_array
+     * @return string
+     */
+    function CriaSQLQuery(&$_page, $qry, $cod_classe_array)
+    {
+        //dump ($qry);
+        if ($qry!='')
+        {
+            if (!is_array($qry))
+            {
+                if (strpos($qry,'&&')===false)
+                {
+                    $qry=explode('||',$qry);
+                    $cola=" OR ";
+                }
+                else
+                {
+                    $qry=explode('&&',$qry);
+                    $cola=" AND ";
+                }
+            }
+        }
+        else
+        {
+            $qry=array();
+        }
+        
+        foreach ($qry as $value)
+        {
+            preg_match("|(.+?)([=\<\>]{1,2})(.+)|",$value,$item);
+            if ($item[1]!='')
+            {
+                $item[1]=trim($item[1]);
+                $item[3]=trim($item[3]);
+                if ($this->EMetadado($_page, $item[1]))
+                {
+                    if ($result['where']!='')
+                    $result['where'].=$cola;
+                    if ($item[1]=='data_publicacao' || $item[1]=='data_validade')
+                    {
+                        if ($item[2]=='=')
+                        {
+                            $item[1]=$this->db->Day('objeto.'.$item[1]);
+                            $data=ConverteData($item[3],16);
+                        }
+                        else
+                        {
+                            $data=ConverteData($item[3],15);
+                        }
+                        $result['where'].=$item[1].$item[2];
+                        $result['where'].=$data;
+                    }
+                    else
+                    {
+                        $result['where'].=' objeto.'.$item[1].$item[2];
+                        if (is_numeric($item[3]))
+                        {
+                            $result['where'].=$item[3];
+                        }
+                        else
+                        {
+                            $result['where'].="'".$item[3]."'";
+                        }
+                    }
+                }
+                else
+                {
+                    if (is_array($cod_classe_array))
+                    {
+                        //var_dump($cod_classe_array);
+                        $sqltoproperty=$this->CriaSQLPropriedade($_page, $cod_classe_array, $item[1], '');
+                        if ($sqltoproperty[0]['field'])
+                        {
+                            $start=true;
+                            foreach ($sqltoproperty as $property)
+                            {
+                                //echo "<br>$property<br>";
+                                //dump($property);
+                                if ($start)
+                                {
+                                    $field=$property['field'];
+                                    $result['joined']=$field;
+                                    if (($result['sort']!='') && ($property['sort']!=''))
+                                    $result['sort'].=',';
+                                    $result['sort'].=$property['sort'];
+                                    $result['join'].=$property['join'];
+                                    $result['join'].=' and ('.$property['where'];
+                                    $start=false;
+                                }
+                                else
+                                {
+                                    $result['join'].=' or '.$property['where'];
+                                }
+                            }
+                            $result['join'].=')';
+                            if ($result['where']!='')
+                            $result['where'].=$cola;
+                            $result['where'].=$field.$item[2];
 
-	function CriaSQLPais(&$_page, $pai, $niveis, $campo="objeto.cod_pai")
-	{
-		$return = "";
-		if ($pai!=-1)
-		{
-		 	$return = " inner join parentesco ".$_page->_db->nomes_tabelas["parentesco"]." 
-				on (".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto 
-				and ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai=".$pai;
-		 	if ($niveis>=0)
-		 		$return.= " and ordem<=".($niveis+1).')';
-		 	else
-		 		$return .=')';
-		}
-		return $return;
-	}
+                            if ($property['type']=='data')
+                            {
+                                $item[3] = ConverteData($item[3],15);
+                            }
 
-	function PegaIDFilhos(&$_page, $pai, $niveis)
-	{
-		$sql = "select cod_pai from parentesco where cod_pai=$pai";
-		$res = $_page->_db->ExecSQL($sql);
-		while ($row = $res->FetchRow())
-		{
-			$list[]=$row['cod_objeto'];
-		}
-		return $list;
-	}
+                            if (is_numeric($item[3]))
+                            {
+                                $result['where'].=$item[3];
+                            }
+                            else
+                            {
+                                $result['where'].="'".$item[3]."'";
+                            }
+                            $result['field'].=','.$field;
+                        }
+                        else
+                        {
+                            $_page->AdicionarAviso('Erro no processamento de um comando Localizar.<br> Express&atilde;o "'.$value.'" pede um campo n&atilde;o existente.',true);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                $_page->AdicionarAviso('Erro no processamento de um comando Localizar.<br> Express&atilde;o "'.$value.'" n&atilde;o pode ser analisada.',true);
+            }
+        }
+        
+        if ($result['where']!='')
+        {
+            $result['where'] = ' and ('.$result['where'].')';
+        }
+        return $result;
+    }
+
+    /**
+     * Cria SQL de associação com objetos pai
+     * @param type $_page
+     * @param type $pai
+     * @param type $niveis
+     * @param string $campo
+     * @return string
+     */
+    function CriaSQLPais(&$_page, $pai, $niveis, $campo="objeto.cod_pai")
+    {
+        $return = "";
+        if ($campo === "objeto.cod_pai")
+        {
+            $campo = $_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_pai"];
+        }
+        if ($pai!=-1)
+        {
+            $return = " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                        . " ON (".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
+                            . " AND ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$pai." ";
+//				on (".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto 
+//				and ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai=".$pai;
+            if ($niveis>=0)
+            {
+                $return.= " AND ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." <= ".($niveis+1).')';
+            }
+            else
+            {
+                $return .=')';
+            }
+        }
+        return $return;
+    }
+
+//        /**
+//         * Retorna lista de códigos dos objetos filhos
+//         * @param type $_page
+//         * @param type $pai
+//         * @param type $niveis
+//         * @return type
+//         */
+//	function PegaIDFilhos(&$_page, $pai, $niveis)
+//	{
+//            $sql = "SELECT ".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
+//                    . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." "
+//                    . " WHERE ".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$pai;
+//            $res = $_page->_db->ExecSQL($sql);
+//            while ($row = $res->FetchRow())
+//            {
+//                $list[]=$row['cod_objeto'];
+//            }
+//            return $list;
+//	}
 	
     
-	
-	function PegaNumFilhos(&$_page, $pai)
-	{
-		$sql = "SELECT count(*) as total 
-		FROM parentesco ".$_page->_db->nomes_tabelas["parentesco"]." 
-		LEFT JOIN objeto ".$_page->_db->nomes_tabelas["objeto"]." on ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto 
-		WHERE ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai = $pai 
-		AND ".$_page->_db->nomes_tabelas["objeto"].".apagado <> 1";
-		$res = $_page->_db->ExecSQL($sql);
-		return $res->fields["total"];
-	}
+    /**
+     * Retorna número de filhos de determinado objeto
+     * @param type $_page
+     * @param type $pai
+     * @return type
+     */
+    function PegaNumFilhos(&$_page, $pai)
+    {
+        $sql = "SELECT COUNT(*) AS total "
+                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                . " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " ON ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$pai." "
+                . " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["apagado"]." <> 1";
+        $res = $_page->_db->ExecSQL($sql);
+        return $res->fields["total"];
+    }
 
-	function EFilho(&$_page, $cod_objeto, $cod_pai)
-	{
-		$sql = "select ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto 
-		from parentesco ".$_page->_db->nomes_tabelas["parentesco"]." 
-		where ".$_page->_db->nomes_tabelas["parentesco"].".cod_pai=$cod_pai 
-		and ".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto=$cod_objeto";
-		$res = $_page->_db->ExecSQL($sql);
-		return !$res->EOF;
-	}
+    /**
+     * Identifica de determinado objeto é filho de outro
+     * @param type $_page
+     * @param type $cod_objeto
+     * @param type $cod_pai
+     * @return type
+     */
+    function EFilho(&$_page, $cod_objeto, $cod_pai)
+    {
+        $sql = "SELECT ".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." "
+                . " WHERE ".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_pai." "
+                . " AND ".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $res = $_page->_db->ExecSQL($sql);
+        return !$res->EOF;
+    }
 
-	function ShowObjectResume(&$_page, $cod_objeto)
-	{
-		$obj = $this->CriarObjeto($_page, $cod_objeto);
-		foreach ($obj as $key => $quadro)
-		{
-			if ($key == 'CaminhoObjeto')
-				$arrCaminho = $quadro;
-		}
-		//echo $obj['CaminhoObjeto']."<br>";
-		//var_dump_pre($cod_objeto);
-		return array('url'=>$obj->Valor('url'), 'titulo'=>$obj->Valor('titulo'), 'descricao'=>$obj->Valor('descricao'), 'codigo'=>$obj->Valor('cod_objeto'),'caminho'=>$arrCaminho);
-	}
+//	function ShowObjectResume(&$_page, $cod_objeto)
+//	{
+//		$obj = $this->CriarObjeto($_page, $cod_objeto);
+//		foreach ($obj as $key => $quadro)
+//		{
+//			if ($key == 'CaminhoObjeto')
+//				$arrCaminho = $quadro;
+//		}
+//		//echo $obj['CaminhoObjeto']."<br>";
+//		//var_dump_pre($cod_objeto);
+//		return array('url'=>$obj->Valor('url'), 'titulo'=>$obj->Valor('titulo'), 'descricao'=>$obj->Valor('descricao'), 'codigo'=>$obj->Valor('cod_objeto'),'caminho'=>$arrCaminho);
+//	}
 
-	function EnviaEmailSolicitacao(&$_page, $cod_chefia, $cod_objeto,$mensagemsubmetida)
-	{
-		global $PORTAL_NAME;
-	  include('email.class.php');
-	  $arrInfoUsuario = $_page->_usuario->PegaInformacaoUsuario($_page, $cod_chefia);
-	  $arrInfoDadosObjeto = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $cod_objeto);
-	  
-		 $texConteudo = "<font align=\"left\">Esta mensagem &eacute; para informar a solicita&ccedil;&atilde;o de publica&ccedil;&atilde;o de objetos por parte do usu&aacute;rio <b>".$_SESSION['usuario']['nome']."</b> dentro do ".$PORTAL_NAME.".
-		 <br>
-		 Voc&ecirc; deve efetuar login no sistema, utilizando seu usu&aacute;rio e senha, <a href=\""._URL."/login\">clicando aqui</a>. Dentro das <b>Op&ccedil;&otilde;es de Menu</b>, localize o bot&atilde;o de <i>objetos aguardando aprova&ccedil;&atilde;o</i>.
-		 <br><br>
-		 Os dados do objeto seguem:<br>
-		 <br>
-		 <br>
-		 <b>Mensagem de solicita&ccedil;&atilde;o:</b> ".$mensagemsubmetida."<br><b>T&iacute;tulo do Objeto:</b> ".$arrInfoDadosObjeto['titulo']." <i>[".$arrInfoDadosObjeto['cod_objeto']."]</i> <br>
-		 <b>Data de Validade:</b> ".ConverteData($arrInfoDadosObjeto['data_validade'],1)."<br>
-		 <b>Data de Publica&ccedil;&atilde;o:</b> ".ConverteData($arrInfoDadosObjeto['data_publicacao'],1)."<br>
-		 <b>Classe utilizada:</b> ".$arrInfoDadosObjeto['classe']."<br>
-		 <br><br>
-		 Caso seja necess&aacute;rio, os dados do solicitante s&atilde;o descritos abaixo:
-		 <br><br>
-		 <b>Nome do Solicitante:</b> ".$_SESSION['usuario']['nome']."<br>
-		 <b>E-mail do Solicitante:</b> ".$_SESSION['usuario']['email']."<br>
-		 <b>Telefone de contato:</b> - n&atilde;o cadastrado -<br>
-		 <br><br><br><br>
-		 <b>Esta mensagem &eacute; autom&aacute;tica e n&atilde;o deve ser respondida.</b>
-		 <br><br>
-		 <center>"._PORTAL_NAME."</center></font>";
-	  
-	  $destinatario = $arrInfoUsuario['nome']." <".$arrInfoUsuario['email'].">";
-	  $remetente =  _PORTAL_EMAIL;
-	
-	  $conteudoCompleto = "<html><body style='margin:0; padding:0;'>".
-						"<center>".
-						"<BR>Caro Sr(a), ".$arrInfoUsuario['nome']."<BR><BR>".
-						"$texConteudo".
-						"<BR></body></html>";
-	  
-	  $email = new Email($remetente ,$destinatario, "Solicitacao de Publicacao" , $conteudoCompleto);
-	
-	//** send a copy of this file in the email. (nï¿½o nescessï¿½rio)
-	  //$email->Attach(__FILE__, "text/plain");
-	
-	
-	//** attach this included image file.
-	
-	  //$email->Attach("informect/images/logo_ct2.gif", "image/gif");
-	  //$email->Attach("informect/images/brasil2.gif", "image/gif");
-	  //$email->Attach("informect/images/moldura_dest_dir.gif", "image/gif");
-	  //$email->Attach("informect/images/bottom_informe.gif", "image/gif");
-	  //$email->Attach("informect/images/headre_informe.jpg", "image/gif");
-	
-	  $wassent = $email->Send();
-	  return $wassent;
-	}
+    function EnviaEmailSolicitacao(&$_page, $cod_chefia, $cod_objeto,$mensagemsubmetida)
+    {
+        global $PORTAL_NAME;
+        include('email.class.php');
+        $arrInfoUsuario = $_page->_usuario->PegaInformacaoUsuario($_page, $cod_chefia);
+        $arrInfoDadosObjeto = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $cod_objeto);
+
+        $texConteudo = "<font align=\"left\">Esta mensagem &eacute; para informar a solicita&ccedil;&atilde;o de publica&ccedil;&atilde;o de objetos por parte do usu&aacute;rio <b>".$_SESSION['usuario']['nome']."</b> dentro do ".$PORTAL_NAME.".
+        <br>
+        Voc&ecirc; deve efetuar login no sistema, utilizando seu usu&aacute;rio e senha, <a href=\""._URL."/login\">clicando aqui</a>. Dentro das <b>Op&ccedil;&otilde;es de Menu</b>, localize o bot&atilde;o de <i>objetos aguardando aprova&ccedil;&atilde;o</i>.
+        <br><br>
+        Os dados do objeto seguem:<br>
+        <br>
+        <br>
+        <b>Mensagem de solicita&ccedil;&atilde;o:</b> ".$mensagemsubmetida."<br><b>T&iacute;tulo do Objeto:</b> ".$arrInfoDadosObjeto['titulo']." <i>[".$arrInfoDadosObjeto['cod_objeto']."]</i> <br>
+        <b>Data de Validade:</b> ".ConverteData($arrInfoDadosObjeto['data_validade'],1)."<br>
+        <b>Data de Publica&ccedil;&atilde;o:</b> ".ConverteData($arrInfoDadosObjeto['data_publicacao'],1)."<br>
+        <b>Classe utilizada:</b> ".$arrInfoDadosObjeto['classe']."<br>
+        <br><br>
+        Caso seja necess&aacute;rio, os dados do solicitante s&atilde;o descritos abaixo:
+        <br><br>
+        <b>Nome do Solicitante:</b> ".$_SESSION['usuario']['nome']."<br>
+        <b>E-mail do Solicitante:</b> ".$_SESSION['usuario']['email']."<br>
+        <b>Telefone de contato:</b> - n&atilde;o cadastrado -<br>
+        <br><br><br><br>
+        <b>Esta mensagem &eacute; autom&aacute;tica e n&atilde;o deve ser respondida.</b>
+        <br><br>
+        <center>"._PORTAL_NAME."</center></font>";
+
+        $destinatario = $arrInfoUsuario['nome']." <".$arrInfoUsuario['email'].">";
+        $remetente =  _PORTAL_EMAIL;
+
+        $conteudoCompleto = "<html><body style='margin:0; padding:0;'>".
+                                              "<center>".
+                                              "<BR>Caro Sr(a), ".$arrInfoUsuario['nome']."<BR><BR>".
+                                              "$texConteudo".
+                                              "<BR></body></html>";
+
+        $email = new Email($remetente ,$destinatario, "Solicitacao de Publicacao" , $conteudoCompleto);
+
+    //** send a copy of this file in the email. (nï¿½o nescessï¿½rio)
+      //$email->Attach(__FILE__, "text/plain");
+
+
+    //** attach this included image file.
+
+      //$email->Attach("informect/images/logo_ct2.gif", "image/gif");
+      //$email->Attach("informect/images/brasil2.gif", "image/gif");
+      //$email->Attach("informect/images/moldura_dest_dir.gif", "image/gif");
+      //$email->Attach("informect/images/bottom_informe.gif", "image/gif");
+      //$email->Attach("informect/images/headre_informe.jpg", "image/gif");
+
+        $wassent = $email->Send();
+        return $wassent;
+    }
 
     /**
      * Executa scripts antes de depois de gravar objetos
@@ -1483,61 +1619,64 @@ class AdminObjeto
         }
     }
 
-	function ExecutaScriptDepois(&$_page, $codClasse, $codPele) {
-		$ClasseUtilizada = $this->PegaNomeClasse($_page, $codClasse);
-		$PeleUtilizada = $_page->_administracao->PegaListaDePeles($_page, $codPele);
-		
-		if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$PeleUtilizada['prefixo']."/exec_".$ClasseUtilizada['prefixo']."_depois.php"))	{
-			include($_SERVER['DOCUMENT_ROOT']."/html/skin/".$PeleUtilizada['prefixo']."/exec_".$ClasseUtilizada['prefixo']."_depois.php");
-			return $_SERVER['DOCUMENT_ROOT']."/html/skin/".$PeleUtilizada['prefixo']."/exec_".$ClasseUtilizada['prefixo']."_depois.php";
-		}
-		elseif (file_exists($_SERVER['DOCUMENT_ROOT']."/html/execscript/exec_".$ClasseUtilizada['prefixo']."depois.php")) {
-			include($_SERVER['DOCUMENT_ROOT']."/html/execscript/exec_".$ClasseUtilizada['prefixo']."_depois.php");
-			return $_SERVER['DOCUMENT_ROOT']."/html/execscript/exec_".$ClasseUtilizada['prefixo']."_depois.php";
-		}
-	}
+//	function ExecutaScriptDepois(&$_page, $codClasse, $codPele) {
+//		$ClasseUtilizada = $this->PegaNomeClasse($_page, $codClasse);
+//		$PeleUtilizada = $_page->_administracao->PegaListaDePeles($_page, $codPele);
+//		
+//		if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$PeleUtilizada['prefixo']."/exec_".$ClasseUtilizada['prefixo']."_depois.php"))	{
+//			include($_SERVER['DOCUMENT_ROOT']."/html/skin/".$PeleUtilizada['prefixo']."/exec_".$ClasseUtilizada['prefixo']."_depois.php");
+//			return $_SERVER['DOCUMENT_ROOT']."/html/skin/".$PeleUtilizada['prefixo']."/exec_".$ClasseUtilizada['prefixo']."_depois.php";
+//		}
+//		elseif (file_exists($_SERVER['DOCUMENT_ROOT']."/html/execscript/exec_".$ClasseUtilizada['prefixo']."depois.php")) {
+//			include($_SERVER['DOCUMENT_ROOT']."/html/execscript/exec_".$ClasseUtilizada['prefixo']."_depois.php");
+//			return $_SERVER['DOCUMENT_ROOT']."/html/execscript/exec_".$ClasseUtilizada['prefixo']."_depois.php";
+//		}
+//	}
 
-        function estaSobAreaProtegida(&$_page, $cod_objeto)
+    /**
+     * Identifica se determinado objeto está sob área protegida
+     * @param type $_page
+     * @param type $cod_objeto
+     * @return boolean
+     */
+    function estaSobAreaProtegida(&$_page, $cod_objeto)
+    {
+        $_page->IncluirAdmin();
+        $protegido = false;
+        $caminho = $_page->_adminobjeto->RecursivaCaminhoObjeto($_page, $cod_objeto);
+        $caminho = explode(",", $caminho);
+        $caminho[] = $cod_objeto;
+
+        $objBlob = new Objeto($_page, $cod_objeto);
+
+        // pegando permissao do usuario no objeto
+        $permissao = false;
+        if (isset($_SESSION['usuario']["cod_usuario"]))
+            $permissao = $_page->_administracao->PegaPerfilDoUsuarioNoObjeto($_page, $_SESSION['usuario']["cod_usuario"], $cod_objeto);
+
+        // verificando se o objeto está publicado
+        if ($objBlob->metadados["cod_status"]!="2" && !$permissao)
         {
-            $_page->IncluirAdmin();
-            $protegido = false;
-            $caminho = $_page->_adminobjeto->RecursivaCaminhoObjeto($_page, $cod_objeto);
-            $caminho = explode(",", $caminho);
-            $caminho[] = $cod_objeto;
-
-            $objBlob = new Objeto($_page, $cod_objeto);
-
-            // pegando permissao do usuario no objeto
-            $permissao = false;
-            if (isset($_SESSION['usuario']["cod_usuario"]))
-                $permissao = $_page->_administracao->PegaPerfilDoUsuarioNoObjeto($_page, $_SESSION['usuario']["cod_usuario"], $cod_objeto);
-            //xd($permissao);
-
-            // verificando se o objeto está publicado
-            if ($objBlob->metadados["cod_status"]!="2" && !$permissao)
-            {
-               return false;
-            }
-
-            // verificando se tem objeto protegido no parentesco
-            foreach ($caminho as $obj)
-            {
-                $objeto = new Objeto($_page, $obj);
-                if (preg_match("/_protegido.*/", $objeto->metadados["script_exibir"]))
-                {
-                    $protegido = true;
-                    break;
-                }
-            }
-
-            if ($protegido && (!$permissao || $permissao>_PERFIL_MILITARIZADO))
-            {
-                return false;
-            }
-
-            return true;
+           return false;
         }
 
-}
+        // verificando se tem objeto protegido no parentesco
+        foreach ($caminho as $obj)
+        {
+            $objeto = new Objeto($_page, $obj);
+            if (preg_match("/_protegido.*/", $objeto->metadados["script_exibir"]))
+            {
+                $protegido = true;
+                break;
+            }
+        }
 
-?>
+        if ($protegido && (!$permissao || $permissao>_PERFIL_MILITARIZADO))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+}

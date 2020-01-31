@@ -66,13 +66,26 @@ class Usuario
 	 */
 	function listaUsuarios(&$_page, $oculta_root=0)
 	{
-		 $sql = "SELECT t1.cod_usuario, t1.nome, t1.email, t1.chefia, t1.secao, t1.ramal, "
-				 . "t1.login, t1.data_atualizacao, t1.altera_senha, t1.ldap, "
-				 . "t2.nome as nome_chefia "
-				 . "FROM usuario t1 "
-				 . "LEFT JOIN usuario t2 ON t1.chefia = t2.cod_usuario "
-				 . "WHERE t1.valido=1 ".($oculta_root==1?"AND t1.cod_usuario>1 ":"")
-				 . "ORDER BY nome;";
+		 $sql = "SELECT t1.".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["email"]." AS email, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["login"]." AS login, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                         . " t1.".$_page->_db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
+                         . " FROM ".$_page->_db->tabelas["usuario"]["nome"]." AS t1 "
+                         . " INNER JOIN ".$_page->_db->tabelas["usuario"]["nome"]." AS t2 ON t1.".$_page->_db->tabelas["usuario"]["colunas"]["chefia"]." = t2.".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." "
+                         . " ORDER BY t1.".$_page->_db->tabelas["usuario"]["colunas"]["nome"];
+//                 t1.cod_usuario, t1.nome, t1.email, t1.chefia, t1.secao, t1.ramal, "
+//				 . "t1.login, t1.data_atualizacao, t1.altera_senha, t1.ldap, "
+//				 . "t2.nome as nome_chefia "
+//				 . "FROM usuario t1 "
+//				 . "LEFT JOIN usuario t2 ON t1.chefia = t2.cod_usuario "
+//				 . "WHERE t1.valido=1 ".($oculta_root==1?"AND t1.cod_usuario>1 ":"")
+//				 . "ORDER BY nome;";
 		 $rs = $_page->_db->ExecSQL($sql);
 		 return $rs->getAll();
 	}
@@ -111,11 +124,24 @@ class Usuario
 //            $usuario = htmlspecialchars($usuario, ENT_QUOTES, "UTF-8");
 //            $senha = htmlspecialchars($senha, ENT_QUOTES, "UTF-8");
             
-            $sql = $_page->_db->getCon()->prepare("SELECT cod_usuario, nome, "
-                    . "email, chefia, secao, ramal, login, data_atualizacao, "
-                    . "altera_senha, ldap "
-                    . "from usuario "
-                    . "where valido=1 and login=?");
+            $sql = $_page->_db->getCon()->prepare("SELECT ".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["email"]." AS email, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["login"]." AS login, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                    . " ".$_page->_db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
+                    . " FROM ".$_page->_db->tabelas["usuario"]["nome"]." "
+                    . " WHERE ".$_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
+                    . " AND ".$_page->_db->tabelas["usuario"]["colunas"]["login"]." = ?");
+//                    . "", nome, ");
+//                    . "email, chefia, secao, ramal, login, data_atualizacao, "
+//                    . "altera_senha, ldap "
+//                    . "from usuario "
+//                    . "where valido=1 and login=?");
             $bind = array(1 => $usuario);
 
             $rs = $_page->_db->ExecSQL(array($sql, $bind));
@@ -143,11 +169,26 @@ class Usuario
                     // caso contrário, verifica senha no banco
                     else
                     {
-                        $sql2 = $_page->_db->getCon()->prepare("SELECT cod_usuario, "
-                                . "nome, email, chefia, secao, ramal, login, "
-                                . "data_atualizacao, altera_senha, ldap "
-                                . "FROM usuario "
-                                . "WHERE valido = 1 AND cod_usuario = ? AND senha = ?");
+                        $sql2 = $_page->_db->getCon()->prepare("SELECT ".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["email"]." AS email, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["login"]." AS login, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                                . " ".$_page->_db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
+                                . " FROM ".$_page->_db->tabelas["usuario"]["nome"]." "
+                                . " WHERE ".$_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
+                                . " AND ".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ? "
+                                . " AND ".$_page->_db->tabelas["usuario"]["colunas"]["senha"]." = ?");
+                        
+//                        $sql2 = $_page->_db->getCon()->prepare("SELECT cod_usuario, "
+//                                . "nome, email, chefia, secao, ramal, login, "
+//                                . "data_atualizacao, altera_senha, ldap "
+//                                . "FROM usuario "
+//                                . "WHERE valido = 1 AND cod_usuario = ? AND senha = ?");
                         $bind2 = array(1 => $rs->fields['cod_usuario'], 2 => md5($senha));
                         $rs2 = $_page->_db->ExecSQL(array($sql2, $bind2));
                         if ($rs2->_numOfRows == 0) return false;
@@ -160,9 +201,9 @@ class Usuario
                     
                     // atualiza data validade do usuario
                     $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
-                    $sql = "UPDATE usuario "
-                            . "SET data_atualizacao = ".ConverteData($data_validade,16)." "
-                            . "WHERE cod_usuario = ".$_SESSION["usuario"]["cod_usuario"];
+                    $sql = "UPDATE ".$_page->_db->tabelas["usuario"]["nome"]." "
+                            . " SET ".$_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
+                            . "WHERE ".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
                     $rs2 = $_page->_db->ExecSQL($sql);
                     
                     // carrega permissões do usuario
@@ -219,18 +260,17 @@ class Usuario
 
 	function CarregarInfoPerfis(&$_page)
 	{
-		$sql = "select cod_perfil,
-		acao,
-		script,
-		donooupublicado,
-		sopublicado,
-		sodono,
-		naomenu,
-		ordem,
-                icone
-		from 
-		infoperfil 
-		order by ordem";
+		$sql = "SELECT ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["cod_perfil"]." AS cod_perfil, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["acao"]." AS acao, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["script"]." AS script, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["donooupublicado"]." AS donooupublicado, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["sopublicado"]." AS sopublicado, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["sodono"]." AS sodono, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["naomenu"]." AS naomenu, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["ordem"]." AS ordem, "
+                        . " ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["icone"]." AS icone "
+                        . " FROM ".$_page->_db->tabelas["infoperfil"]["nome"]." AS ".$_page->_db->tabelas["infoperfil"]["nick"]." "
+                        . " ORDER BY ".$_page->_db->tabelas["infoperfil"]["nick"].".".$_page->_db->tabelas["infoperfil"]["colunas"]["ordem"];
 
 		$_SESSION['perfil']=array();
 
@@ -330,7 +370,8 @@ class Usuario
 	function ContaPendencias(&$_page)
 	{
 		//$sql = 'select count(*) as contador from pendencia where cod_usuario='.$_SESSION['usuario']["cod_usuario"];
-		$sql = "select count(*) as contador from pendencia";
+		$sql = "SELECT COUNT(*) AS contador "
+                        . " FROM ".$_page->_db->tabelas["pendencia"]["nome"];
 		$rs = $_page->_db->ExecSQL($sql);
 		$row = $rs->fields;
 		return $row['contador'];
@@ -338,11 +379,11 @@ class Usuario
 
 	function ContaRejeitados(&$_page)
 	{
-		$sql = "select count(*) as contador 
-		from objeto 
-		where cod_usuario=".$_SESSION['usuario']["cod_usuario"]. " 
-		and cod_status="._STATUS_REJEITADO." 
-		and apagado=0";
+		$sql = "SELECT COUNT(*) AS contador "
+                        . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." "
+                        . " WHERE ".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']["cod_usuario"]." "
+                        . " AND ".$_page->_db->tabelas["usuario"]["colunas"]["cod_status"]." = "._STATUS_REJEITADO." "
+                        . " AND ".$_page->_db->tabelas["usuario"]["colunas"]["apagado"]." = 0";
 		$rs = $_page->_db->ExecSQL($sql);
 		$row = $rs->fields;
 		return $row['contador'];
@@ -502,17 +543,21 @@ class Usuario
      */
     function atualizaUsuario(&$_page, $dados)
     {
-        $sql = "update usuario set nome='" . $dados['nome'] . "', "
-                . "email='" . $dados['email'] . "', "
-                . "secao='" . $dados["secao"] . "', "
-                . "ramal='" . $dados['ramal'] . "', "
-                . "login='" . $dados['login'] . "', "
-                . "altera_senha=" . $dados['altera_senha'] . ", "
-                . "ldap=" . $dados['ldap'] . ", "
-                . "data_atualizacao=" . ConverteData($dados['data_atualizacao'], 16) . ", ";
-        if ($dados['senha']!="") $sql .= "senha='" . md5($dados['senha']) . "', ";
-        $sql .= "chefia=" . $dados['chefia'] . " "
-                . "where cod_usuario=" . $dados['cod_usuario'];
+        $sql = "UPDATE ".$_page->_db->tabelas["usuario"]["nome"]." "
+                . " SET ".$_page->_db->tabelas["usuario"]["colunas"]["nome"]." = '" . $dados['nome'] . "', "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["email"]." = '" . $dados['email'] . "', "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["secao"]." = '" . $dados["secao"] . "', "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["ramal"]." = '" . $dados['ramal'] . "', "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["login"]." = '" . $dados['login'] . "', "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]." = " . $dados['altera_senha'] . ", "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["ldap"]." = " . $dados['ldap'] . ", "
+                . " ".$_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($dados['data_atualizacao'], 16).", ";
+        if ($dados['senha']!="") 
+        {
+            $sql .= " ".$_page->_db->tabelas["usuario"]["colunas"]["senha"]." = '" . md5($dados['senha']) . "', ";
+        }
+        $sql .= " ".$_page->_db->tabelas["usuario"]["colunas"]["chefia"]." = " . $dados['chefia'] . " "
+                . " WHERE ".$_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = " . $dados['cod_usuario'];
         $_page->_db->ExecSQL($sql);
     }
     
@@ -526,12 +571,13 @@ class Usuario
      */
     function AlterarPerfilDoUsuarioNoObjeto(&$_page, $cod_usuario, $cod_objeto, $perfil, $inserir=true)
     {
-        $sql = "delete from usuarioxobjetoxperfil "
-			."where cod_objeto=".$cod_objeto." and cod_usuario=".$cod_usuario;
+        $sql = "DELETE FROM ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
+                . " WHERE ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " AND ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = ".$cod_usuario;
         $_page->_db->ExecSQL($sql);
         if ($inserir)
         {
-            $sql = "insert into usuarioxobjetoxperfil "
+            $sql = "INSERT INTO ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
 				."(cod_usuario,cod_objeto,cod_perfil) "
 				."values(".$cod_usuario.",".$cod_objeto.",".$perfil.")";
             $_page->_db->ExecSQL($sql);
@@ -614,11 +660,11 @@ class Usuario
      */
     function PegaDireitosDoUsuario(&$_page, $interCod_Usuario)
     {
-        $sql = "SELECT cod_objeto, "
-                . "cod_perfil "
-                . "FROM usuarioxobjetoxperfil "
-                . "WHERE cod_usuario = ".$interCod_Usuario." "
-                . "ORDER BY cod_objeto";
+        $sql = "SELECT ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." AS cod_perfil "
+                . " FROM ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
+                . "WHERE ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = ".$interCod_Usuario." "
+                . "ORDER BY ".$_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"];
         $rs = $_page->_db->ExecSQL($sql);
         if ($rs->_numOfRows>0){
             while ($row = $rs->FetchRow()){

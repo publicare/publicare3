@@ -350,7 +350,10 @@ class Blob
      */
     private function CodigoObjeto(&$_page, $cod_blob)
     {
-        $sql = 'select cod_objeto, arquivo from tbl_blob where cod_blob='.$cod_blob;
+        $sql = 'SELECT '.$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_objeto"].' AS cod_objeto, '
+                . ' '.$_page->_db->tabelas["tbl_blob"]["colunas"]["arquivo"].' AS arquivo '
+                . ' FROM '.$_page->_db->tabelas["tbl_blob"]["nome"].' '
+                . ' WHERE '.$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"].' = '.$cod_blob;
 	$rs = $_page->_db->ExecSQL($sql);
 	return array("cod"=>$rs->fields['cod_objeto'], "nome"=>$rs->fields['arquivo']);
     }
@@ -891,7 +894,8 @@ class Blob
            if (!is_null($objeto->propriedades[$prop_capa]["cod_blob"]))
            {
                @unlink(_BLOBDIR . Blob::identificaPasta($objeto->propriedades[$prop_capa]["cod_blob"]) . "/" . $objeto->propriedades[$prop_capa]["cod_blob"] . "." . $objeto->propriedades[$prop_capa]["tipo_blob"]);
-               $sql = "delete from tbl_blob where cod_blob=".$objeto->propriedades[$prop_capa]["cod_blob"];
+               $sql = "DELETE FROM ".$_page->_db->tabelas["tbl_blob"]["nome"]." "
+                       . " WHERE ".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." = ".$objeto->propriedades[$prop_capa]["cod_blob"];
                $_page->_db->ExecSQL($sql);
    //            xd($objeto->propriedades[$prop_capa]["tipo_blob"]);
            }
