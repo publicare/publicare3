@@ -175,7 +175,7 @@ if ($amigavel != "")
 {
     // procura no banco pela url amigavel
     $sql = "SELECT ".$_db->tabelas["objeto"]["nick"].".".$_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
-            . " FROM ".$_db->tabelas["objeto"]["nome"]." AS ".$_db->tabelas["objeto"]["nick"]." "
+            . " FROM ".$_db->tabelas["objeto"]["nome"]." ".$_db->tabelas["objeto"]["nick"]." "
             . " WHERE ".$_db->tabelas["objeto"]["nick"].".".$_db->tabelas["objeto"]["colunas"]["url_amigavel"]." = '" . $amigavel . "'";
     $rs = $_db->ExecSQL($sql, 0, 1);
     while ($row = $rs->FetchRow())

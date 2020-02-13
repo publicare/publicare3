@@ -46,7 +46,10 @@ define('_PERFIL_RESTRITO', 4);
 define('_PERFIL_MILITARIZADO', 5);
 define('_PERFIL_DEFAULT', 6);
 
+
+//define('ADODB_ASSOC_CASE', 0);
+
 /**
  * Versao
  */
-define('_VERSIONPROG','Publicare 3.1.1 - 05/11/2019');
+define('_VERSIONPROG','Publicare 3.2.2 - 10/02/2020');

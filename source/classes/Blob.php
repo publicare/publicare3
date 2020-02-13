@@ -319,7 +319,7 @@ class Blob
                         
                         header("Content-length: $size");
                         header("Content-Disposition: attachment; filename=".$nome."");
-                        header("Content-type: $content_type[$file_ext]");
+                        header("Content-type: $this->tipos_baixar[$file_ext]");
                         
                         $this->readfile_chunked(_BLOBDIR.$subpasta."/".$cod_blob.'.'.$file_ext);
                         

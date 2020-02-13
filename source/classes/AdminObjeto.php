@@ -88,12 +88,12 @@ class AdminObjeto
                         ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel, "
                         ." ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["peso"]." AS peso, "
                         ." ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"]." AS nome_classe "
-                    . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
-                    . " INNER JOIN ".$_page->_db->tabelas["classe"]["nome"]." AS ".$_page->_db->tabelas["classe"]["nick"]." "
+                    . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " INNER JOIN ".$_page->_db->tabelas["classe"]["nome"]." ".$_page->_db->tabelas["classe"]["nick"]." "
                         . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." "
-                    . " LEFT JOIN ".$_page->_db->tabelas["tbl_text"]["nome"]." AS ".$_page->_db->tabelas["tbl_text"]["nick"]." "
+                    . " LEFT JOIN ".$_page->_db->tabelas["tbl_text"]["nome"]." ".$_page->_db->tabelas["tbl_text"]["nick"]." "
                         . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["tbl_text"]["nick"].".".$_page->_db->tabelas["tbl_text"]["colunas"]["cod_objeto"]." "
-                    . " LEFT JOIN ".$_page->_db->tabelas["tbl_string"]["nome"]." AS ".$_page->_db->tabelas["tbl_string"]["nick"]." "
+                    . " LEFT JOIN ".$_page->_db->tabelas["tbl_string"]["nome"]." ".$_page->_db->tabelas["tbl_string"]["nick"]." "
                         . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["tbl_string"]["nick"].".".$_page->_db->tabelas["tbl_string"]["colunas"]["cod_objeto"]." "
                     . " WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 0 ";
 
@@ -161,10 +161,10 @@ class AdminObjeto
     {
         $tags = "";
         $sql = "SELECT ".$_page->_db->tabelas["tag"]["nick"].".".$_page->_db->tabelas["tag"]["colunas"]["nome_tag"]." AS nome_tag "
-                . "FROM ".$_page->_db->tabelas["tag"]["nome"]." AS ".$_page->_db->tabelas["tag"]["nick"]." "
-                . "INNER JOIN ".$_page->_db->tabelas["tagxobjeto"]["nome"]." AS ".$_page->_db->tabelas["tagxobjeto"]["nick"]." "
+                . "FROM ".$_page->_db->tabelas["tag"]["nome"]." ".$_page->_db->tabelas["tag"]["nick"]." "
+                . "INNER JOIN ".$_page->_db->tabelas["tagxobjeto"]["nome"]." ".$_page->_db->tabelas["tagxobjeto"]["nick"]." "
                     . "ON ".$_page->_db->tabelas["tag"]["nick"].".".$_page->_db->tabelas["tag"]["colunas"]["cod_tag"]." = ".$_page->_db->tabelas["tagxobjeto"]["nick"].".".$_page->_db->tabelas["tagxobjeto"]["colunas"]["cod_tag"]." "
-                . "WHERE ".$_page->_db->tabelas["tagxobjeto"]["nick"].".".$_page->_db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto.";";
+                . "WHERE ".$_page->_db->tabelas["tagxobjeto"]["nick"].".".$_page->_db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $rs = $_page->_db->ExecSQL($sql);
         if ($rs->_numOfRows>0)
         {
@@ -247,7 +247,7 @@ class AdminObjeto
     {
         $result = array();
         $sql = "SELECT ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai "
-                ." FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                ." FROM ".$_page->_db->tabelas["parentesco"]["nome"]." ".$_page->_db->tabelas["parentesco"]["nick"]." "
                 ." WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
                 . " ORDER BY ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." DESC";
         $rs = $_page->_db->ExecSQL($sql);
@@ -281,8 +281,8 @@ class AdminObjeto
                 . " ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"]." AS ordem, "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo "
-                . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
-                . " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." ".$_page->_db->tabelas["parentesco"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
                 . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
                 . " GROUP BY ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["ordem"].", "
@@ -318,10 +318,10 @@ class AdminObjeto
                 . " ".$_page->_db->tabelas["tipodado"]["nick"].".".$_page->_db->tabelas["tipodado"]["colunas"]["nome"]." AS tipodado, "
                 . " ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
                 . " ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref "
-                . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
-                . " INNER JOIN ".$_page->_db->tabelas["propriedade"]["nome"]." AS ".$_page->_db->tabelas["propriedade"]["nick"]." "
+                . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["propriedade"]["nome"]." ".$_page->_db->tabelas["propriedade"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." "
-                . " INNER JOIN ".$_page->_db->tabelas["tipodado"]["nome"]." AS ".$_page->_db->tabelas["tipodado"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["tipodado"]["nome"]." ".$_page->_db->tabelas["tipodado"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["propriedade"]["nick"].".".$_page->_db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$_page->_db->tabelas["tipodado"]["nick"].".".$_page->_db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
                 . " WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $res = $_page->_db->ExecSQL($sql);
@@ -341,8 +341,8 @@ class AdminObjeto
             if (($row[$i]["tabela"]=="tbl_objref") && (!$this->EMetadado($_page, $row[$i]["campo_ref"])))
             {
                 $sql = "SELECT ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                        . " FROM ".$_page->_db->tabelas["tbl_objref"]["nome"]." AS ".$_page->_db->tabelas["tbl_objref"]["nick"]." "
-                        . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                        . " FROM ".$_page->_db->tabelas["tbl_objref"]["nome"]." ".$_page->_db->tabelas["tbl_objref"]["nick"]." "
+                        . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
                             . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["tbl_objref"]["nick"].".".$_page->_db->tabelas["tbl_objref"]["colunas"]["valor"]." "
                         . " WHERE ".$_page->_db->tabelas["tbl_objref"]["nick"].".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_propriedade"]." = ".$row[$i]["cod_propriedade"]." "
                         . " AND ".$_page->_db->tabelas["tbl_objref"]["nick"].".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
@@ -373,10 +373,10 @@ class AdminObjeto
                         if ($this->EMetadado($_page, $row['campo_ref']))
                         {
                             $tipo[] = 'ref';
-                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_objref"]["nome"]." AS ".$tabela." "
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_objref"]["nome"]." ".$tabela." "
                                     . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_propriedade"]." = ". $row['cod_propriedade']." "
                                     . " AND ".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
-                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$tabela."_objeto "
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." ".$tabela."_objeto "
                                     . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["valor"]." = ".$tabela."_objeto.".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
                             $campos[] = " ".$tabela."_objeto.".$_page->_db->tabelas["objeto"]["colunas"][$row['campo_ref']]." AS ".$row['nome'];
                             $campos[] = " ".$tabela."_objeto.".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS ".$row['nome']."_referencia";
@@ -385,10 +385,10 @@ class AdminObjeto
                         else
                         {
                             $tipo[] = 'ref_prop';
-                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_objref"]["nome"]." AS ".$tabela." "
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_objref"]["nome"]." ".$tabela." "
                                     . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_propriedade"]." = ". $row['cod_propriedade']." "
                                     . " AND ".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
-                            $join[] = " LEFT JOIN ".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["nome"]." AS ".$tabela."_prop "
+                            $join[] = " LEFT JOIN ".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["nome"]." ".$tabela."_prop "
                                     . " ON (".$tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["valor"]." = ".$tabela."_prop.".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["colunas"]["cod_objeto"].") ";
                             $campos[] = $tabela."_prop.".$_page->_db->tabelas[$row["valor_saida"]["tipo"]]["colunas"]["valor"]." AS ".$row['nome'];
                             $campos[] = $tabela.".".$_page->_db->tabelas["tbl_objref"]["colunas"]["cod_objeto"]." AS ".$row['nome']."_referencia";
@@ -397,7 +397,7 @@ class AdminObjeto
                         break;
                     case 'tbl_blob':
                         $tipo[] = 'blob';
-                        $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_blob"]["nome"]." AS ".$tabela." "
+                        $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_blob"]["nome"]." ".$tabela." "
                                 . " ON (".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_propriedade"]." = ". $row['cod_propriedade']." "
                                 . " AND ".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
                         $campos[] = " ".$tabela.".".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS ".$row['nome']."_cod_blob";
@@ -406,14 +406,14 @@ class AdminObjeto
                         break;
                     case 'tbl_date':
                         $tipo[] = 'date';
-                        $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_date"]["nome"]." AS ".$tabela." "
+                        $join[] = " LEFT JOIN ".$_page->_db->tabelas["tbl_date"]["nome"]." ".$tabela." "
                                 . " ON (".$tabela.".".$_page->_db->tabelas["tbl_date"]["colunas"]["cod_propriedade"]." = ".$row['cod_propriedade']." "
                                 . " AND ".$tabela.".".$_page->_db->tabelas["tbl_date"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
                         $campos[] = $tabela.".".$_page->_db->tabelas["tbl_date"]["colunas"]["valor"]." AS ".$row['nome'];
                         break;
                     default:
                         $tipo[] = 'default';
-                        $join[] = " LEFT JOIN ".$_page->_db->tabelas[$row['tabela']]["nome"]." AS ".$tabela." "
+                        $join[] = " LEFT JOIN ".$_page->_db->tabelas[$row['tabela']]["nome"]." ".$tabela." "
                                 . " ON (".$tabela.".".$_page->_db->tabelas[$row['tabela']]["colunas"]["cod_propriedade"]." = ".$row['cod_propriedade']." "
                                 . " AND ".$tabela.".".$_page->_db->tabelas[$row['tabela']]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].") ";
 //                        $join[] = " left join ".$row['tabela']." as ".$tabela." on (".$tabela.".cod_propriedade=".$row['cod_propriedade']." and ".$tabela.".cod_objeto=".$_page->_db->nomes_tabelas["objeto"].".cod_objeto )";
@@ -424,7 +424,7 @@ class AdminObjeto
 		
             // Monta SQL com dados dos arrays de montagem
             $sql = "SELECT ".implode(',',$campos)." "
-                    . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                    . " FROM ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
                     . " ".implode(' ',$join)." "
                     . " WHERE ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
             $res = $_page->_db->ExecSQL($sql);
@@ -484,7 +484,7 @@ class AdminObjeto
         $sql = "SELECT cod_objeto "
                 . "FROM parentesco "
                 . "WHERE cod_pai = ".$cod_objeto." "
-                . "AND ordem = 1;";
+                . "AND ordem = 1";
         $res = $_page->_db->ExecSQL($sql);
         while ($row = $res->FetchRow())
         {
@@ -604,9 +604,9 @@ class AdminObjeto
         if ($tags != "")
         {
             $array_tags = preg_split("[,]", $tags);
-            $tags_join .= " INNER JOIN ".$_page->_db->tabelas['tagxobjeto']["nome"]." AS ".$_page->_db->nomes_tabelas['tagxobjeto']['nick']." "
+            $tags_join .= " INNER JOIN ".$_page->_db->tabelas['tagxobjeto']["nome"]." ".$_page->_db->tabelas['tagxobjeto']['nick']." "
                     . " ON ".$_page->_db->tabelas['objeto']["nick"].".".$_page->_db->tabelas['objeto']["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas['tagxobjeto']["nick"].".".$_page->_db->tabelas['tagxobjeto']["colunas"]["cod_objeto"]." "
-                    . " INNER JOIN ".$_page->_db->tabelas['tag']["nome"]." AS ".$_page->_db->tabelas['tag']["nick"]." "
+                    . " INNER JOIN ".$_page->_db->tabelas['tag']["nome"]." ".$_page->_db->tabelas['tag']["nick"]." "
                         . " ON ".$_page->_db->tabelas['tagxobjeto']['nick'].".".$_page->_db->tabelas['tagxobjeto']['colunas']["cod_tag"]." = ".$_page->_db->tabelas['tag']["nick"].".".$_page->_db->tabelas['tag']['colunas']["cod_tag"]." ";
             $tags_where .= " AND ( ";
             foreach ($array_tags as $tag)
@@ -683,7 +683,7 @@ class AdminObjeto
         {
             if (!isset($classes_where)) $classes_where = "";
             $sql_out = $this->_LocalizarObjetosComTabelaTemporaria ($_page, $classes, $array_qry, $array_ordem, $apagado_where.$tags_where.$usuario_where.$classes_where, $pai_join.$tags_join);
-            $sqlfinal = "select * from ".$sql_out['tbl'].$sql_out['ordem'];
+            $sqlfinal = $sql_out['tbl'].$sql_out['ordem'];
         }
         else
         {
@@ -712,6 +712,7 @@ class AdminObjeto
         // Vai criando objetos Objeto e populando array
         for ($i=0; $i<sizeof($row); $i++)
         {
+//            xd($_SESSION['usuario']);
             if ($_SESSION['usuario']['perfil'] < _PERFIL_MILITARIZADO || ($_SESSION['usuario']['perfil']==_PERFIL_DEFAULT || $_SESSION['usuario']['perfil']==_PERFIL_MILITARIZADO) && ($row[$i]["data_publicacao"]<=date("YmdHi")."00" && $row[$i]["data_validade"]>=date("YmdHi")."00"))
             {
                 $obj = new Objeto($_page);
@@ -721,10 +722,10 @@ class AdminObjeto
         }
 		
         // Apaga tabela temporária caso tenha sido utilizada
-        if (isset($sql_out['tbl']) && $sql_out['tbl'] != '')
-        {
-            $_page->_db->DropTempTable($sql_out['tbl']);
-        }
+//        if (isset($sql_out['tbl']) && $sql_out['tbl'] != '')
+//        {
+//            $_page->_db->DropTempTable($sql_out['tbl']);
+//        }
 
         return $objetos;
     }
@@ -771,7 +772,7 @@ class AdminObjeto
                     . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["indexar"]." AS indexar, "
                     . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["descricao"]." AS descricao, "
                     . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["sistema"]." AS sistema "
-                    . " FROM ".$_page->_db->tabelas["classe"]["nome"]." AS ".$_page->_db->tabelas["classe"]["nick"]." "
+                    . " FROM ".$_page->_db->tabelas["classe"]["nome"]." ".$_page->_db->tabelas["classe"]["nick"]." "
                     . " ORDER BY ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"];
             $rs = $_page->_db->ExecSQL($sql);
 
@@ -801,6 +802,103 @@ class AdminObjeto
      * @return array
      */
     function _LocalizarObjetosComTabelaTemporaria (&$_page, $classes, $array_qry, $array_ordem, $default_where, $pai_join)
+    {
+        
+        // Variavel para controlar a criacao dos campos na tabela temporaria //
+        $campo_incluido=array();
+        $campo_incluido_natabela=array();
+        $ordem_temporaria=array();
+		
+        $sqls_insert = array();
+		
+        foreach ($classes as $cod_classe)
+        {
+            
+            $temp_campos=array();
+            $temp_from=array();
+            $temp_where=array();
+            $campo_incluido=array();
+			
+            //Constroi SQL para casos em que existem propriedades na ordem
+            foreach ($array_ordem as $item)
+            {
+                if (!isset($item['orientacao'])) $item['orientacao'] = "ASC";
+                
+                if (!$this->EMetadado($_page, $item['campo']))
+                {
+                    $info = $this->CriaSQLPropriedade($_page, $item['campo'], $item['orientacao'], $cod_classe);
+                    
+                    if ($info["tabela"]=="tbl_objref") $item['campo'] .= "_ref";
+                    
+                    $temp_campos[]=$info['field'];
+                    $temp_from[]=$info['from'];
+                    $temp_where[]=$info['where'];
+                    $campo_incluido[]=$info['field'];
+                }
+                
+                $string_temp = $item['campo'].' '.$item['orientacao'];
+                if (!in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[]=$item['campo'].' '.$item['orientacao'];
+            }
+
+            //Constroi SQL para casos em que existem propriedades na condicao
+            foreach ($array_qry as $condicao)
+            {
+                if (!is_array($condicao))
+                {
+                    $out['where'] .= ' '.$condicao;
+                } 
+                else 
+                {
+                    if ($this->EMetadado($_page, $condicao[0]))
+                    {
+                        if (preg_match('/floor/',$condicao[0])) {
+                            $condicao[0]=str_replace('objeto.','',$condicao[0]);
+                        }
+                        $temp_where[]=' ('.$condicao[0]." ".$condicao[1]." '".$condicao[2]."')";
+                    }
+                    else
+                    {
+                        $info = $this->CriaSQLPropriedade($_page, $condicao[0],"", $cod_classe);
+                        $temp_campos[]=$info['field'];
+                        $temp_from[]=$info['from'];
+                        $temp_where[]=$info['where'];
+                        $campo_incluido[]=$info['field'];
+			
+                        $temp_where[]= ' ('.$info['field']." ".$condicao[1]." ".$info['delimitador'].$condicao[2].$info['delimitador'].')';                   
+                    }
+                }
+            }
+			//fim
+            $campos=','.implode(',', $temp_campos);
+            $from = implode(' ', $temp_from);
+            $where = implode(' AND ', $temp_where);
+			
+            $sqls_insert[] = " SELECT ".$_page->_db->sqlobjsel.$campos.$_page->_db->sqlobjfrom.$pai_join.$from.' WHERE (1=1) AND '.$where.$default_where;
+			//$_page->_db->ExecSQL($sql);
+
+        }
+		
+//        $sqlCreate = $_page->_db->tipodados["temp"]." ".$_page->_db->tipodados["temp2"].$tbl["nome"]." (".implode(", ", $tbl["colunas"]).")";
+//        $_page->_db->ExecSQL($sqlCreate);
+	
+        $sqlFinal = "SELECT * FROM ( "
+                . join(PHP_EOL." UNION ALL ".PHP_EOL, $sqls_insert)
+                . " ) tabletemp ";
+        
+//        xd($sqlFinal);
+        
+//        foreach($sqls_insert as $sqls)
+//        {
+//            $_page->_db->ExecSQL($sqls);
+//        }
+
+        $result['tbl'] = $sqlFinal;
+        $result['ordem']=' ORDER BY '.implode(',', $ordem_temporaria);
+			
+        return $result;
+    }
+    
+    function _LocalizarObjetosComTabelaTemporariaOld (&$_page, $classes, $array_qry, $array_ordem, $default_where, $pai_join)
     {
         
         $tbl = $_page->_db->GetTempTable();
@@ -1022,10 +1120,10 @@ class AdminObjeto
         $sql_pendentes = "SELECT "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo "
-                . " FROM ".$_page->_db->tabelas["pendencia"]["nome"]." AS ".$_page->_db->tabelas["pendencia"]["nick"]." "
-                . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " FROM ".$_page->_db->tabelas["pendencia"]["nome"]." ".$_page->_db->tabelas["pendencia"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["pendencia"]["nick"].".".$_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
-                . " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." ".$_page->_db->tabelas["parentesco"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["pendencia"]["nick"].".".$_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." "
                 . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_pai." "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 0 "
@@ -1116,8 +1214,8 @@ class AdminObjeto
         $sql = "SELECT ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai, "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
                 . " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel "
-                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
-                . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                . " INNER JOIN ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
                 . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         if (count($excecoes_classes)>0) { 
@@ -1180,7 +1278,7 @@ class AdminObjeto
     {
         $sql = "SELECT ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["nome"]." as nome, "
                 . " ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["prefixo"]." as prefixo "
-                . " FROM ".$_page->_db->tabelas["classe"]["nome"]." AS ".$_page->_db->tabelas["classe"]["nick"]." "
+                . " FROM ".$_page->_db->tabelas["classe"]["nome"]." ".$_page->_db->tabelas["classe"]["nick"]." "
                 . " WHERE ".$_page->_db->tabelas["classe"]["nick"].".".$_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$cod_classe; 
         $rs = $_page->_db->ExecSQL($sql);
         return $rs->fields;
@@ -1203,7 +1301,7 @@ class AdminObjeto
         if ($info!=null && $info!='')
         {
             $montagem["tabela"] = $_page->_db->tabelas[$info['tabela']]["nome"];
-            $montagem['from'] = " LEFT JOIN ".$_page->_db->tabelas[$info['tabela']]["nome"]." AS ".$campo." ON ";
+            $montagem['from'] = " LEFT JOIN ".$_page->_db->tabelas[$info['tabela']]["nome"]." ".$campo." ON ";
             $on = " ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["cod_objeto"]." ";
             $montagem['type'] = $info['nome'];
             $montagem['field'] = "";
@@ -1211,7 +1309,7 @@ class AdminObjeto
             {
                 $montagem['from'] .= ' (('.$on.') AND ('.$campo.'.'.$_page->_db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"].' = '.$info['cod_propriedade'].')) ';
                 $montagem['where'] = ' (1 = 1) AND '.$_page->_db->tabelas["objeto"]["nick"].'.'.$_page->_db->tabelas["objeto"]["colunas"]["cod_classe"].' = '.$cod_classe;
-                $montagem['from'] .= " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$campo."_ref ON ".$campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["valor"]." = ".$campo."_ref.".$_page->_db->tabelas["objeto"]["cod_objeto"]." ";
+                $montagem['from'] .= " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." ".$campo."_ref ON ".$campo.".".$_page->_db->tabelas[$info['tabela']]["colunas"]["valor"]." = ".$campo."_ref.".$_page->_db->tabelas["objeto"]["cod_objeto"]." ";
                 if (!$this->EMetadado($_page, $info['campo_ref']))
                 {
                     $propriedade = $this->PegaInfoSobrePropriedade($_page, $info['cod_referencia_classe'], $info['campo_ref']);
@@ -1264,8 +1362,8 @@ class AdminObjeto
                 . " ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
                 . " ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref, "
                 . " ".$tabelas["tipodado"]["nick"].".".$tabelas["tipodado"]["colunas"]["delimitador"]." AS delimitador "
-                . " FROM ".$tabelas["propriedade"]["nome"]." AS ".$tabelas["propriedade"]["nick"]." "
-                . " INNER JOIN ".$tabelas["tipodado"]["nome"]." AS ".$tabelas["tipodado"]["nick"]." "
+                . " FROM ".$tabelas["propriedade"]["nome"]." ".$tabelas["propriedade"]["nick"]." "
+                . " INNER JOIN ".$tabelas["tipodado"]["nome"]." ".$tabelas["tipodado"]["nick"]." "
                     . " ON ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$tabelas["tipodado"]["nick"].".".$tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
                 . " WHERE ".$tabelas["propriedade"]["nick"].".".$tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$cod_classe." ";
 
@@ -1452,7 +1550,7 @@ class AdminObjeto
         }
         if ($pai!=-1)
         {
-            $return = " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
+            $return = " INNER JOIN ".$_page->_db->tabelas["parentesco"]["nome"]." ".$_page->_db->tabelas["parentesco"]["nick"]." "
                         . " ON (".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
                             . " AND ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$pai." ";
 //				on (".$_page->_db->nomes_tabelas["parentesco"].".cod_objeto = ".$_page->_db->nomes_tabelas["objeto"].".cod_objeto 
@@ -1499,8 +1597,8 @@ class AdminObjeto
     function PegaNumFilhos(&$_page, $pai)
     {
         $sql = "SELECT COUNT(*) AS total "
-                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." AS ".$_page->_db->tabelas["parentesco"]["nick"]." "
-                . " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." AS ".$_page->_db->tabelas["objeto"]["nick"]." "
+                . " FROM ".$_page->_db->tabelas["parentesco"]["nome"]." ".$_page->_db->tabelas["parentesco"]["nick"]." "
+                . " LEFT JOIN ".$_page->_db->tabelas["objeto"]["nome"]." ".$_page->_db->tabelas["objeto"]["nick"]." "
                     . " ON ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
                 . " WHERE ".$_page->_db->tabelas["parentesco"]["nick"].".".$_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$pai." "
                 . " AND ".$_page->_db->tabelas["objeto"]["nick"].".".$_page->_db->tabelas["objeto"]["colunas"]["apagado"]." <> 1";

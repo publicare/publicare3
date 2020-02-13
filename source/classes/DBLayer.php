@@ -22,7 +22,7 @@ class DBLayer
     private $con = null;
     private $db;
     private $host;
-    private $server;
+    public $server;
     private $port;
     private $user;
     private $password;
@@ -441,6 +441,7 @@ class DBLayer
         switch ($this->server){
             // PostgreSQL
             case "postgres":
+            case "pgsql":
                 $this->tipodados = array("inteiro"=>"int",
                 "inteirogde"=>"bigint",
                 "inteiropqn"=>"smallint",
@@ -477,16 +478,17 @@ class DBLayer
                 "temp"=>"CREATE TABLE",
                 "temp2"=>"#");
                 break;
-            case "oracle":
-                $this->tipodados = array("inteiro"=>"[int]",
-                "inteirogde"=>"[numeric](18, 0)",
-                "inteiropqn"=>"[tinyint]",
-                "float"=>"[numeric](18, 5)",
-                "texto"=>"[varchar](255)", 
-                "textogde"=>"[text]", 
+            case "oracle11":
+                define('ADODB_ASSOC_CASE', 0);
+                $this->tipodados = array("inteiro"=>"number",
+                "inteirogde"=>"number(18,0)",
+                "inteiropqn"=>"number(3,0)",
+                "float"=>"number(18, 5)",
+                "texto"=>"varchar2(255)", 
+                "textogde"=>"long", 
                 "coluna"=>"",
                 "temp"=>"CREATE TABLE",
-                "temp2"=>"#");
+                "temp2"=>"");
                 break;
         }
 		
@@ -516,20 +518,27 @@ class DBLayer
                 . " ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["versao_publicada"]." AS versao_publicada ";
 	
 	// definindo clausula from do sql geral de consulta
-        $this->sqlobjfrom = " FROM ".$this->tabelas["objeto"]["nome"]." AS ".$this->tabelas["objeto"]["nick"]." "
-                . "LEFT JOIN ".$this->tabelas["classe"]["nome"]." AS ".$this->tabelas["classe"]["nick"]." "
+        $this->sqlobjfrom = " FROM ".$this->tabelas["objeto"]["nome"]." ".$this->tabelas["objeto"]["nick"]." "
+                . "LEFT JOIN ".$this->tabelas["classe"]["nome"]." ".$this->tabelas["classe"]["nick"]." "
                     . "ON ".$this->tabelas["classe"]["nick"].".".$this->tabelas["classe"]["colunas"]["cod_classe"]." = ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_classe"]." "
-                . "LEFT JOIN ".$this->tabelas["pele"]["nome"]." AS ".$this->tabelas["pele"]["nick"]." "
+                . "LEFT JOIN ".$this->tabelas["pele"]["nome"]." ".$this->tabelas["pele"]["nick"]." "
                     ."ON ".$this->tabelas["pele"]["nick"].".".$this->tabelas["pele"]["colunas"]["cod_pele"]." = ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_pele"]." "
-                . "LEFT JOIN ".$this->tabelas["status"]["nome"]." AS ".$this->tabelas["status"]["nick"]." "
+                . "LEFT JOIN ".$this->tabelas["status"]["nome"]." ".$this->tabelas["status"]["nick"]." "
                     . "ON ".$this->tabelas["status"]["nick"].".".$this->tabelas["status"]["colunas"]["cod_status"]." = ".$this->tabelas["objeto"]["nick"].".".$this->tabelas["objeto"]["colunas"]["cod_status"]." ";
 	
 	// criando sql geral de consulta de objetos
         $this->sqlobj = "SELECT ".$this->sqlobjsel." ".$this->sqlobjfrom;
 		
         try {
-            $this->con = ADONewConnection($this->server);
-//            $this->con->debug = true;
+            if ($this->server == "oracle11")
+            {
+                $this->con = ADONewConnection("oci8");
+            }
+            else
+            {
+                $this->con = ADONewConnection($this->server);
+            }
+            if (defined("_DBDEBUG")) $this->con->debug = _DBDEBUG;
             
             if (defined("_DBCACHE") && _DBCACHE===true)
             {
@@ -554,12 +563,20 @@ class DBLayer
                 }
             }
             
-            $this->con->Connect($this->host.":".$this->port, $this->user, $this->password, $this->db) or die("Erro ao tentar conectar banco de dados");
+            if ($this->server == "oracle11")
+            {
+                $this->con->Connect($this->host.":".$this->port, $this->user, $this->password, $this->db) or die("Erro ao tentar conectar banco de dados");
+            }
+            else
+            {
+                $this->con->Connect($this->host.":".$this->port, $this->user, $this->password, $this->db) or die("Erro ao tentar conectar banco de dados");
+            }
             
             switch ($this->server)
             {
                 
                 case "postgres":
+                case "pgsql":
                     $this->con->Execute("SET CLIENT_ENCODING TO 'UTF8'");
                     break;
                 case "mysql":
@@ -568,6 +585,9 @@ class DBLayer
                     $this->con->Execute("set names utf8");
                     break;
                 case "mssql":
+                    break;
+                case "oracle11":
+//                    $this->con->Execute("SET NLS_LANG");
                     break;
             }
             $this->con->SetFetchMode(ADODB_FETCH_ASSOC);

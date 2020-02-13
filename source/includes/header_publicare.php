@@ -70,7 +70,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 						{
                                                     if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
 							echo "
-								<li><a href='".$item["script"]."/".$_page->_objeto->Valor($_page, 'cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
+								<li><a href='"._URL."/".$item["script"]."/".$_page->_objeto->Valor($_page, 'cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
 						}
 					}
 				?>
@@ -85,7 +85,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 			<!-- === Final === Usuário logado === -->
 			
 			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
+			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_URL); ?>do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
 			<!-- === Final === Logout === -->
 			
 		</ul> 
