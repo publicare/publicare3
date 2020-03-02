@@ -30,7 +30,7 @@ $ic_classe = isset($_POST['ic_classe'])?htmlspecialchars($_POST["ic_classe"], EN
 
 // Apaga a classe
 if (isset($_POST['apagar_classe']) && $_POST['apagar_classe'] == "1" && $cod_classe > 0) {
-    $_page->_administracao->ApagarClasse($_page, $_POST['cod_classe']);
+    $_page->_administracao->ApagarClasse($_POST['cod_classe']);
     $cod_classe = 0;
 }
 // criar / editar classe
@@ -82,12 +82,12 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
         "index" => $indexar_classe);
     
     // Editar classe
-    if ($cod_classe > 0) $_page->_administracao->AtualizarClasse($_page, $cod_classe, $dados_classe);
+    if ($cod_classe > 0) $_page->_administracao->AtualizarClasse($cod_classe, $dados_classe);
     // Criar classe
-    else $cod_classe = $_page->_administracao->CriarClasse($_page, $dados_classe);
+    else $cod_classe = $_page->_administracao->CriarClasse($dados_classe);
         
     // Recupera dados da classe
-    $classinfo = $_page->_administracao->PegaInfoDaClasse($_page, $cod_classe);
+    $classinfo = $_page->_administracao->PegaInfoDaClasse($cod_classe);
     
     // Verifica / apaga / altera / adiciona propriedades
     foreach ($props as $propp)
@@ -113,18 +113,18 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
             // apagar propriedade
             if ($propp["ativa"] == 0)
             {
-                $_page->_administracao->ApagarPropriedadeDaClasse($_page, $cod_propriedade);
+                $_page->_administracao->ApagarPropriedadeDaClasse($cod_propriedade);
             }
             // alterar propriedade
             else
             {
-                $_page->_administracao->AtualizarDadosDaPropriedade($_page, $cod_propriedade, $dados);
+                $_page->_administracao->AtualizarDadosDaPropriedade($cod_propriedade, $dados);
             }
         }
         // nova propriedade
         else
         {
-            $_page->_administracao->AcrescentarPropriedadeAClasse($_page, $cod_classe, $dados);
+            $_page->_administracao->AcrescentarPropriedadeAClasse($cod_classe, $dados);
         }
     }
     
@@ -132,37 +132,37 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
 //    $_page->_administracao->CriarTemplateClasse($_page, $cod_classe);
     
     // Atualiza informações sobre classes que pode conter
-    if (isset($_POST["podeconter"])) $_page->_administracao->MontaRelacionamentoClasses($_page, $cod_classe, $_POST["podeconter"], 1);
+    if (isset($_POST["podeconter"])) $_page->_administracao->MontaRelacionamentoClasses($cod_classe, $_POST["podeconter"], 1);
     
     // Atualiza informação sobre onde pode ser criado
-    if (isset($_POST["criadoem"])) $_page->_administracao->MontaRelacionamentoClasses($_page, $cod_classe, $_POST["criadoem"], 2);
+    if (isset($_POST["criadoem"])) $_page->_administracao->MontaRelacionamentoClasses($cod_classe, $_POST["criadoem"], 2);
     
     // Atualiza lista de objetos onde pode ser criada
     if (isset($_POST["objetos"])) 
     {
-        $_page->_administracao->MontaRelacionamentoClassesObjetos($_page, $cod_classe, $_POST["objetos"], $_POST["objetosurls"]);
+        $_page->_administracao->MontaRelacionamentoClassesObjetos($cod_classe, $_POST["objetos"], $_POST["objetosurls"]);
     }
     
     if (isset($_POST["apagar_icone"]) && $_POST["apagar_icone"] == "apagar")
     {
-        $_page->_blob->apagaIconeClasse($_page, $prefixo_classe);
+        $_page->_blob->apagaIconeClasse($prefixo_classe);
     }
     
     if (isset($_FILES["ic_classe"]["name"]) && !empty($_FILES["ic_classe"]["name"])) 
     {
-        $_page->_blob->gravarIconeClasse($_page, $_FILES, $prefixo_classe);
+        $_page->_blob->gravarIconeClasse($_FILES, $prefixo_classe);
     }
 }
 
 // limpa cache
-$_page->_administracao->cacheFlush($_page);
+$_page->_administracao->cacheFlush();
 
 $_SESSION['classesPrefixos'] = array();
 $_SESSION['classesNomes'] = array();
 $_SESSION['classes'] = array();
 $_SESSION['classesIndexaveis'] = array();
 
-$header = "Location:" . _URL . "/do/classes/" . $_page->_objeto->Valor($_page, "cod_objeto") . ".html";
+$header = "Location:" . $_page->config["portal"]["url"] . "/do/classes/" . $_page->_objeto->Valor("cod_objeto") . ".html";
 header($header);
 
 exit();

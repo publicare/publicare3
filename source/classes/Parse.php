@@ -93,12 +93,12 @@ class Parse
             'MES' => 'date("m")',
             'ANO' => 'date("Y")',
             'DATA'=> 'date("d/m/Y")',
-            'ROOT'=> _ROOT,
+            'ROOT'=> '$_page->config["portal"]["objroot"]',
             'INDICE' => '$_LOOP_["count"]',
             'FIM' => '$_LOOP_["max"]',
-            'COD_OBJETO' => '$_OBJ_->Valor($_page, "cod_objeto")',
-            'COD_PAI' => '$_OBJ_->Valor($_page, "cod_pai")',
-            'TAGS' => '$_OBJ_->Valor($_page, "tags")',
+            'COD_OBJETO' => '$_OBJ_->Valor("cod_objeto")',
+            'COD_PAI' => '$_OBJ_->Valor("cod_pai")',
+            'TAGS' => '$_OBJ_->Valor("tags")',
             'QUANTIDADE' => '$_LOOP_["max"]',
         );
 
@@ -255,7 +255,7 @@ class Parse
             "filhos" => array (
                 'opentag' => 'filhos',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->PegaListaDeFilhos($_page, <#P:classes#>, <#P:ordem#>, <#P:inicio#>, <#P:limite#>)) {'."\n"
+                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->PegaListaDeFilhos(<#P:classes#>, <#P:ordem#>, <#P:inicio#>, <#P:limite#>)) {'."\n"
                     .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                     .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
                     .'$_LOOP_=array();'."\n"
@@ -315,7 +315,7 @@ class Parse
             "aleatorio" => array (
                 'opentag' => 'aleatorio',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->PegaListaDeFilhos($_page, <#P:classes#>, <#P:ordem#>)) {'."\n"
+                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->PegaListaDeFilhos(<#P:classes#>, <#P:ordem#>)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
                         .'$_LOOP_=array();'."\n"
@@ -370,7 +370,7 @@ class Parse
             "localizar" => array (
                 'opentag' => 'localizar',
                 'regex' => '|(.*)|',
-                'output' => '<?php <#P:nome#>_array = $_page->_adminobjeto->LocalizarObjetos($_page, <#P:classes#>,<#P:condicao#>,<#P:ordem#>,<#P:inicio#>,<#P:limite#>,<#P:pai#>,<#P:niveis#>,false,<#P:like#>,<#P:ilike#>,<#P:tags#>);'."\n"
+                'output' => '<?php <#P:nome#>_array = $_page->_adminobjeto->LocalizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,<#P:inicio#>,<#P:limite#>,<#P:pai#>,<#P:niveis#>,false,<#P:like#>,<#P:ilike#>,<#P:tags#>);'."\n"
                     .'if (<#P:nome#>_max = count(<#P:nome#>_array)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
@@ -437,7 +437,7 @@ class Parse
             "localizaraleatorio" => array (
                 'opentag' => 'localizaraleatorio',
                 'regex' => '|(.*)|',
-                'output' => '<?php <#P:nome#>_array = $_page->_adminobjeto->LocalizarObjetos($_page, <#P:classes#>,<#P:condicao#>,<#P:ordem#>,-1,-1,<#P:pai#>,<#P:niveis#>);'."\n"
+                'output' => '<?php <#P:nome#>_array = $_page->_adminobjeto->LocalizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,-1,-1,<#P:pai#>,<#P:niveis#>);'."\n"
                     .'if (<#P:nome#>_max = count(<#P:nome#>_array)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_STACK_,$_OBJ_);'."\n"
@@ -496,8 +496,8 @@ class Parse
             "usarobjeto" => array (
                 'opentag' => 'objeto',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:titulo#>!="") $_tmp_=$_page->_adminobjeto->CriarObjeto($_page, <#P:titulo#>);'."\n"
-                    .'else { if (<#P:cod_objeto#>!=-1) $_tmp_=$_page->_adminobjeto->CriarObjeto($_page, <#P:cod_objeto#>); }'."\n"
+                'output' => '<?php if (<#P:titulo#>!="") $_tmp_=$_page->_adminobjeto->CriarObjeto(<#P:titulo#>);'."\n"
+                    .'else { if (<#P:cod_objeto#>!=-1) $_tmp_=$_page->_adminobjeto->CriarObjeto(<#P:cod_objeto#>); }'."\n"
                     .'if ($_tmp_) {'."\n"
                         .'array_push($_STACK_,$_OBJ_);'."\n"
                         .'$_OBJ_=$_tmp_;'."\n"
@@ -530,7 +530,7 @@ class Parse
                 'opentag' => 'menu',
                 'regex' => '',
                 'output' => '<?php if ($_SESSION["usuario"]["cod_usuario"]) {'."\n"
-                        .'$_MENU = $_page->_usuario->Menu($_page);'."\n"
+                        .'$_MENU = $_page->_usuario->Menu();'."\n"
                         .'foreach ($_MENU as $_OPCAO) {?>'."\n",
                 'parameters' => false,
                 'paramitens' => false,
@@ -590,14 +590,14 @@ class Parse
                 'regex' => '|(.*)|',
                 'output' => '<?php '."\n"
                     .'global $_BLOBTAMANHO, $_BLOBLINK, $_BLOBDOWNLOAD, $_BLOBVIEW, $_BLOBTIPO, $_THUMBVIEW, $_BLOBICONE;'."\n"
-                    .'if ($_OBJ_->TamanhoBlob($_page, <#P:nome#>)) {'."\n"
-                    .'$_BLOBTAMANHO = $_OBJ_->TamanhoBlob($_page, <#P:nome#>);'."\n"
-                    .'$_BLOBLINK = $_OBJ_->LinkBlob($_page, <#P:nome#>);'."\n"
-                    .'$_BLOBDOWNLOAD = $_OBJ_->DownloadBlob($_page, <#P:nome#>);'."\n"
-                    .'$_BLOBVIEW = $_OBJ_->ExibirBlob($_page, <#P:nome#>, <#P:largura#>, <#P:altura#>);'."\n"
-                    .'$_BLOBTIPO = $_OBJ_->TipoBlob($_page, <#P:nome#>);'."\n"
-                    .'$_THUMBVIEW = $_OBJ_->ExibirThumb($_page, <#P:nome#>);'."\n"
-                    .'$_BLOBICONE = $_OBJ_->IconeBlob($_page, <#P:nome#>);'."\n"
+                    .'if ($_OBJ_->TamanhoBlob(<#P:nome#>)) {'."\n"
+                    .'$_BLOBTAMANHO = $_OBJ_->TamanhoBlob(<#P:nome#>);'."\n"
+                    .'$_BLOBLINK = $_OBJ_->LinkBlob(<#P:nome#>);'."\n"
+                    .'$_BLOBDOWNLOAD = $_OBJ_->DownloadBlob(<#P:nome#>);'."\n"
+                    .'$_BLOBVIEW = $_OBJ_->ExibirBlob(<#P:nome#>, <#P:largura#>, <#P:altura#>);'."\n"
+                    .'$_BLOBTIPO = $_OBJ_->TipoBlob(<#P:nome#>);'."\n"
+                    .'$_THUMBVIEW = $_OBJ_->ExibirThumb(<#P:nome#>);'."\n"
+                    .'$_BLOBICONE = $_OBJ_->IconeBlob(<#P:nome#>);'."\n"
                     .'?>',
                 'parameters'=> 1,
                 'helptext' => 'O comando <strong>usarblob</strong> deve ser escrito assim: <strong>&lt;@usarblob nome=[{string}] largura=[{integer}] altura=[{integer}] @&gt;</strong>',
@@ -660,11 +660,11 @@ class Parse
             "iconeclasse" => array (
                 'regex' => '',
                 'output' => '<?php  '."\n"
-                    .'if ($_OBJ_->Valor($_page, "prefixoclasse")=="arquivo") '."\n"
+                    .'if ($_OBJ_->Valor("prefixoclasse")=="arquivo") '."\n"
                     .'{'."\n"
-                    .'  echo "<img src=\"".$_OBJ_->IconeBlob($_page, "conteudo")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->Valor($_page, "classe")."\" />";'."\n"
+                    .'  echo "<img src=\"".$_OBJ_->IconeBlob("conteudo")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->Valor("classe")."\" />";'."\n"
                     .'} else {'."\n"
-                    .'  echo "<img src=\"/blob/iconeclasse?nome=".$_OBJ_->Valor($_page, "prefixoclasse")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->Valor($_page, "classe")."\" />";'."\n"
+                    .'  echo "<img src=\"/blob/iconeclasse?nome=".$_OBJ_->Valor("prefixoclasse")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->Valor("classe")."\" />";'."\n"
                     .'} ?>'."\n",
                 'parameters'=> false,
             ),
@@ -690,7 +690,7 @@ class Parse
             "temfilho" => array (
                 'opentag'=>'temfilho',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:cod_objeto#>!="") $_tmp_=$_page->_adminobjeto->PegaNumFilhos($_page, <#P:cod_objeto#>);'."\n"
+                'output' => '<?php if (<#P:cod_objeto#>!="") $_tmp_=$_page->_adminobjeto->PegaNumFilhos(<#P:cod_objeto#>);'."\n"
                     .'if ($_tmp_ > 0) {'."\n"
                     .'?>'."\n",
                 'parameters'=> 1,
@@ -1080,12 +1080,12 @@ exit;*/
 		//echo '<BR>';
 		if (count ($array)>2)
 		{
-			return '$'.$array[1].'->Valor($_page, "'.$array[2].'");';
+			return '$'.$array[1].'->Valor("'.$array[2].'");';
 		}
 		else
 		{
 //			echo "*$array[1]*";
-			return '$_OBJ_->Valor($_page, "'.$array[1].'")';
+			return '$_OBJ_->Valor("'.$array[1].'")';
 		}
 	}
 

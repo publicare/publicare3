@@ -67,8 +67,8 @@ $(document).ready(function(){
 <!-- === Objetos aguardando aprovação === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objetos aguardando aprovação</b></h3></div>
-		<form action="/do/list_content_post.php/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="pendentes" id="pendentes" method="POST">
-		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor($_page, "cod_objeto")?>">
+		<form action="/do/list_content_post.php/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="pendentes" id="pendentes" method="POST">
+		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
 		<div class="panel-footer">
@@ -101,12 +101,12 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 					<div class="row">
 						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><? echo $_page->_objeto->Valor($_page, "titulo")?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
-                            <a href="<?php echo(_URL); ?><?php echo($_page->_objeto->Valor($_page, "url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
+if ($_page->_objeto->Valor("cod_objeto") != $_page->config["portal"]["objroot"])
 { 
 ?>
-                            <a href="/do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="/do/list_content/<?php echo($_page->_objeto->Valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>
@@ -127,7 +127,7 @@ if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
                         <tbody>
 						
 <?php
-	$objetos = $_page->_adminobjeto->LocalizarPendentes($_page, $cod_objeto, $_SESSION["usuario"]["cod_usuario"], $ord1, $ord2, $inicio);
+	$objetos = $_page->_adminobjeto->LocalizarPendentes($cod_objeto, $_SESSION["usuario"]["cod_usuario"], $ord1, $ord2, $inicio);
 	$cont = $inicio;
 	foreach ($objetos as $obj)
 	{
@@ -140,7 +140,7 @@ if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
 				$show=false;
 		}
 		$cont++;
-		$loglist=$_page->_log->PegaLogWorkflow($_page, $obj["cod_objeto"]);
+		$loglist=$_page->_log->PegaLogWorkflow($obj["cod_objeto"]);
 ?>
 							<tr>
 								<td><?php if ($show){ ?><input type="checkbox" id="objlist[]" name="objlist[]" value="<?=$obj["cod_objeto"]?>" class="chkObj"><?php } ?></td>

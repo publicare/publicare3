@@ -15,16 +15,16 @@
 
 global $_page, $loglist, $log, $count;
 
-	$loglist = $_page->_log->PegaLogObjeto($_page, $_page->_objeto->Valor($_page, "cod_objeto"));
-	if (count ($loglist))
-	{
+	$loglist = $_page->_log->PegaLogObjeto($_page->_objeto->Valor("cod_objeto"));
+//	if (count ($loglist))
+//	{
 ?>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#tabelaLista').dataTable({
 			responsive: true,
 			language: linguagemDataTable,
-			order: [[ 1, "asc" ]],
+			order: [[ 2, "desc" ]],
 		});
 	});
 </script>
@@ -33,9 +33,9 @@ global $_page, $loglist, $log, $count;
 
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li><a href="do/preview/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li><a href="do/log_workflow/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Workflow</a></li>
-  <li class="active"><a href="do/log_objeto/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Log Status</a></li>
+  <li><a href="do/preview/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li><a href="do/log_workflow/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Workflow</a></li>
+  <li class="active"><a href="do/log_objeto/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -48,9 +48,9 @@ global $_page, $loglist, $log, $count;
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor($_page, "titulo")); echo " <i>[cod: ".$_page->_objeto->Valor($_page, "cod_objeto")."]</i>"; ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor("titulo")); echo " <i>[cod: ".$_page->_objeto->Valor("cod_objeto")."]</i>"; ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a class="ABranco" href="<?php echo(_URL); ?><?php echo($_page->_objeto->Valor($_page, "url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a class="ABranco" href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>
@@ -110,8 +110,8 @@ global $_page, $loglist, $log, $count;
 </div>
 <!-- === Log Status === -->
 <?php
-	}
-	else {
-	include("manage/vazio.php");	
-	}
+//	}
+//	else {
+//	include("manage/vazio.php");	
+//	}
 ?>

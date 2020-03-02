@@ -20,16 +20,9 @@
 class DBLayer
 {
     private $con = null;
-    private $db;
-    private $host;
-    public $server;
-    private $port;
-    private $user;
-    private $password;
 
     public $result;
     public $page_size=25;
-    public $contador;
 
     public $tabelas;
     public $metadados;
@@ -39,456 +32,114 @@ class DBLayer
     public $sqlobjfrom;
     public $sqlobj;
     public $sqltags;
+    
+    public $config;
 		
     /**
      * Método construtor - Define variáveis e cria conexão com banco de dados
      */
-    function __construct()
+    function __construct($config)
     {
-        global $cfgbanco;
-        
-        
         // pegando dados de conexao ao banco
-        $this->contador = 0;
-        $this->server = _DBSERVERTYPE;
-        $this->db = _DBNOME;
-        $this->host = _DBHOST;
-        $this->port = _DBPORT;
-        $this->user = _DBUSER;
-        $this->password = _DBPWD;
+        $this->config = $config;
 
 	// criando alias para as tabelas
+        // permite trabalhar de forma desacoplada ao nome das tabelas
         $this->tabelas = array(
-            
-            "classe" => array(
-                "nome" => "classe", 
-                "nick" => "t1", 
-                "colunas" => array(
-                    "cod_classe" => "cod_classe",
-                    "nome" => "nome",
-                    "prefixo" => "prefixo",
-                    "descricao" => "descricao",
-                    "temfilhos" => "temfilhos",
-                    "sistema" => "sistema",
-                    "indexar" => "indexar"
-                )
-            ),
-            
-            "classexfilhos" => array(
-                "nome" => "classexfilhos", 
-                "nick" => "t2",
-                "colunas" => array(
-                    "cod_classe" => "cod_classe",
-                    "cod_classe_filho" => "cod_classe_filho"
-                )
-            ),
-            
-            "classexobjeto" => array(
-                "nome" => "classexobjeto", 
-                "nick" => "t3",
-                "colunas" => array(
-                    "cod_classe" => "cod_classe",
-                    "cod_objeto" => "cod_objeto"
-                )
-            ),
-            
-            "infoperfil" => array(
-                "nome" => "infoperfil", 
-                "nick" => "t4",
-                "colunas" => array(
-                    "cod_infoperfil" => "cod_infoperfil",
-                    "cod_perfil" => "cod_perfil",
-                    "acao" => "acao",
-                    "script" => "script",
-                    "donooupublicado" => "donooupublicado",
-                    "sopublicado" => "sopublicado",
-                    "sodono" => "sodono",
-                    "naomenu" => "naomenu",
-                    "ordem" => "ordem",
-                    "icone" => "icone"
-                )
-            ),
-            
-            "logobjeto" => array(
-                "nome" => "logobjeto", 
-                "nick" => "t5",
-                "colunas" => array(
-                    "cod_logobjeto" => "cod_logobjeto",
-                    "cod_objeto" => "cod_objeto",
-                    "estampa" => "estampa",
-                    "cod_usuario" => "cod_usuario",
-                    "cod_operacao" => "cod_operacao"
-                )
-            ),
-            
-            "logworkflow" => array(
-                "nome" => "logworkflow", 
-                "nick" => "t6",
-                "colunas" => array(
-                    "cod_logworkflow" => "cod_logworkflow",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_usuario" => "cod_usuario",
-                    "mensagem" => "mensagem",
-                    "cod_status" => "cod_status",
-                    "estampa" => "estampa"
-                )
-            ),
-            
-            "objeto" => array(
-                "nome" => "objeto", 
-                "nick" => "t7",
-                "colunas" => array(
-                    "cod_objeto" => "cod_objeto",
-                    "cod_pai" => "cod_pai",
-                    "cod_classe" => "cod_classe",
-                    "cod_usuario" => "cod_usuario",
-                    "cod_pele" => "cod_pele",
-                    "cod_status" => "cod_status",
-                    "titulo" => "titulo",
-                    "descricao" => "descricao",
-                    "data_publicacao" => "data_publicacao",
-                    "data_validade" => "data_validade",
-                    "script_exibir" => "script_exibir",
-                    "apagado" => "apagado",
-                    "objetosistema" => "objetosistema",
-                    "peso" => "peso",
-                    "data_exclusao" => "data_exclusao",
-                    "url_amigavel" => "url_amigavel",
-                    "versao" => "versao",
-                    "versao_publicada" => "versao_publicada"
-                )
-            ),
-            
-            "parentesco" => array(
-                "nome" => "parentesco", 
-                "nick" => "t8",
-                "colunas" => array(
-                    "cod_objeto" => "cod_objeto",
-                    "cod_pai" => "cod_pai",
-                    "ordem" => "ordem"
-                )
-            ),
-            
-            "pele" => array(
-                "nome" => "pele", 
-                "nick" => "t9",
-                "colunas" => array(
-                    "cod_pele" => "cod_pele",
-                    "nome" => "nome",
-                    "prefixo" => "prefixo",
-                    "publica" => "publica"
-                )
-            ), 
-            
-            "pendencia" => array(
-                "nome" => "pendencia", 
-                "nick" => "t10",
-                "colunas" => array(
-                    "cod_pendencia" => "cod_pendencia",
-                    "cod_usuario" => "cod_usuario",
-                    "cod_objeto" => "cod_objeto"
-                )
-            ), 
-            
-            "perfil" => array(
-                "nome" => "perfil", 
-                "nick" => "t11",
-                "colunas" => array(
-                    "cod_perfil" => "cod_perfil",
-                    "nome" => "nome",
-                    "cod_perfil_pai" => "cod_perfil_pai"
-                )
-            ),
-            
-            "pilha" => array(
-                "nome" => "pilha", 
-                "nick" => "t12",
-                "colunas" => array(
-                    "cod_pilha" => "cod_pilha",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_usuario" => "cod_usuario",
-                    "cod_tipo" => "cod_tipo",
-                    "datahora" => "datahora"
-                )
-            ),
-            
-            "propriedade" => array(
-                "nome" => "propriedade", 
-                "nick" => "t13",
-                "colunas" => array(
-                    "cod_propriedade" => "cod_propriedade",
-                    "cod_classe" => "cod_classe",
-                    "cod_tipodado" => "cod_tipodado",
-                    "cod_referencia_classe" => "cod_referencia_classe",
-                    "campo_ref" => "campo_ref",
-                    "nome" => "nome",
-                    "posicao" => "posicao",
-                    "descricao" => "descricao",
-                    "rotulo" => "rotulo",
-                    "rot1booleano" => "rot1booleano",
-                    "rot2booleano" => "rot2booleano",
-                    "obrigatorio" => "obrigatorio",
-                    "seguranca" => "seguranca",
-                    "valorpadrao" => "valorpadrao"
-                )
-            ),
-            
-            "status" => array(
-                "nome" => "status", 
-                "nick" => "t14",
-                "colunas" => array(
-                    "cod_status" => "cod_status",
-                    "nome" => "nome"
-                )
-            ), 
-            
-            "tag" => array(
-                "nome" => "tag", 
-                "nick" => "t15",
-                "colunas" => array(
-                    "cod_tag" => "cod_tag",
-                    "nome_tag" => "nome_tag"
-                )
-            ),
-            
-            "tagxobjeto" => array(
-                "nome" => "tagxobjeto", 
-                "nick" => "t16",
-                "colunas" => array(
-                    "cod_tagxobjeto" => "cod_tagxobjeto",
-                    "cod_tag" => "cod_tag",
-                    "cod_objeto" => "cod_objeto"
-                )
-            ),
-            
-            "tbl_blob" => array(
-                "nome" => "tbl_blob", 
-                "nick" => "t17", 
-                "colunas" => array(
-                    "cod_blob" => "cod_blob",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "arquivo" => "arquivo",
-                    "tamanho" => "tamanho"
-                )
-            ), 
-            
-            "tbl_boolean" => array(
-                "nome" => "tbl_boolean", 
-                "nick" => "t18", 
-                "colunas" => array(
-                    "cod_boolean" => "cod_boolean",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )
-            ), 
-            
-            "tbl_date" => array(
-                "nome" => "tbl_date", 
-                "nick" => "t19", 
-                "colunas" => array(
-                    "cod_date" => "cod_date",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )), 
-            
-            "tbl_float" => array(
-                "nome" => "tbl_float", 
-                "nick" => "t20",
-                "colunas" => array(
-                    "cod_float" => "cod_float",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )
-            ), 
-            
-            "tbl_integer" => array(
-                "nome" => "tbl_integer", 
-                "nick" => "t21",
-                "colunas" => array(
-                    "cod_integer" => "cod_integer",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )
-            ),
-            
-            "tbl_objref" => array(
-                "nome" => "tbl_objref", 
-                "nick" => "t22",
-                "colunas" => array(
-                    "cod_objref" => "cod_objref",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )
-            ), 
-            
-            "tbl_string" => array(
-                "nome" => "tbl_string", 
-                "nick" => "t23",
-                "colunas" => array(
-                    "cod_string" => "cod_string",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )
-            ), 
-            
-            "tbl_text" => array(
-                "nome" => "tbl_text", 
-                "nick" => "t24",
-                "colunas" => array(
-                    "cod_text" => "cod_text",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_propriedade" => "cod_propriedade",
-                    "valor" => "valor"
-                )
-            ), 
-            
-            "tipodado" => array(
-                "nome" => "tipodado", 
-                "nick" => "t25", 
-                "colunas" => array(
-                    "cod_tipodado" => "cod_tipodado",
-                    "nome" => "nome",
-                    "tabela" => "tabela",
-                    "delimitador" => "delimitador",
-                )
-            ), 
-            
-            "usuario" => array(
-                "nome" => "usuario", 
-                "nick" => "t26",
-                "colunas" => array(
-                    "cod_usuario" => "cod_usuario",
-                    "secao" => "secao",
-                    "nome" => "nome",
-                    "login" => "login",
-                    "email" => "email",
-                    "ramal" => "ramal",
-                    "senha" => "senha",
-                    "chefia" => "chefia",
-                    "valido" => "valido",
-                    "data_atualizacao" => "data_atualizacao",
-                    "altera_senha" => "altera_senha",
-                    "ldap" => "ldap"
-                )
-            ), 
-            
-            "usuarioxobjetoxperfil" => array(
-                "nome" => "usuarioxobjetoxperfil", 
-                "nick" => "t27",
-                "colunas" => array(
-                    "cod_usuario" => "cod_usuario",
-                    "cod_objeto" => "cod_objeto",
-                    "cod_perfil" => "cod_perfil"
-                )
-            ),
-            
-            "versaoobjeto" => array(
-                "nome" => "versaoobjeto", 
-                "nick" => "t28",
-                "colunas" => array(
-                    "cod_versaoobjeto" => "cod_versaoobjeto",
-                    "cod_objeto" => "cod_objeto",
-                    "versao" => "versao",
-                    "conteudo" => "conteudo",
-                    "data_criacao" => "data_criacao",
-                    "cod_usuario" => "cod_usuario",
-                    "ip" => "ip"
-                )
-            )
-            
+            "classe" => array("nome" => "classe", "nick" => "t1", "colunas" => array("cod_classe" => "cod_classe", "nome" => "nome", "prefixo" => "prefixo", "descricao" => "descricao", "temfilhos" => "temfilhos", "sistema" => "sistema", "indexar" => "indexar")),
+            "classexfilhos" => array("nome" => "classexfilhos", "nick" => "t2", "colunas" => array("cod_classe" => "cod_classe", "cod_classe_filho" => "cod_classe_filho")),
+            "classexobjeto" => array("nome" => "classexobjeto", "nick" => "t3", "colunas" => array("cod_classe" => "cod_classe", "cod_objeto" => "cod_objeto")),
+            "infoperfil" => array("nome" => "infoperfil", "nick" => "t4", "colunas" => array("cod_infoperfil" => "cod_infoperfil", "cod_perfil" => "cod_perfil", "acao" => "acao", "script" => "script", "donooupublicado" => "donooupublicado", "sopublicado" => "sopublicado", "sodono" => "sodono", "naomenu" => "naomenu", "ordem" => "ordem", "icone" => "icone")),
+            "logobjeto" => array("nome" => "logobjeto", "nick" => "t5", "colunas" => array("cod_logobjeto" => "cod_logobjeto", "cod_objeto" => "cod_objeto", "estampa" => "estampa", "cod_usuario" => "cod_usuario", "cod_operacao" => "cod_operacao")),
+            "logworkflow" => array("nome" => "logworkflow", "nick" => "t6", "colunas" => array("cod_logworkflow" => "cod_logworkflow", "cod_objeto" => "cod_objeto", "cod_usuario" => "cod_usuario", "mensagem" => "mensagem", "cod_status" => "cod_status", "estampa" => "estampa")),
+            "objeto" => array("nome" => "objeto", "nick" => "t7", "colunas" => array("cod_objeto" => "cod_objeto", "cod_pai" => "cod_pai", "cod_classe" => "cod_classe", "cod_usuario" => "cod_usuario", "cod_pele" => "cod_pele", "cod_status" => "cod_status", "titulo" => "titulo", "descricao" => "descricao", "data_publicacao" => "data_publicacao", "data_validade" => "data_validade", "script_exibir" => "script_exibir", "apagado" => "apagado", "objetosistema" => "objetosistema", "peso" => "peso", "data_exclusao" => "data_exclusao", "url_amigavel" => "url_amigavel","versao" => "versao", "versao_publicada" => "versao_publicada")),
+            "parentesco" => array("nome" => "parentesco", "nick" => "t8", "colunas" => array("cod_objeto" => "cod_objeto", "cod_pai" => "cod_pai", "ordem" => "ordem")),
+            "pele" => array("nome" => "pele", "nick" => "t9", "colunas" => array("cod_pele" => "cod_pele", "nome" => "nome", "prefixo" => "prefixo", "publica" => "publica")), 
+            "pendencia" => array("nome" => "pendencia", "nick" => "t10", "colunas" => array("cod_pendencia" => "cod_pendencia", "cod_usuario" => "cod_usuario", "cod_objeto" => "cod_objeto")), 
+            "perfil" => array("nome" => "perfil", "nick" => "t11", "colunas" => array("cod_perfil" => "cod_perfil", "nome" => "nome", "cod_perfil_pai" => "cod_perfil_pai")),
+            "pilha" => array("nome" => "pilha", "nick" => "t12", "colunas" => array("cod_pilha" => "cod_pilha", "cod_objeto" => "cod_objeto", "cod_usuario" => "cod_usuario", "cod_tipo" => "cod_tipo", "datahora" => "datahora")),
+            "propriedade" => array("nome" => "propriedade", "nick" => "t13", "colunas" => array("cod_propriedade" => "cod_propriedade", "cod_classe" => "cod_classe", "cod_tipodado" => "cod_tipodado", "cod_referencia_classe" => "cod_referencia_classe", "campo_ref" => "campo_ref", "nome" => "nome", "posicao" => "posicao", "descricao" => "descricao", "rotulo" => "rotulo", "rot1booleano" => "rot1booleano", "rot2booleano" => "rot2booleano", "obrigatorio" => "obrigatorio", "seguranca" => "seguranca", "valorpadrao" => "valorpadrao")),
+            "status" => array("nome" => "status", "nick" => "t14", "colunas" => array("cod_status" => "cod_status", "nome" => "nome")), 
+            "tag" => array("nome" => "tag", "nick" => "t15", "colunas" => array("cod_tag" => "cod_tag", "nome_tag" => "nome_tag")),
+            "tagxobjeto" => array("nome" => "tagxobjeto", "nick" => "t16", "colunas" => array("cod_tagxobjeto" => "cod_tagxobjeto", "cod_tag" => "cod_tag", "cod_objeto" => "cod_objeto")),
+            "tbl_blob" => array("nome" => "tbl_blob", "nick" => "t17", "colunas" => array("cod_blob" => "cod_blob", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "arquivo" => "arquivo", "tamanho" => "tamanho")), 
+            "tbl_boolean" => array("nome" => "tbl_boolean", "nick" => "t18", "colunas" => array("cod_boolean" => "cod_boolean", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")), 
+            "tbl_date" => array("nome" => "tbl_date", "nick" => "t19", "colunas" => array("cod_date" => "cod_date", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")), 
+            "tbl_float" => array("nome" => "tbl_float", "nick" => "t20", "colunas" => array("cod_float" => "cod_float", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")), 
+            "tbl_integer" => array("nome" => "tbl_integer", "nick" => "t21", "colunas" => array("cod_integer" => "cod_integer", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")),
+            "tbl_objref" => array("nome" => "tbl_objref", "nick" => "t22", "colunas" => array("cod_objref" => "cod_objref", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")), 
+            "tbl_string" => array("nome" => "tbl_string", "nick" => "t23", "colunas" => array("cod_string" => "cod_string", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")), 
+            "tbl_text" => array("nome" => "tbl_text", "nick" => "t24", "colunas" => array("cod_text" => "cod_text", "cod_objeto" => "cod_objeto", "cod_propriedade" => "cod_propriedade", "valor" => "valor")), 
+            "tipodado" => array("nome" => "tipodado", "nick" => "t25", "colunas" => array("cod_tipodado" => "cod_tipodado", "nome" => "nome", "tabela" => "tabela", "delimitador" => "delimitador")), 
+            "usuario" => array("nome" => "usuario", "nick" => "t26", "colunas" => array("cod_usuario" => "cod_usuario", "secao" => "secao", "nome" => "nome", "login" => "login", "email" => "email", "ramal" => "ramal", "senha" => "senha", "chefia" => "chefia", "valido" => "valido", "data_atualizacao" => "data_atualizacao", "altera_senha" => "altera_senha", "ldap" => "ldap")), 
+            "usuarioxobjetoxperfil" => array("nome" => "usuarioxobjetoxperfil", "nick" => "t27", "colunas" => array("cod_usuario" => "cod_usuario", "cod_objeto" => "cod_objeto", "cod_perfil" => "cod_perfil")),
+            "versaoobjeto" => array("nome" => "versaoobjeto", "nick" => "t28", "colunas" => array("cod_versaoobjeto" => "cod_versaoobjeto", "cod_objeto" => "cod_objeto", "versao" => "versao", "conteudo" => "conteudo", "data_criacao" => "data_criacao", "cod_usuario" => "cod_usuario", "ip" => "ip"))
         );
         
-        if (isset($cfgbanco) && is_array($cfgbanco) && count($cfgbanco) > 0)
+        if (isset($this->config["bd"]["tabelas"]) && is_array($this->config["bd"]["tabelas"]) && count($this->config["bd"]["tabelas"]) > 0)
         {
-            $this->tabelas = array_merge($this->tabelas, $cfgbanco);
+            $this->tabelas = array_merge($this->tabelas, $this->config["bd"]["tabelas"]);
         }
 		
 	// definindo campos que sao metadados do objeto
-        $this->metadados = array ('cod_objeto',
-        'cod_pai',
-        'cod_usuario',
-        'cod_classe',
-        'classe',
-        'temfilhos',
-        'prefixoclasse',
-        'cod_pele',
-        'pele',
-        'prefixopele',
-        'cod_status',
-        'status',
-        'titulo',
-        'descricao',
-        'data_publicacao',
-        'data_validade',
-        'script_exibir',
-        'apagado',
-        'objetosistema',
-        'url',
-        'peso',
-        'tags',
-        'url_amigavel',
-        'versao',
-        'versao_publicada');
+        $this->metadados = array('cod_objeto', 'cod_pai', 'cod_usuario', 'cod_classe', 
+            'classe', 'temfilhos', 'prefixoclasse', 'cod_pele', 'pele', 'prefixopele', 'cod_status', 
+            'status', 'titulo', 'descricao', 'data_publicacao', 'data_validade', 'script_exibir', 
+            'apagado', 'objetosistema', 'url', 'peso', 'tags', 'url_amigavel', 'versao',
+            'versao_publicada'
+        );
 			
 	// definindo tipos de dados para os bancos
-        switch ($this->server){
+        switch ($this->config["bd"]["tipo"]){
             // PostgreSQL
             case "postgres":
             case "pgsql":
                 $this->tipodados = array("inteiro"=>"int",
-                "inteirogde"=>"bigint",
-                "inteiropqn"=>"smallint",
-                "float"=>"float",
-                "texto"=>"character varying(500)", 
-                "textogde"=>"text", 
-                "coluna"=>"column",
-                "temp"=>"CREATE TEMPORARY TABLE",
-                "temp2"=>"");
+                    "inteirogde"=>"bigint",
+                    "inteiropqn"=>"smallint",
+                    "float"=>"float",
+                    "texto"=>"character varying(500)", 
+                    "textogde"=>"text", 
+                    "coluna"=>"column",
+                    "temp"=>"CREATE TEMPORARY TABLE",
+                    "temp2"=>"");
                 break;
             // MySQL
             case "mysql":
             case "mysqli":
             case "pdo_mysql":
                 $this->tipodados = array("inteiro"=>"int",
-                "inteirogde"=>"bigint(14)",
-                "inteiropqn"=>"tinyint",
-                "float"=>"float",
-                "texto"=>"varchar(255)", 
-                "textogde"=>"text", 
-                "coluna"=>"",
-                "temp"=>"CREATE TEMPORARY TABLE",
-                "temp2"=>"");
+                    "inteirogde"=>"bigint(14)",
+                    "inteiropqn"=>"tinyint",
+                    "float"=>"float",
+                    "texto"=>"varchar(255)", 
+                    "textogde"=>"text", 
+                    "coluna"=>"",
+                    "temp"=>"CREATE TEMPORARY TABLE",
+                    "temp2"=>"");
                 break;
             // MICROSOFT SQL SERVER
             case "mssql":
                 $this->tipodados = array("inteiro"=>"[int]",
-                "inteirogde"=>"[numeric](18, 0)",
-                "inteiropqn"=>"[tinyint]",
-                "float"=>"[numeric](18, 5)",
-                "texto"=>"[varchar](255)", 
-                "textogde"=>"[text]", 
-                "coluna"=>"",
-                "temp"=>"CREATE TABLE",
-                "temp2"=>"#");
+                    "inteirogde"=>"[numeric](18, 0)",
+                    "inteiropqn"=>"[tinyint]",
+                    "float"=>"[numeric](18, 5)",
+                    "texto"=>"[varchar](255)", 
+                    "textogde"=>"[text]", 
+                    "coluna"=>"",
+                    "temp"=>"CREATE TABLE",
+                    "temp2"=>"#");
                 break;
             case "oracle11":
-                define('ADODB_ASSOC_CASE', 0);
                 $this->tipodados = array("inteiro"=>"number",
-                "inteirogde"=>"number(18,0)",
-                "inteiropqn"=>"number(3,0)",
-                "float"=>"number(18, 5)",
-                "texto"=>"varchar2(255)", 
-                "textogde"=>"long", 
-                "coluna"=>"",
-                "temp"=>"CREATE TABLE",
-                "temp2"=>"");
+                    "inteirogde"=>"number(18,0)",
+                    "inteiropqn"=>"number(3,0)",
+                    "float"=>"number(18, 5)",
+                    "texto"=>"varchar2(255)", 
+                    "textogde"=>"long", 
+                    "coluna"=>"",
+                    "temp"=>"CREATE TABLE",
+                    "temp2"=>"");
                 break;
         }
 		
@@ -530,49 +181,56 @@ class DBLayer
         $this->sqlobj = "SELECT ".$this->sqlobjsel." ".$this->sqlobjfrom;
 		
         try {
-            if ($this->server == "oracle11")
+            if ($this->config["bd"]["tipo"] == "oracle11")
             {
+                define('ADODB_ASSOC_CASE', 0);
+                putenv("NLS_LANG=AMERICAN_AMERICA.AL32UTF8");
                 $this->con = ADONewConnection("oci8");
             }
             else
             {
-                $this->con = ADONewConnection($this->server);
+                $this->con = ADONewConnection($this->config["bd"]["tipo"]);
             }
-            if (defined("_DBDEBUG")) $this->con->debug = _DBDEBUG;
+            $this->con->debug = $this->config["bd"]["debug"];
             
-            if (defined("_DBCACHE") && _DBCACHE===true)
+            if ($this->config["bd"]["cache"] === true)
             {
-                if (defined("_DBCACHETIPO") && _DBCACHETIPO=="disco")
+                if ($this->config["bd"]["cachetipo"] == "disco")
                 {
-                    if (defined("_DBCACHEPATH") && _DBCACHEPATH!="") 
+                    if ($this->config["bd"]["cachepath"] != "") 
                     {
-                        if (!is_dir(_DBCACHEPATH))
-                        {
-                            mkdir(_DBCACHEPATH, 0775, true);
+                        try {
+                            if (!is_dir($this->config["bd"]["cachepath"]))
+                            {
+                                mkdir($this->config["bd"]["cachepath"], 0775, true);
+                            }
+                            $ADODB_CACHE_DIR = $this->config["bd"]["cachepath"];
+                        } catch (Exception $e) {
+                            $this->config["bd"]["cache"] = false;
                         }
-                        $ADODB_CACHE_DIR = _DBCACHEPATH;
                     }
                 }
-                elseif (defined("_DBCACHETIPO") && _DBCACHETIPO=="memoria")
+                elseif ($this->config["bd"]["cachetipo"] == "memoria")
                 {
                     $this->con->memCache = true;
-                    $hosts = preg_split("[,]", _DBCACHEHOST);
+                    $hosts = preg_split("[,]", $this->config["bd"]["cachehost"]);
                     $this->con->memCacheHost = $hosts;
-                    $this->con->memCachePort = _DBCACHEPORT;
-                    $this->con->memCacheCompress = _DBCACHECOMPRESS;
+                    $this->con->memCachePort = $this->config["bd"]["cacheporta"];
+                    $this->con->memCacheCompress = $this->config["bd"]["cachecompress"];
                 }
             }
             
-            if ($this->server == "oracle11")
+            if ($this->config["bd"]["tipo"] == "oracle11")
             {
-                $this->con->Connect($this->host.":".$this->port, $this->user, $this->password, $this->db) or die("Erro ao tentar conectar banco de dados");
+                
+                $this->con->Connect($this->config["bd"]["host"].":".$this->config["bd"]["porta"], $this->config["bd"]["usuario"], $this->config["bd"]["senha"], $this->config["bd"]["nome"]) or die("Erro ao tentar conectar banco de dados");
             }
             else
             {
-                $this->con->Connect($this->host.":".$this->port, $this->user, $this->password, $this->db) or die("Erro ao tentar conectar banco de dados");
+                $this->con->Connect($this->config["bd"]["host"].":".$this->config["bd"]["porta"], $this->config["bd"]["usuario"], $this->config["bd"]["senha"], $this->config["bd"]["nome"]) or die("Erro ao tentar conectar banco de dados");
             }
             
-            switch ($this->server)
+            switch ($this->config["bd"]["tipo"])
             {
                 
                 case "postgres":
@@ -587,7 +245,7 @@ class DBLayer
                 case "mssql":
                     break;
                 case "oracle11":
-//                    $this->con->Execute("SET NLS_LANG");
+//                    $this->con->Execute("ALTER SESSION SET NLS_LANG='AL32UTF8'");
                     break;
             }
             $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -613,6 +271,11 @@ class DBLayer
     public function getCon()
     {
         return $this->con;
+    }
+    
+    public function getConfig()
+    {
+        return $this->config;
     }
 	
     /**
@@ -663,20 +326,21 @@ class DBLayer
     {
         GLOBAL $ADODB_CACHE_DIR;
         
-        $this->contador++;
-        $this->LogSQL[]=$sql;
-
-        if ($limit!=-1)
-                if ($start==-1)
-                        $start=0;
-
-        if ($limit!=-1 && $start!=-1)
+        if ($limit != -1)
         {
-            if (_DBCACHE===true && stripos($sql, "insert into")===false)
+            if ($start == -1)
             {
-                if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
-                if (is_array($sql)) $this->con->CacheSelectLimit(_DBCACHETIME, $sql[0], $limit, $start, $sql[1]);
-                else $this->result = $this->con->CacheSelectLimit(_DBCACHETIME, $sql, $limit, $start); 
+                $start = 0;
+            }
+        }
+
+        if ($limit != -1 && $start != -1)
+        {
+            if ($this->config["bd"]["cache"] === true && stripos($sql, "insert into") === false)
+            {
+                if ($this->config["bd"]["cachepath"] != "") $ADODB_CACHE_DIR = $this->config["bd"]["cachepath"];
+                if (is_array($sql)) $this->con->CacheSelectLimit($this->config["bd"]["cachetempo"], $sql[0], $limit, $start, $sql[1]);
+                else $this->result = $this->con->CacheSelectLimit($this->config["bd"]["cachetempo"], $sql, $limit, $start); 
             }
             else
             {
@@ -686,11 +350,11 @@ class DBLayer
         }
         else 
         {
-            if (_DBCACHE===true && stripos($sql, "insert into")===false)
+            if ($this->config["bd"]["cache"] === true && stripos($sql, "insert into") === false)
             {
-                if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
-                if (is_array($sql)) $this->result = $this->con->CacheExecute(_DBCACHETIME, $sql[0], $sql[1]);
-                else $this->result = $this->con->CacheExecute(_DBCACHETIME, $sql);
+                if ($this->config["bd"]["cachepath"] != "") $ADODB_CACHE_DIR = $this->config["bd"]["cachepath"];
+                if (is_array($sql)) $this->result = $this->con->CacheExecute($this->config["bd"]["cachetempo"], $sql[0], $sql[1]);
+                else $this->result = $this->con->CacheExecute($this->config["bd"]["cachetempo"], $sql);
             }
             else
             {
@@ -802,9 +466,9 @@ class DBLayer
     function Slashes($str)
     {
         $str = stripslashes($str);
-        if ($this->server == "mysql") return addslashes($str);
-        if ($this->server == "mysqli") return addslashes($str);
-        return str_replace("'","''",$str);
+        if ($this->config["bd"]["tipo"] == "mysql") return addslashes($str);
+        if ($this->config["bd"]["tipo"] == "mysqli") return addslashes($str);
+        return str_replace("'", "''", $str);
     }
 
     function Month($field)
@@ -857,7 +521,7 @@ class DBLayer
         if ($this->Query($sql)) return $this->InsertID($table);
         else return false;
     }
-	
+    
     /**
      * Retorna ID do registro inserido
      * @param string $table - nome da tabela
@@ -865,15 +529,28 @@ class DBLayer
      */
     function InsertID($table)
     {
-        $table2 = $table;
-        if (!($table == "index_word")){
-            $arr_temp = explode("_", $table);
-            if (sizeof($arr_temp)>=2) $table = $arr_temp[(sizeof($arr_temp)-1)];
-        } 		
-        $sql = "select max(cod_".$table.") as cod from ".$table2;
-        $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
-        $this->result=$this->con->Execute($sql);
-        return $this->result->fields["cod"];
+        foreach ($this->tabelas as $id => $tab)
+        {
+            if ($tab["nome"]==$table)
+            {
+                $sql = "SELECT MAX(".$tab["colunas"]["cod_".$id].") as cod FROM ".$table;
+                $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
+                $this->result=$this->con->Execute($sql);
+                return $this->result->fields["cod"];
+            }
+        }
+        return false;
+//        xd($table);
+//        return $this->con->insert_Id();
+//        $table2 = $table;
+//        if (!($table == "index_word")){
+//            $arr_temp = explode("_", $table);
+//            if (sizeof($arr_temp)>=2) $table = $arr_temp[(sizeof($arr_temp)-1)];
+//        } 		
+//        $sql = "select max(cod_".$table.") as cod from ".$table2;
+//        $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
+//        $this->result=$this->con->Execute($sql);
+//        return $this->result->fields["cod"];
     }
 	
     /**

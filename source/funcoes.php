@@ -13,6 +13,9 @@
 * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
 */
 
+//    use PHPMailer\PHPMailer\PHPMailer;
+//    use PHPMailer\PHPMailer\SMTP;
+
 /**
  * Função para realizar autoload das classes do Publicare
  */
@@ -110,115 +113,195 @@ function array_push_associative(&$arr)
  * @param type $arrArquivoAnexado
  * @return boolean
  */
-function EnviarEmail($remetente_nome, $remetente_email, $destinatario_nome, $destinatario_email, $assunto=-1, $texConteudo=-1, $altConteudo="", $arrArquivoAnexado=array())
+function EnviaEmail($destinatario_nome, $destinatario_email, $remetente_nome=-1, $remetente_email=-1, $assunto="", $texConteudo="", $altConteudo="", $arrArquivoAnexado=array())
 {
-        include_once("lib/phpmailer/class.phpmailer.php");
 
-        // para views antes da versao 2.8.9
-        $flag = 0;
-        if ($assunto==-1 && $texConteudo==-1)
+    
+    $mail = new PHPMailer();
+//    $mail = new PHPMailer(true);
+    
+    try {
+        //Server settings
+        // Ativa verbose debug
+//        $mail->SMTPDebug = SMTP::DEBUG_LOWLEVEL;
+//        $mail->SMTPDebug   = 2;
+        
+        // Envio via smtp
+        if (defined("_PBLMAILSMTP") && _PBLMAILSMTP===true)
         {
-                $tempRem = $remetente_nome;
-                $tempDes = $remetente_email;
-                $tempAss = $destinatario_nome;
-                $tempMsg = $destinatario_email;
-
-                // arrumando campo remetente
-                if (strpos($remetente_nome, "<")!==false)
+            $mail->isSMTP();
+            $mail->Host = _PBLMAILHOST;
+            $mail->Port = _PBLMAILPORT;
+            
+            if (defined('_PBLMAILSMTPAUTH') && _PBLMAILSMTPAUTH === true)
+            {
+                $mail->SMTPAuth = true;
+                $mail->Username = _PBLMAILUSER;
+                $mail->Password = _PBLMAILPASS;
+                
+                
+                
+                if (defined('_PBLMAILAUTHENC') && (_PBLMAILAUTHENC === 'tls' ||  _PBLMAILAUTHENC === 'ssl'))
                 {
-                        $remetente_nome = substr($tempRem, 0, strpos($tempRem, "<"));
-                        $remetente_email = substr($tempRem, strpos($tempRem, "<")+1, strpos($tempRem, ">")-strpos($tempRem, "<")-1);
+                    $mail->SMTPOptions = array(
+                        'ssl' => array(
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true
+                        )
+                    );
+                    
+                    if (_PBLMAILAUTHENC === 'tls')
+                    {
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    }
+                    if (_PBLMAILAUTHENC === 'ssl')
+                    {
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                    }
                 }
-                else
-                {
-                        $remetente_nome = $remetente_email = $tempRem;
-                }
+            }
+        }
+            
+        $mail->setFrom(($remetente_email==-1?$remetente_email:_PBLMAILFROMMAIL), ($remetente_nome==-1?$remetente_nome:_PBLMAILFROMNAME));
+        $mail->addAddress($destinatario_email, $destinatario_nome);
+//        $mail->addAddress('ellen@example.com');
+//        $mail->addReplyTo('info@example.com', 'Information');
+//        $mail->addCC('cc@example.com');
+//        $mail->addBCC('bcc@example.com');
 
-                // arrumando campo destinatario
-                $arDes = preg_split("[,|;]", $tempDes);
+        // Attachments
+//        $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+//        $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
 
-                $destin = array();
-                for ($i=0; $i<count($arDes); $i++)
-                {
-                        $temp = $arDes[$i];
-                        $destin[] = array("nome"=>"", "email"=>$temp);
-                }
-
-                $assunto = $tempAss;
-                $texConteudo = $tempMsg;
-
-                $flag = 1;
+        // Conteudo
+        $mail->isHTML(true);
+        $mail->Subject = $assunto;
+        $mail->Body = $texConteudo;
+        if ($altConteudo!=="")
+        {
+            $mail->AltBody = $altConteudo;
         }
         else
         {
-                $destin = array(array("nome"=>$destinatario_nome, "email"=>$destinatario_email));
+            $mail->AltBody = strip_tags(br2nl($texConteudo));
         }
 
-        $mail = new PHPMailer(true);
-        $mail->Charset = 'UTF-8';
+        $mail->send();
+        return(array("status"=>true, "mensagem"=>"Enviado com sucesso"));
+    } catch (Exception $e) {
+        return(array("status"=>false, "mensagem"=>"Erro ao enviar: ".$mail->ErrorInfo));
+    }
+    
+    exit();
+    
+//        include_once("lib/phpmailer/class.phpmailer.php");
 
-        $retorno = false;
-
-        foreach ($arrArquivoAnexado as $arq)
-        {
-                $mail->AddAttachment($arq[0], $arq[1]);
-        }
-
-        if (_mailsmtp)
-        {
-                // envio smtp
-                try {
-                        $mail->SetFrom($remetente_email, $remetente_nome);
-                        $mail->AddReplyTo($remetente_email, $remetente_nome);
-                        $mail->IsHTML(true);
-                        $mail->Subject = $assunto;
-                        $mail->Body     = $texConteudo;
-                        $mail->AltBody = $altConteudo;
-                        $mail->IsSMTP();
-                        $mail->Host     = _mailhost;
-                        $mail->Port     = _mailport;
-                        if (_mailuser!="")
-                        {
-                                $mail->SMTPAuth = true;
-                                $mail->Username = _mailuser;
-                                $mail->Password = _mailpass;		
-                        }
-                        foreach($destin as $dest)
-                        {
-                                $mail->AddAddress($dest["email"], $dest["nome"]);
-                        }
-                        $mail->Send();
-                        $retorno = true;
-                } catch (phpmailerException $e) {
-                        echo $e->errorMessage();
-                } catch (Exception $e) {
-                        echo $e->getMessage();
-                }
-        } 
-        else 
-        {
-                // envio simples
-                try
-                {
-                        $mail->SetFrom($remetente_email, $remetente_nome);
-                        $mail->AddReplyTo($remetente_email, $remetente_nome);
-                        foreach($destin as $dest)
-                        {
-                                $mail->AddAddress($dest["email"], $dest["nome"]);
-                        }
-                        $mail->Subject    = $assunto;
-                        $mail->AltBody    = $altConteudo;
-                        $mail->MsgHTML($texConteudo);
-                        $mail->Send();
-                        $retorno = true;
-                } catch (phpmailerException $e) {
-                        echo $e->errorMessage(); 
-                } catch (Exception $e) {
-                        echo $e->getMessage();
-                }
-        }
-
-        return $retorno;
+        // para views antes da versao 2.8.9
+//        $flag = 0;
+//        if ($assunto==-1 && $texConteudo==-1)
+//        {
+//                $tempRem = $remetente_nome;
+//                $tempDes = $remetente_email;
+//                $tempAss = $destinatario_nome;
+//                $tempMsg = $destinatario_email;
+//
+//                // arrumando campo remetente
+//                if (strpos($remetente_nome, "<")!==false)
+//                {
+//                        $remetente_nome = substr($tempRem, 0, strpos($tempRem, "<"));
+//                        $remetente_email = substr($tempRem, strpos($tempRem, "<")+1, strpos($tempRem, ">")-strpos($tempRem, "<")-1);
+//                }
+//                else
+//                {
+//                        $remetente_nome = $remetente_email = $tempRem;
+//                }
+//
+//                // arrumando campo destinatario
+//                $arDes = preg_split("[,|;]", $tempDes);
+//
+//                $destin = array();
+//                for ($i=0; $i<count($arDes); $i++)
+//                {
+//                        $temp = $arDes[$i];
+//                        $destin[] = array("nome"=>"", "email"=>$temp);
+//                }
+//
+//                $assunto = $tempAss;
+//                $texConteudo = $tempMsg;
+//
+//                $flag = 1;
+//        }
+//        else
+//        {
+//                $destin = array(array("nome"=>$destinatario_nome, "email"=>$destinatario_email));
+//        }
+//
+//        $mail = new PHPMailer(true);
+//        $mail->Charset = 'UTF-8';
+//
+//        $retorno = false;
+//
+//        foreach ($arrArquivoAnexado as $arq)
+//        {
+//                $mail->AddAttachment($arq[0], $arq[1]);
+//        }
+//
+//        if (_mailsmtp)
+//        {
+//                // envio smtp
+//                try {
+//                        $mail->SetFrom($remetente_email, $remetente_nome);
+//                        $mail->AddReplyTo($remetente_email, $remetente_nome);
+//                        $mail->IsHTML(true);
+//                        $mail->Subject = $assunto;
+//                        $mail->Body     = $texConteudo;
+//                        $mail->AltBody = $altConteudo;
+//                        $mail->IsSMTP();
+//                        $mail->Host     = _mailhost;
+//                        $mail->Port     = _mailport;
+//                        if (_mailuser!="")
+//                        {
+//                                $mail->SMTPAuth = true;
+//                                $mail->Username = _mailuser;
+//                                $mail->Password = _mailpass;		
+//                        }
+//                        foreach($destin as $dest)
+//                        {
+//                                $mail->AddAddress($dest["email"], $dest["nome"]);
+//                        }
+//                        $mail->Send();
+//                        $retorno = true;
+//                } catch (phpmailerException $e) {
+//                        echo $e->errorMessage();
+//                } catch (Exception $e) {
+//                        echo $e->getMessage();
+//                }
+//        } 
+//        else 
+//        {
+//                // envio simples
+//                try
+//                {
+//                        $mail->SetFrom($remetente_email, $remetente_nome);
+//                        $mail->AddReplyTo($remetente_email, $remetente_nome);
+//                        foreach($destin as $dest)
+//                        {
+//                                $mail->AddAddress($dest["email"], $dest["nome"]);
+//                        }
+//                        $mail->Subject    = $assunto;
+//                        $mail->AltBody    = $altConteudo;
+//                        $mail->MsgHTML($texConteudo);
+//                        $mail->Send();
+//                        $retorno = true;
+//                } catch (phpmailerException $e) {
+//                        echo $e->errorMessage(); 
+//                } catch (Exception $e) {
+//                        echo $e->getMessage();
+//                }
+//        }
+//
+//        return $retorno;
 }
 	
 	

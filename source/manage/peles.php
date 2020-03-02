@@ -28,7 +28,7 @@ $row = array("texto" => $nome,
 
 
 if ($cod_pele > 0) {
-    $pele = $_page->_administracao->PegaListaDePeles($_page, $cod_pele);
+    $pele = $_page->_administracao->PegaListaDePeles($cod_pele);
     $row = $pele[0];
 }
 
@@ -45,10 +45,10 @@ $("document").ready(function(){
 </script>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li><a href="do/gerusuario/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="do/classes/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li class="active"><a href="do/peles/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li><a href="do/indexportal/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+    <li><a href="do/gerusuario/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li><a href="do/classes/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li class="active"><a href="do/peles/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -58,7 +58,7 @@ $("document").ready(function(){
     <div class="panel-body">
 
         <!-- === Selecione a pele === -->
-        <form action="do/peles/<?php echo $_page->_objeto->Valor($_page, "cod_objeto") ?>.html" method="post">            
+        <form action="do/peles/<?php echo $_page->_objeto->Valor("cod_objeto") ?>.html" method="post">            
             <div class="panel panel-info">
                 <div class="panel-heading">Selecione a Pele</div>
                 <div class="panel-body">
@@ -67,7 +67,7 @@ $("document").ready(function(){
                         <select name="cod_pele" class="form-control">
                             <option value="0"> -- NOVA -- </option>
 <?php
-$peles = $_page->_administracao->PegaListaDePeles($_page);
+$peles = $_page->_administracao->PegaListaDePeles();
 foreach ($peles as $pele)
 {
 ?>
@@ -81,7 +81,7 @@ foreach ($peles as $pele)
 
                     <div class="col-md-3">
                         <input type="submit" name="submit"  value="Selecionar" class="btn btn-primary">
-                        <a href="#" onclick="history.back()" class="btn btn-success">Voltar</a>
+                        <!--<a href="#" onclick="history.back()" class="btn btn-success">Voltar</a>-->
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@ if ($erro!="")
 }
 ?>
         <!-- === Nova Pele === -->
-        <form action="do/peles_post.php/<?php echo $_page->_objeto->Valor($_page, "cod_objeto") ?>.html" method="post">
+        <form action="do/peles_post.php/<?php echo $_page->_objeto->Valor("cod_objeto") ?>.html" method="post">
             <div class="panel panel-info">
                 <div class="panel-heading"><?php if ($cod_pele > 0) { ?>Editar Pele - código: <?php echo($cod_pele); ?><?php } else { ?>Nova Pele<?php } ?></div>
                 <div class="panel-body">

@@ -19,8 +19,9 @@ if (!isset($_SESSION)) session_start();
 // inclui funcoes requeridas pelo publicare
 require ("funcoes.php");
 
+
 // define timezone
-date_default_timezone_set(_TZ);
+date_default_timezone_set($PBLCONFIG["portal"]["tz"]);
 
 // inicia tratamento de URL
 $url = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, "UTF-8");
@@ -36,7 +37,7 @@ $_SERVER['REQUEST_URI'] = $url;
 $aurl = preg_split("[\?]", $url);
 $url = $aurl[0];
 
-$vurlpbl = preg_split("[\/]", _URL);
+$vurlpbl = preg_split("[\/]", $PBLCONFIG["portal"]["url"]);
 
 
 // inclusao das classes publicare
@@ -44,30 +45,34 @@ require ("constantes.php");
 require ("lib/adodb/adodb-exceptions.inc.php");
 require ("lib/adodb/adodb.inc.php");
 require ("data.php");
+require ("lib/phpmailer/src/Exception.php");
+require ("lib/phpmailer/src/PHPMailer.php");
+require ("lib/phpmailer/src/SMTP.php");
 
 // iniciando banco de dados
-$_db = new DBLayer();
+$_db = new DBLayer($PBLCONFIG);
+
 
 $incluir = "";
 $amigavel = "";
 $action = "";
 $path = $_SERVER["DOCUMENT_ROOT"];
-$cod_root = _ROOT;
+$cod_root = $PBLCONFIG["portal"]["objroot"];
 
 // caso tenha array de dominios definido, verifica codigo objeto root do dominio
-if (isset($_dominios))
-{
-    $dominio = htmlspecialchars($_SERVER['HTTP_HOST'], ENT_QUOTES, "UTF-8");
-    foreach ($_dominios as $dom => $dom1) 
-    {
-        if ($dominio == $dom) $cod_root = $_dominios[$dominio];
-    }
-}
+//if (isset($_dominios))
+//{
+//    $dominio = htmlspecialchars($_SERVER['HTTP_HOST'], ENT_QUOTES, "UTF-8");
+//    foreach ($_dominios as $dom => $dom1) 
+//    {
+//        if ($dominio == $dom) $cod_root = $_dominios[$dominio];
+//    }
+//}
 
 $cod_objeto = $cod_root;
 $cod_blob = 0;
 //x($url);
-$url = defined("_PASTA")?str_ireplace("/"._PASTA."/", "/", $url):$url;
+$url = $PBLCONFIG["portal"]["pasta"]!=""?str_ireplace("/".$PBLCONFIG["portal"]["pasta"]."/", "/", $url):$url;
 $url = preg_replace("[\/+]", "/", $url);
 $arrUrl = preg_split("[\/]", $url);
 //xd($url);
@@ -170,6 +175,9 @@ else
     $action = "/content/view";
 }
 
+
+
+
 // verifica se eh url amigavel
 if ($amigavel != "")
 {
@@ -183,6 +191,8 @@ if ($amigavel != "")
         $cod_objeto = (int)$row["cod_objeto"];
     }
 }
+
+
 
 // verifica existencia de action
 if ($action=="" || isset($_GET["action"]) || isset($_POST["action"]))

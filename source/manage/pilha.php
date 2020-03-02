@@ -16,8 +16,8 @@
 global $_page;
 ?>
 <ul class="nav nav-tabs">
-  <li><a href="do/list_content/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Listar Conteúdo</a></li>
-  <li class="active"><a href="do/pilha/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Pilha</a></li>
+  <li><a href="do/list_content/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
+  <li class="active"><a href="do/pilha/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Pilha</a></li>
 </ul>
 <script>
 $(document).ready(function(){
@@ -34,7 +34,7 @@ $(document).ready(function(){
 if (($_page->_objeto->PodeTerFilhos()))
 {
 ?>
-    <form action="do/pilha_post/<?php echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="POST" name="objmanage" id="objmanage">
+    <form action="do/pilha_post/<?php echo $_page->_objeto->Valor("cod_objeto");?>.html" method="POST" name="objmanage" id="objmanage">
         <div class="panel-body">
             <select class="pblSelectForm" name="cod_objmanage">
             <?php echo $_page->_administracao->DropDownPilha($_page) ?>

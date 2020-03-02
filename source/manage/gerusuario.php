@@ -15,7 +15,8 @@
 global $_page;
 
 // pega lista completa de usuários
-$usuarios = $_page->_usuario->listaUsuarios($_page, 1);
+$usuarios = $_page->_usuario->listaUsuarios(1);
+//xd($usuarios);
 $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
 
 $acao = isset($_REQUEST["acao"]) ? htmlspecialchars($_REQUEST["acao"], ENT_QUOTES, "UTF-8") : "";
@@ -24,10 +25,10 @@ $cod = isset($_REQUEST["cod"]) ? (int)htmlspecialchars($_REQUEST["cod"], ENT_QUO
 ?>
 <!-- === Menu === --> 
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li class="active"><a href="do/gerusuario/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="do/classes/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li><a href="do/peles/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li><a href="do/indexportal/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+    <li class="active"><a href="do/gerusuario/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li><a href="do/classes/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li><a href="do/peles/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -73,7 +74,7 @@ if ($acao == "")
 <?php
 foreach ($usuarios as $usu)
 {
-    $permissoes = $_page->_usuario->PegaDireitosDoUsuario($_page, $usu["cod_usuario"]);
+    $permissoes = $_page->_usuario->PegaDireitosDoUsuario($usu["cod_usuario"]);
 ?>
                         <tr>
                             <td><?php echo($usu["nome"]); ?></td>
@@ -89,12 +90,12 @@ foreach ($usuarios as $usu)
 foreach ($permissoes as $cod=>$perm)                          
 {
     $objtemp = new Objeto($_page, $cod);
-    echo "<br/>".$objtemp->Valor($_page, "titulo")." <strong>(".$cod.")</strong> - ".$_page->_usuario->pegaNomePerfil($perm);
+    echo "<br/>".$objtemp->Valor("titulo")." <strong>(".$cod.")</strong> - ".$_page->_usuario->pegaNomePerfil($perm);
 }
                             ?></td>
                             <td>
-                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=editar&cod=<?php echo($usu["cod_usuario"]); ?>" title='Editar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Usuário' data-placement='left' title='Editar este usuário'><i class="fapbl fapbl-pencil-alt font-size16"></i></a>
-                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=bloquear&cod=<?php echo($usu["cod_usuario"]); ?>" title='Apagar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Usuário' data-placement='left' title='Apagar este usuário'><i class="fapbl fapbl-times-circle font-size16"></i></a>
+                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html?acao=editar&cod=<?php echo($usu["cod_usuario"]); ?>" title='Editar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Usuário' data-placement='left' title='Editar este usuário'><i class="fapbl fapbl-pencil-alt font-size16"></i></a>
+                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html?acao=bloquear&cod=<?php echo($usu["cod_usuario"]); ?>" title='Apagar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Usuário' data-placement='left' title='Apagar este usuário'><i class="fapbl fapbl-times-circle font-size16"></i></a>
                             </td>
                         </tr>
 <?php
@@ -121,7 +122,7 @@ $(document).ready(function() {
     });
     
     $("#btnAdicionar").click(function(){
-        document.location.href="do/gerusuario/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html?acao=novo";
+        document.location.href="do/gerusuario/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html?acao=novo";
     });
 });
 </script>
@@ -131,28 +132,28 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
 {
     $tmpArrPerfilObjeto = array();
     $usuario = array();
-	$tmpPerfilObjetoAtualNovo = 0;
+    $tmpPerfilObjetoAtualNovo = 0;
 
     if ($acao == "novo")
     {
         $titPagina = "Adicionar";
-		$usuario["nome"] = isset($_REQUEST['nome'])?htmlspecialchars(urldecode($_REQUEST["nome"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["secao"] = isset($_REQUEST['secao'])?htmlspecialchars(urldecode($_REQUEST["secao"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["login"] = isset($_REQUEST['login'])?htmlspecialchars(urldecode($_REQUEST["login"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["email"] = isset($_REQUEST['email'])?htmlspecialchars(urldecode($_REQUEST["email"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["ramal"] = isset($_REQUEST['ramal'])?htmlspecialchars(urldecode($_REQUEST["ramal"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["chefia"] = isset($_REQUEST['chefia'])?htmlspecialchars(urldecode($_REQUEST["chefia"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["altera_senha"] = isset($_REQUEST['altera_senha'])?htmlspecialchars(urldecode($_REQUEST["altera_senha"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["ldap"] = isset($_REQUEST['ldap'])?htmlspecialchars(urldecode($_REQUEST["ldap"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["data_atualizacao"] = isset($_REQUEST['data_atualizacao'])?htmlspecialchars(urldecode($_REQUEST["data_atualizacao"]), ENT_QUOTES, "UTF-8"):"";
-		$usuario["perfil"] = isset($_REQUEST['perfil'])?htmlspecialchars(urldecode($_REQUEST["perfil"]), ENT_QUOTES, "UTF-8"):"";
-		$tmpPerfilObjetoAtualNovo = $usuario["perfil"];
+        $usuario["nome"] = isset($_REQUEST['nome'])?htmlspecialchars(urldecode($_REQUEST["nome"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["secao"] = isset($_REQUEST['secao'])?htmlspecialchars(urldecode($_REQUEST["secao"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["login"] = isset($_REQUEST['login'])?htmlspecialchars(urldecode($_REQUEST["login"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["email"] = isset($_REQUEST['email'])?htmlspecialchars(urldecode($_REQUEST["email"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["ramal"] = isset($_REQUEST['ramal'])?htmlspecialchars(urldecode($_REQUEST["ramal"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["chefia"] = isset($_REQUEST['chefia'])?htmlspecialchars(urldecode($_REQUEST["chefia"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["altera_senha"] = isset($_REQUEST['altera_senha'])?htmlspecialchars(urldecode($_REQUEST["altera_senha"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["ldap"] = isset($_REQUEST['ldap'])?htmlspecialchars(urldecode($_REQUEST["ldap"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["data_atualizacao"] = isset($_REQUEST['data_atualizacao'])?htmlspecialchars(urldecode($_REQUEST["data_atualizacao"]), ENT_QUOTES, "UTF-8"):"";
+        $usuario["perfil"] = isset($_REQUEST['perfil'])?htmlspecialchars(urldecode($_REQUEST["perfil"]), ENT_QUOTES, "UTF-8"):"";
+        $tmpPerfilObjetoAtualNovo = $usuario["perfil"];
     }
     else
     {
         $titPagina = "Alterar";
-        $usuario = $_page->_usuario->PegaInformacaoUsuario($_page, $cod);
-        $tmpArrPerfilObjeto = $_page->_usuario->PegaDireitosDoUsuario($_page, $cod);
+        $usuario = $_page->_usuario->PegaInformacaoUsuario($cod);
+        $tmpArrPerfilObjeto = $_page->_usuario->PegaDireitosDoUsuario($cod);
     }
 ?>
     <script src="include/javascript_datepicker" type="text/javascript"></script>
@@ -164,7 +165,7 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
                 <h3 class="font-size20" style="line-height: 30px;"><?php echo($titPagina); ?> usuário</h3>
             </div>
 			
-            <form action="do/gerusuario_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html" method="POST" id="form_usuario">
+            <form action="do/gerusuario_post/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <div class="panel-body">
                 				
                     <input type="hidden" name="cod_usuario" id="cod_usuario" value="<?php echo isset($usuario['cod_usuario']) ? $usuario['cod_usuario'] : ""; ?>" />
@@ -250,12 +251,12 @@ if (defined("_ldaphost") && _ldaphost!="")
                             </div>
                             <?php
                             $tmpDisabled = "";
-                            if (isset($tmpArrPerfilObjeto['1']) && ($tmpArrPerfilObjeto['1'] == _PERFIL_ADMINISTRADOR) && ($_page->_objeto->Valor($_page, 'cod_objeto') != _ROOT)) {
+                            if (isset($tmpArrPerfilObjeto['1']) && ($tmpArrPerfilObjeto['1'] == _PERFIL_ADMINISTRADOR) && ($_page->_objeto->Valor('cod_objeto') != $_page->config["portal"]["objroot"])) {
                                 $tmpPerfilObjetoAtual = _PERFIL_ADMINISTRADOR;
                                 $tmpDisabled = "disabled";
                             } else {
-                                if (isset($tmpArrPerfilObjeto[$_page->_objeto->Valor($_page, 'cod_objeto')]))
-                                    $tmpPerfilObjetoAtual = $tmpArrPerfilObjeto[$_page->_objeto->Valor($_page, 'cod_objeto')];
+                                if (isset($tmpArrPerfilObjeto[$_page->_objeto->Valor('cod_objeto')]))
+                                    $tmpPerfilObjetoAtual = $tmpArrPerfilObjeto[$_page->_objeto->Valor('cod_objeto')];
                                 else
                                     $tmpPerfilObjetoAtual = $tmpPerfilObjetoAtualNovo;
                             }
@@ -329,11 +330,11 @@ $(document).ready(function() {
             if (verifica)
             {
                 var complexidade = $("#PassValue").val();
-                if (complexidade <= 40) 
-                {
-                    alert("Senha com complexidade baixa.\nUtilize uma senha combinando letras maiúsculas, minúsculas e números.");
-                    return false
-                }
+//                if (complexidade <= 40) 
+//                {
+//                    alert("Senha com complexidade baixa.\nUtilize uma senha combinando letras maiúsculas, minúsculas e números.");
+//                    return false
+//                }
             }
             form.submit();
         }
@@ -342,7 +343,7 @@ $(document).ready(function() {
         document.getElementById("PassValue").value = complexity; 
     });
     $("#btnCancelar").click(function(){
-        document.location.href="do/gerusuario/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html";
+        document.location.href="do/gerusuario/<?php echo($_page->_objeto->Valor("cod_objeto")); ?>.html";
     });
     $("#ldap").click(function(){
         if (this.checked)
@@ -363,11 +364,11 @@ $(document).ready(function() {
 }
 elseif ($acao=="bloquear" && $cod > 0)
 {
-    $usuario = $_page->_usuario->PegaInformacaoUsuario($_page, $cod);
+    $usuario = $_page->_usuario->PegaInformacaoUsuario($cod);
     
     if (!$usuario)
     {
-        echo "<script>document.location.href='do/gerusuario/".$_page->_objeto->Valor($_page, "cod_objeto").".html?msge=".urlencode("Usuário não encontrado")."';</script>";
+        echo "<script>document.location.href='do/gerusuario/".$_page->_objeto->Valor("cod_objeto").".html?msge=".urlencode("Usuário não encontrado")."';</script>";
         exit();
     }
 ?>
@@ -376,7 +377,7 @@ elseif ($acao=="bloquear" && $cod > 0)
             <div class="panel-heading">
                 <h3 class="font-size20" style="line-height: 30px;">Apagar usuário</h3>
             </div>
-            <form action="do/gerusuario_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto') ?>.html" method="POST" id="form_usuario">
+            <form action="do/gerusuario_post/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <input type="hidden" name="cod_usuario" value="<?php echo($cod); ?>" />
                 <div class="panel-body">
                     <p>Deseja realmente apagar o usuário <b>"<?php echo($usuario["nome"]); ?>"</b>?</p>

@@ -34,7 +34,7 @@ global $_page;
 		
 	}
 
-	$url = "Location:"._URL."/do/gerdadospessoais/".$_page->_objeto->Valor($_page, 'cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
+	$url = "Location:".$_page->config["portal"]["url"]."/do/gerdadospessoais/".$_page->_objeto->Valor('cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
 	if ($Msg)
 	{
 		$url .= "&Msg=".urlencode($Msg)."&nome=".urlencode($_POST['nome']).'&login='.urlencode($_POST['login']).'&email='.urlencode($_POST['senha']);
@@ -43,7 +43,7 @@ global $_page;
 	}
 	else
 	{
-		$url = "Location:"._URL."/security/logout/1.html";
+		$url = "Location:".$_page->config["portal"]["url"]."/security/logout/1.html";
 		header($url);
 		exit();
 	}

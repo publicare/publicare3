@@ -91,6 +91,8 @@ class Pagina
      * @var integer 
      */
     public $TempoDeExecucao;
+    
+    public $config;
 
     /**
      * Método construtor
@@ -100,18 +102,23 @@ class Pagina
      */
     function __construct(&$_db, $cod_objeto=0, $cod_blob=0)
     {
-        if ($cod_objeto==0) $cod_objeto = _ROOT;
+        $this->config = $_db->getConfig();
+        unset($this->config["bd"]);
+        
+        if ($cod_objeto==0) $cod_objeto = $this->config["portal"]["objroot"];
+        
 
         $this->cod_objeto = $cod_objeto;
+        
+        
         $this->cod_blob = $cod_blob;
         $this->_db = $_db;
-        $this->_adminobjeto = new AdminObjeto();
+        $this->_adminobjeto = new AdminObjeto($this);
         $this->_objeto = new Objeto($this, $cod_objeto);
-//        xd($this->_objeto);
         $this->_usuario = new Usuario($this);
         $this->_parser = new Parse();
         $this->_rss = new Rss();
-        $this->_blob = new Blob();
+        $this->_blob = new Blob($this);
         $this->inicio = $this->getmicrotime();
     }
         
@@ -150,9 +157,9 @@ class Pagina
      */
     function IncluirAdmin()
     {
-//        include_once ('administracao.class.php');
-//        include_once ('classelog.class.php');
+//        xd("aa");
         $this->_administracao = new Administracao($this);
+//        xd($this->_administracao);
         $this->_log = new ClasseLog($this);
     }
 
@@ -182,6 +189,7 @@ class Pagina
         $incluir["view"]["arquivo"] = "";
         $incluir["view"]["parse"] = true;
         
+        
         // informa se header sera incluido ou nao
         if (isset($_GET["naoincluirheader"])) $incluirheader = false;
         else $incluirheader = true;
@@ -190,25 +198,25 @@ class Pagina
         // estas acoes foram adicionadas no inicio do metodo para que a carga de imagens seja mais rapida
         if ($acao == "/blob/ver")
         {
-            $this->_blob->VerBlob($this, $this->cod_blob);
+            $this->_blob->VerBlob($this->cod_blob);
         }
         elseif ($acao == "/blob/verinterno")
         {
-            $this->_blob->VerBlobInterno($this, $this->cod_blob);
+            $this->_blob->VerBlobInterno($this->cod_blob);
         }
         elseif ($acao == "/blob/baixar")
         {
-            $this->_blob->BaixarBlob($this, $this->cod_blob);
+            $this->_blob->BaixarBlob($this->cod_blob);
         }
         elseif ($acao == "/blob/iconeclasse")
         {
             $prefixo = $_GET["nome"];
-            $this->_blob->IconeClasse($this, $prefixo);
+            $this->_blob->IconeClasse($prefixo);
         }
         elseif ($acao == "/blob/iconeblob")
         {
             $prefixo = $_GET["nome"];
-            $this->_blob->IconeBlob($this, $prefixo);
+            $this->_blob->IconeBlob($prefixo);
         }
         elseif (strpos($acao,"/do/")!==false || strpos($acao,"/manage/")!==false)
         {
@@ -220,7 +228,7 @@ class Pagina
                 $incluir["view"]["arquivo"] = 'manage/'.$acaoSistema.".php";
                 $incluir["view"]["parse"] = false;
             }
-            elseif ($this->_usuario->PodeExecutar($this, $acao))
+            elseif ($this->_usuario->PodeExecutar($acao))
             {
                 
                 $this->IncluirAdmin();
@@ -230,7 +238,7 @@ class Pagina
                 // Copiar para pilha
                 if ($acao=='/do/copy')
                 {
-                    $this->_administracao->CopiarObjetoParaPilha($this, $cod_objeto);
+                    $this->_administracao->CopiarObjetoParaPilha($cod_objeto);
                     $acao = '/content/view';
                     return true;
                 }
@@ -239,7 +247,7 @@ class Pagina
                 {
                     if ($this->_objeto->PodeTerFilhos())
                     {
-                        $this->_administracao->MoverObjeto($this, -1, $cod_objeto);
+                        $this->_administracao->MoverObjeto(-1, $cod_objeto);
                         $acao = '/content/view';
                     }
                     return true;
@@ -249,7 +257,7 @@ class Pagina
                 {
                     if ($this->_objeto->PodeTerFilhos())
                     {
-                        $this->_administracao->DuplicarObjeto($this, -1,$cod_objeto);
+                        $this->_administracao->DuplicarObjeto(-1, $cod_objeto);
                         $acao = '/content/view';
                     }
                     return true;
@@ -334,10 +342,9 @@ class Pagina
         // Ver pagina
         elseif ($acao == "/content/view")
         {
-            if ($this->_usuario->PodeExecutar($this, $acao))
+            if ($this->_usuario->PodeExecutar($acao))
             {
-            
-                if ($this->_objeto->Valor($this, 'apagado'))
+                if ($this->_objeto->Valor('apagado') && $_SESSION["usuario"]["perfil"] > _PERFIL_EDITOR)
                 {
                     $this->ExibirMensagemProibido($acao);
                     return false;
@@ -346,14 +353,15 @@ class Pagina
                 // caso tenha view definida manualmente pega o arquivo
                 $tmpScriptAtual = $this->_objeto->metadados['script_exibir'];
 
+//        xd($this->_objeto->metadados['cod_objeto']);
                 // caso o objeto nao esteja protegido
-                if ($this->_adminobjeto->estaSobAreaProtegida($this, $this->_objeto->metadados['cod_objeto']))
+                if ($this->_adminobjeto->estaSobAreaProtegida())
                 {
                     // caso tenha passado valor execview e objeto nao estiver com view protegida
                     if ((isset($_GET['execview'])) && (!preg_match("/_protegido.*/", $tmpScriptAtual)))
                     {
                         // verifica existencia da view dentro da pasta da pele
-                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php"))
+                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->Valor('prefixopele')."/view_".$_GET['execview'].".php"))
                         {
                             $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php";
                             $incluir["view"]["parse"] = true;
@@ -446,8 +454,6 @@ class Pagina
         $buffer = "";
         
         
-//        xd($incluir);
-        
         if ($incluirheader)
         {
             if ($incluir["header"]["parse"])
@@ -521,18 +527,63 @@ class Pagina
      */
     function ExibirMensagemProibido($acao)
     {
+        $header = $_SERVER['DOCUMENT_ROOT']."/html/template/basic_header.php";
+        $footer = $_SERVER['DOCUMENT_ROOT']."/html/template/basic_footer.php";
+        $pagina = "";
+        $parse = true;
+        
+        if ($this->_objeto->metadados['cod_pele'] > 0)
+        {
+            if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/header.php"))
+            {
+                $header = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/header.php";
+            }
+            if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/footer.php"))
+            {
+                $footer = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->_objeto->metadados['prefixopele']."/footer.php";
+            }
+        }
+        
+        if (isset($_GET["naoincluirheader"]))
+        {
+            $header = "";
+            $footer = "";
+        }
+        
         if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/error404.php"))
         {
-            $this->_parser->Start($_SERVER['DOCUMENT_ROOT']."/html/template/error404.php");
+            $pagina = $_SERVER['DOCUMENT_ROOT']."/html/template/error404.php";
+            $parse = true;
         }
-        elseif (file_exists(_PUBLICAREPATH."/includes/error404.php"))
+        elseif (file_exists($this->config["portal"]["pblpath"]."/includes/error404.php"))
         {
-            include(_PUBLICAREPATH."/includes/error404.php");
+            $pagina = $this->config["portal"]["pblpath"]."/includes/error404.php";
+            $parse = false;
         }
         else
         {
             $this->headerHtml(403, "Visualização não permitida");
         }
+        
+        $_SESSION["escondetitulo"] = true;
+        
+        if ($header != "")
+        {
+            $this->_parser->Start($header);
+        }
+        if ($parse === true)
+        {
+            $this->_parser->Start($pagina);
+        }
+        else
+        {
+            include($pagina);
+        }
+        if ($footer != "")
+        {
+            $this->_parser->Start($footer);
+        }
+        
         exit();
     }
 
@@ -563,12 +614,12 @@ class Pagina
 		{
 			$cols++;
 			echo '
-			<td><a class="ABranco" href="/index.php/content/view/'.$this->_objeto->Valor($this, "cod_objeto").'.html"><img border=0 src="/html/imagens/portalimages/button_exibir.png" ALT="Exibir Objeto"</a></td>';
+			<td><a class="ABranco" href="/index.php/content/view/'.$this->_objeto->Valor("cod_objeto").'.html"><img border=0 src="/html/imagens/portalimages/button_exibir.png" ALT="Exibir Objeto"</a></td>';
 		}
 		
 		if (in_array('pai',$botoes))
 		{
-			if ($this->_objeto->Valor($this, "cod_objeto")!=_ROOT)
+			if ($this->_objeto->Valor("cod_objeto")!=$_page->config["portal"]["objroot"])
 			{
 				$cols++;
 				echo '
@@ -586,7 +637,7 @@ class Pagina
 		</TR>
 		<TR>
 			<TD colspan="'.($cols+1).'" background="/html/imagens/portalimages/form_top_02.png">
-				<img align="top" src="/html/imagens/portalimages/neutro.png" width=75 height=31><font class="pblFormTextTitle">'.$this->_objeto->Valor($this, "titulo").'</font></td>
+				<img align="top" src="/html/imagens/portalimages/neutro.png" width=75 height=31><font class="pblFormTextTitle">'.$this->_objeto->Valor("titulo").'</font></td>
 		</TR>
 	</table>
 	<table width="550" border="0" cellpadding="3" cellspacing="0" background="/html/imagens/portalimages/form_bg.png">

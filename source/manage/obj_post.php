@@ -24,7 +24,7 @@ $_POST['script_exibir'] = preg_replace("[\/+]", "/", $_POST['script_exibir']); /
 $palavra = "criação";
 
 $cod = 0;
-$local = _URL;
+$local = $_page->config["portal"]["url"];
 $acaoobj = filter_input(INPUT_POST, 'op', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $publicar = 0;
 
@@ -37,12 +37,12 @@ elseif (isset($_POST["gravarepublicar"]))
     $publicar = 2;
 }
 
-$obj = $_page->_administracao->GravarObjeto($_page, $_POST, $acaoobj, $publicar, $cod);
-$local .= $obj["obj"]->Valor($_page, "url");
+$obj = $_page->_administracao->GravarObjeto($_POST, $acaoobj, $publicar, $cod);
+$local .= $obj["obj"]->Valor("url");
 
 if (isset($_POST["gravaroutro"]))
 {
-    $local = _URL."/manage/new_".$obj["obj"]->Valor($_page, 'prefixoclasse')."/".$obj["obj"]->Valor($_page, 'cod_pai').".html";
+    $local = $_page->config["portal"]["url"]."/manage/new_".$obj["obj"]->Valor('prefixoclasse')."/".$obj["obj"]->Valor('cod_pai').".html";
 }
 
 header("Location: ".$local);

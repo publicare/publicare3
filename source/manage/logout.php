@@ -16,5 +16,5 @@ global $_page;
 $_page->_usuario->Logout();
 ?>
 <script>
-    window.location.href="<?php echo(_URL.$_page->_objeto->Valor($_page, "url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
+    window.location.href="<?php echo($_page->config["portal"]["url"].$_page->_objeto->Valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
 </script>

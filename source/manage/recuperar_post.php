@@ -20,8 +20,8 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']) && count($_POST['obj
 
     foreach($_POST['objlist'] as $obj)
     {
-            $_page->_administracao->RecuperarObjeto($_page, $obj);
+            $_page->_administracao->RecuperarObjeto($obj);
     }
 }
-header ("Location: "._URL."/do/recuperar/".$_page->_objeto->Valor($_page, 'cod_objeto').".html");
+header ("Location: ".$_page->config["portal"]["url"]."/do/recuperar/".$_page->_objeto->Valor('cod_objeto').".html");
 

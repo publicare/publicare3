@@ -14,9 +14,9 @@
  */
  
 global $_page, $cod_objeto;
-
-$total = $_page->_administracao->PegaTotalDeVencidos($_page, $cod_objeto);
-$inicio = !isset($inicio)?0:$inicio;
+//
+//$total = $_page->_administracao->PegaTotalDeVencidos($_page, $cod_objeto);
+//$inicio = !isset($inicio)?0:$inicio;
 ?>
 <script src="include/javascript_datatable" type="text/javascript"></script>
 <link href="include/css_datatable" rel="stylesheet" type="text/css"> 
@@ -30,7 +30,7 @@ $(document).ready(function(){
             .dataTable({
                 responsive: true,
                 language: linguagemDataTable,
-                order: [[ 1, "asc" ]],
+                order: [[ 2, "desc" ]],
             });
             
     $(".btnAcao").click(function(){
@@ -54,8 +54,8 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objeto Vencidos</b></h3></div>
 	
-		<form action="do/vencidos_post.php/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
-		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor($_page, "cod_objeto")?>">
+		<form action="do/vencidos_post.php/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
 		<div class="panel-footer">
@@ -89,14 +89,14 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 			<div class="panel panel-info modelo_propriedade">
 				<div class="panel-heading">
 					<div class="row">
-						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><? echo $_page->_objeto->Valor($_page, "titulo")?></h3></div>
+						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo $_page->_objeto->Valor("titulo")?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
-                            <a href="<?php echo(_URL); ?><?php echo($_page->_objeto->Valor($_page, "url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
+if ($_page->_objeto->Valor("cod_objeto") != $_page->config["portal"]["objroot"])
 { 
 ?>
-                            <a href="do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="do/list_content/<?php echo($_page->_objeto->Valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>
@@ -117,43 +117,29 @@ if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
                         </thead>
                         <tbody>
 <?php
-$arrListaObjetoVencidos = $_page->_administracao->PegaListaDeVencidos($_page);
-$cont = $inicio;
+$arrListaObjetoVencidos = $_page->_administracao->PegaListaDeVencidos();
 foreach ($arrListaObjetoVencidos as $ListaChave => $ListaTexto)
 {
 	$show = true;
 	if ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR || $_SESSION['usuario']['perfil']==_PERFIL_RESTRITO)
 	{
-		if ($obj['cod_usuario']==$_SESSION['usuario']['cod_usuario'])
+		if ($obj['cod_usuario'] == $_SESSION['usuario']['cod_usuario'])
 			$show=true;
 		else
 			$show=false;
 	}
 
-	$cont++;
-	if ($cont%2!=0)
-		$classe="pblTextoLogImpar";
-	else
-		$classe="pblTextoLogPar";
 ?>
 							<tr>
-								<td><? if ($show){ ?><input type="checkbox" id="objlist[]" name="objlist[]" value="<?=$ListaTexto['cod_objeto']?>" class="chkObj"><? } ?></td>
+								<td><?php if ($show){ ?><input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo($ListaTexto['cod_objeto']); ?>" class="chkObj"><?php } ?></td>
 								<td width="60%"><?=$ListaTexto['titulo']?></td>
 								<td width="30%"><?=ConverteData($ListaTexto['data_validade'],5)?>&nbsp;</td>
-								<td width="10%"><? if ($show){ ?><a href="/index.php/manage/edit/<?=$ListaTexto['cod_objeto']?>.html" title='Editar este objeto' class=' margin-left5' rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Editar este objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a><? } ?></td>
+								<td width="10%"><?php if ($show){ ?><a href="/index.php/manage/edit/<?=$ListaTexto['cod_objeto']?>.html" title='Editar este objeto' class=' margin-left5' rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Editar este objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a><?php } ?></td>
 							</tr>
 <?php
 }
 ?>	
 						</tbody>
-						<tfoot>
-							<tr>
-                                <th>#</th>
-                                <th>T&iacute;tulo</th>
-                                <th>Data</th>
-                                <th>A&ccedil;&otilde;es</th>
-							</tr>
-						</tfoot>
 					</table>
 					<!-- === Final === Tabela Listar Conteúdo (DATATABLE) === -->
 					

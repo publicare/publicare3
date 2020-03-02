@@ -17,9 +17,9 @@ global $_page;
 
 foreach($_POST['objlist'] as $obj)
 {
-    if ($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) $_page->_administracao->ApagarEmDefinitivo($_page, $obj);
-    elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $_page->_administracao->ApagarObjeto($_page, $obj); 
+    if ($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) $_page->_administracao->ApagarEmDefinitivo($obj);
+    elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $_page->_administracao->ApagarObjeto($obj); 
 }
 	
-header("Location:" . _URL . "/do/vencidos/".$_page->_objeto->Valor($_page, 'cod_objeto').'.html');
+header("Location:" . $_page->config["portal"]["url"] . "/do/vencidos/".$_page->_objeto->Valor('cod_objeto').'.html');
 

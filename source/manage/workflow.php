@@ -15,7 +15,7 @@
 
 global $_page;
 
-	$loglist = $_page->_log->PegaLogWorkflow($_page, $_page->_objeto->Valor($_page, "cod_objeto"));
+	$loglist = $_page->_log->PegaLogWorkflow($_page->_objeto->Valor("cod_objeto"));
 	if (count ($loglist))
 	{
 		//BoxSimplesTop();

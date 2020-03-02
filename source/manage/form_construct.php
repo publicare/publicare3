@@ -23,7 +23,7 @@ $horaAtual = date("H:i");
 // data de validade do objeto
 $dataValidade = "31/12/2036";
 // lista de peles disponiveis
-$peles = $_page->_administracao->PegaListaDePeles($_page);
+$peles = $_page->_administracao->PegaListaDePeles();
 // lista de views disponiveis
 $views = $_page->_administracao->PegaListaDeViews($_page);
 $dadosPai = array();
@@ -35,16 +35,16 @@ if (strpos($action,"edit") === false)
 {
     $classname = substr($action,strpos($action,'_')+1);
 //    xd($action);
-    $classe = $_page->_administracao->PegaInfoDaClasse($_page, $_page->_administracao->CodigoDaClasse($_page, $classname));
+    $classe = $_page->_administracao->PegaInfoDaClasse($_page->_administracao->CodigoDaClasse($classname));
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
-    $dadosPai = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page, $_page->_objeto->Valor($_page, "cod_objeto"));
+    $dadosPai = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page->_objeto->Valor("cod_objeto"));
 }
 // Edição de objeto
 else
 {
-    $classname = $_page->_objeto->Valor($_page, "prefixoclasse");
-    $classe = $_page->_administracao->PegaInfoDaClasse($_page, $_page->_objeto->Valor($_page, "cod_classe"));
+    $classname = $_page->_objeto->Valor("prefixoclasse");
+    $classe = $_page->_administracao->PegaInfoDaClasse($_page->_objeto->Valor("cod_classe"));
     $edit = true;
     $titulo = "Editar";
 }
@@ -52,29 +52,29 @@ else
 // view atual
 $scriptAtual = ($edit)?$_page->_objeto->metadados['script_exibir']:"";
 // codigo do usuario dono do objeto
-$cod_usuario = ($edit)?$_page->_objeto->Valor($_page, "cod_usuario"):$_SESSION['usuario']['cod_usuario'];
+$cod_usuario = ($edit)?$_page->_objeto->Valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
 // peso do objeto
-$peso = ($edit)?$_page->_objeto->Valor($_page, "peso"):0;
+$peso = ($edit)?$_page->_objeto->Valor("peso"):0;
 // codigo do objeto pai
-$cod_pai = ($edit)?$_page->_objeto->Valor($_page, "cod_pai"):$_page->_objeto->Valor($_page, "cod_objeto");
+$cod_pai = ($edit)?$_page->_objeto->Valor("cod_pai"):$_page->_objeto->Valor("cod_objeto");
 // código da pele
-$cod_pele = ($edit)?$_page->_objeto->Valor($_page, "cod_pele"):(int)$dadosPai["cod_pele"];
+$cod_pele = ($edit)?$_page->_objeto->Valor("cod_pele"):(int)$dadosPai["cod_pele"];
 
 // Redefinido para que o STATUS de todos os objetos, 
 // independentemente do nivel do usuario, sejam sempre DESPUBLICADOS
 $new_status = 0;
 // o unico objeto que não pode ser despublicado é a página inicial, objeto _ROOT
-if ($_page->_objeto->Valor($_page, "cod_objeto") == _ROOT) $new_status = _STATUS_PUBLICADO;
+if ($_page->_objeto->Valor("cod_objeto") == $_page->config["portal"]["objroot"]) $new_status = _STATUS_PUBLICADO;
 else $new_status = _STATUS_PRIVADO;
 ?>
 <script src="include/javascript_datepicker" type="text/javascript"></script>
 <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
 
-<form enctype="multipart/form-data" action="do/obj_post/<?=$_page->_objeto->Valor($_page, "cod_objeto")?>.html" method="post" name="formobj" id="formobj">
+<form enctype="multipart/form-data" action="do/obj_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
     <input type="hidden" name="op" value="<?php echo($edit===true?"edit":"create"); ?>">
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">
-    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$_page->_objeto->Valor($_page, "cod_objeto"):0); ?>">
+    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$_page->_objeto->Valor("cod_objeto"):0); ?>">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3><strong><?php echo($titulo); ?> objeto</strong></h3>
@@ -83,15 +83,15 @@ else $new_status = _STATUS_PRIVADO;
     if ($edit)
     {
 ?>
-                <strong>Editando</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
-                <strong>Vers&atilde;o</strong>: <?php echo($_page->_objeto->Valor($_page, "versao")) ?>
+                <strong>Editando</strong>: <?php echo($_page->_objeto->Valor("titulo")) ?> (<?php echo($_page->_objeto->Valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+                <strong>Vers&atilde;o</strong>: <?php echo($_page->_objeto->Valor("versao")) ?>
                 
 <?php
     }
     else
     {
 ?>
-                <strong>Criando em</strong>: <?php echo($_page->_objeto->Valor($_page, "titulo")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_objeto")) ?>),  <?php echo($_page->_objeto->Valor($_page, "classe")) ?> (<?php echo($_page->_objeto->Valor($_page, "cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
+                <strong>Criando em</strong>: <?php echo($_page->_objeto->Valor("titulo")) ?> (<?php echo($_page->_objeto->Valor("cod_objeto")) ?>),  <?php echo($_page->_objeto->Valor("classe")) ?> (<?php echo($_page->_objeto->Valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
 <?php
     }
 ?>
@@ -134,18 +134,18 @@ else
                     <div class="row form-group">
                         <label class="col-md-3 col-form-label" for="titulo"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo t&iacute;tulo do objeto é obrigatório.' data-placement='top' title='O campo t&iacute;tulo do objeto é obrigatório.'></i> T&iacute;tulo do objeto <small><small>* <br />(#titulo)</small></small></label>
                         <div class="col-md-9">
-                            <input type="text" name="titulo" id="titulo" class="form-control required" value="<?php echo($edit?$_page->_objeto->Valor($_page, "titulo"):"") ?>" />
+                            <input type="text" name="titulo" id="titulo" class="form-control required" value="<?php echo($edit?$_page->_objeto->Valor("titulo"):"") ?>" />
                         </div>
                     </div>
                     
                     <div class="row form-group">
                         <label class="col-md-3 col-form-label" for="data_publicacao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual o objeto ficar&aacute; vis&iacute;vel.' data-placement='top' title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual objeto ficar&aacute; vis&iacute;vel.'></i> Data publica&ccedil;&atilde;o <small><small>* <br />(#data_publicacao)</small></small></label>
                         <div class="col-md-3">
-                            <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor($_page, "data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
+                            <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor("data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
                         </div>
                         <label class="col-md-3 col-form-label" for="data_validade"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data validade informa a data/hora a partir da qual objeto deixar&aacute; de ser vis&iacute;vel.' data-placement='top' title='O campo data validade informa a data/hora a partir da qual o objeto deixar&aacute; de ser vis&iacute;vel.'></i> Data validade <small><small>* <br />(#data_validade)</small></small></label>
                         <div class="col-md-3">
-                            <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor($_page, "data_validade")):$dataValidade." ".$horaAtual) ?>" />
+                            <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor("data_validade")):$dataValidade." ".$horaAtual) ?>" />
                         </div>
                     </div>
 <?php
@@ -156,7 +156,7 @@ foreach ($classe["prop"] as $prop)
     $obrigatorio = "";
     $visivel = "";
     $pos = "";
-    $valor = $edit?$_page->_objeto->Valor($_page, $prop["nome"]):$prop["valorpadrao"];
+    $valor = $edit?$_page->_objeto->Valor($prop["nome"]):$prop["valorpadrao"];
     
     // Verifica se o campo e permitido para o PERFIL atual do usuario
     if ((int)$prop['seguranca'] < (int)$_SESSION['usuario']['perfil'])
@@ -228,7 +228,7 @@ foreach ($classe["prop"] as $prop)
             break;
         // ref objeto
         case 6:
-            $objs = $_page->_administracao->PegaListaDeObjetos($_page, $prop["cod_referencia_classe"], $prop["campo_ref"]);
+            $objs = $_page->_administracao->PegaListaDeObjetos($prop["cod_referencia_classe"], $prop["campo_ref"]);
 ?>
                             <select class="form-control <?php echo($obrigatorio); ?>" name="property___<?php echo($prop["nome"]); ?>" id="property___<?php echo($prop["nome"]); ?>">
                                 <option value="">. selecione .</option>
@@ -289,19 +289,19 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                     <div class="row form-group">
                         <label class="col-md-3 col-form-label" for="descricao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo Descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.' data-placement='top' title='O campo descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.'></i> Descri&ccedil;&atilde;o <small><small><br />(#descricao)</small></small></label>
                         <div class="col-md-9">
-                            <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$_page->_objeto->Valor($_page, "descricao"):""); ?></textarea>
+                            <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$_page->_objeto->Valor("descricao"):""); ?></textarea>
                         </div>
                     </div>
                     <div class="row form-group">
                         <label class="col-md-3 col-form-label" for="url_amigavel"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".' data-placement='top' title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".'></i> URL Amigável <small><small><br />(#url_amigavel)</small></small></label>
                         <div class="col-md-9">
-                            <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$_page->_objeto->Valor($_page, "url_amigavel"):""); ?>" />
+                            <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$_page->_objeto->Valor("url_amigavel"):""); ?>" />
                         </div>
                     </div>
                     <div class="row form-group">
                         <label class="col-md-3 col-form-label" for="tags"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.' data-placement='top' title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.'></i> TAGS <small><small><br />(#tags)</small></small></label>
                         <div class="col-md-9">
-                            <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$_page->_objeto->Valor($_page, "tags"):""); ?></textarea>
+                            <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$_page->_objeto->Valor("tags"):""); ?></textarea>
                         </div>
                     </div>                    
                     <div class="row form-group">
@@ -333,7 +333,7 @@ foreach ($peles as $pele)
                         <label class="col-md-3 col-form-label" for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto</label>
                         <div class="col-md-9">
 <?php
-$usuarios = $_page->_administracao->PegaListadeDependentes($_page, $cod_usuario);
+$usuarios = $_page->_administracao->PegaListadeDependentes($cod_usuario);
 if ($usuarios === false)
 {
 ?>

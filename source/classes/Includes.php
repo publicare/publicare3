@@ -22,6 +22,7 @@ class Includes
     private $_tipo;
     private $_ext;
     private $_nome;
+    public $_page;
     
     function __construct($scripts = array(), $tipo="js", $ext="")
     {
@@ -32,12 +33,16 @@ class Includes
     
     public function adicionaArquivos($scripts = array())
     {
+        global $PBLCONFIG;
+        
+//        xd( $PBLCONFIG["portal"]["pblpath"]);
+        
         $this->_scripts = $scripts;
         if (count($this->_scripts) > 0)
         {
             foreach ($this->_scripts as $script)
             {
-                $path = _PUBLICAREPATH."/includes/";
+                $path = $PBLCONFIG["portal"]["pblpath"]."/includes/";
                 if ($this->_tipo == "js") $path .= "javascript";
                 if ($this->_tipo == "css") $path .= "css";
                 if ($this->_tipo == "font") $path .= "fonts";

@@ -32,7 +32,7 @@ $perfil = isset($_POST['perfil'])?(int)htmlspecialchars($_POST["perfil"], ENT_QU
 
 //xd($_POST);
 
-$perfil_chefia = $_page->_usuario->PegaListaDeUsuarios($_page);
+$perfil_chefia = $_page->_usuario->PegaListaDeUsuarios();
 
 $msg = "";
 $msge = "";
@@ -57,7 +57,7 @@ if ($_SESSION['usuario']['perfil'] == 1)
     if ($_POST && isset($_POST["btnGravar"]) && $_POST["btnGravar"] == "Gravar") 
     {
 
-        if ($_page->_usuario->ExisteOutroUsuario($_page, $login, $cod_usuario))
+        if ($_page->_usuario->ExisteOutroUsuario($login, $cod_usuario))
         {
             $msge = "Login '".$login."' já existe. Por favor escolha outro.";
             $gets = "&nome=".urlencode($nome)."&secao=".urlencode($secao)."&"
@@ -87,14 +87,14 @@ if ($_SESSION['usuario']['perfil'] == 1)
                 if ($dados["cod_usuario"] > 0)
                 {
                     // atualiza dados do usuario no banco
-                    $_page->_usuario->atualizaUsuario($_page, $dados);
+                    $_page->_usuario->atualizaUsuario($dados);
 
                     // apaga perfis selecionados
                     if (isset($_POST['checkadmperfil']) && is_array($_POST['checkadmperfil']))
                     {
                         foreach ($_POST['checkadmperfil'] as $tmpObjQuadro) 
                         {
-                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $dados["cod_usuario"], $tmpObjQuadro, _PERFIL_DEFAULT, false);
+                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($dados["cod_usuario"], $tmpObjQuadro, _PERFIL_DEFAULT, false);
                         }
                     }
                     // grava perfil do usuario no objeto atual
@@ -102,47 +102,56 @@ if ($_SESSION['usuario']['perfil'] == 1)
                     {
                         if ($perfil != _PERFIL_ADMINISTRADOR)
                         {
-                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $cod_usuario, $_page->_objeto->Valor($_page, 'cod_objeto'), $perfil);
+                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $_page->_objeto->Valor('cod_objeto'), $perfil);
                         }
                         // caso seja admin, atribui perfil no objeto root e apaga todas as outras entradas
                         else
                         {
-                            $_page->_usuario->limpaPerfisUsuario($_page, $cod_usuario);
-                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $_POST['cod_usuario'], _ROOT, _PERFIL_ADMINISTRADOR);
+                            $_page->_usuario->limpaPerfisUsuario($cod_usuario);
+                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_POST['cod_usuario'], $_page->config["portal"]["objroot"], _PERFIL_ADMINISTRADOR);
                         }
                     }
                     $msg = "Usuário atualizado com êxito.";
                 }
                 else
                 {
-                    $dadosinsert = $dados;
-                    $dadosinsert["valido"] = 1;
-                    $dadosinsert["data_atualizacao"] = ConverteData($dadosinsert['data_atualizacao'], 16);
-                    $dadosinsert["senha"] = md5($dadosinsert["senha"]);
-                    unset($dadosinsert["cod_usuario"]);
-                    unset($dadosinsert["nomehidden"]);
-                    unset($dadosinsert["confsenha"]);
-                    unset($dadosinsert["perfil"]);
+                    $dadosinsert = array();
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["nome"]] = $dados["nome"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["secao"]] = $dados["secao"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["login"]] = $dados["login"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["email"]] = $dados["email"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["ramal"]] = $dados["ramal"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["senha"]] = md5($dados["senha"]);
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["chefia"]] = $dados["chefia"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]] = $dados["altera_senha"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["ldap"]] = $dados["ldap"];
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]] = ConverteData($dados['data_atualizacao'], 16);
+                    $dadosinsert[$_page->_db->tabelas["usuario"]["colunas"]["valido"]] = 1;
+//                    $dadosinsert["valido"] = 1;
+//                    $dadosinsert["data_atualizacao"] = ConverteData($dadosinsert['data_atualizacao'], 16);
+//                    $dadosinsert["senha"] = md5($dadosinsert["senha"]);
+//                    unset($dadosinsert["cod_usuario"]);
+//                    unset($dadosinsert["nomehidden"]);
+//                    unset($dadosinsert["confsenha"]);
+//                    unset($dadosinsert["perfil"]);
 
-                    $cod_usuario = $_page->_db->Insert('usuario', $dadosinsert);
+                    $cod_usuario = $_page->_db->Insert($_page->_db->tabelas["usuario"]["nome"], $dadosinsert);
 
                     // Se não tiver nenhum perfil selecionado, coloca o perfil default
                     if (strlen($perfil) > 0) {
                         // DEFINE PERFIL SO_LOGADO PARA OBJETO ROOT NO SITE -- CASO N�O SEJA O OBJETO ROOT QUE ESTEJA SENDO DEFINIDO
-                        if ($_page->_objeto->Valor($_page, 'cod_objeto') != _ROOT) {
-                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $cod_usuario, _ROOT, _PERFIL_RESTRITO);
-                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $cod_usuario, $_page->_objeto->Valor($_page, 'cod_objeto'), $perfil);
+                        if ($_page->_objeto->Valor('cod_objeto') != $_page->config["portal"]["objroot"]) {
+                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $_page->config["portal"]["objroot"], _PERFIL_RESTRITO);
+                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $_page->_objeto->Valor('cod_objeto'), $perfil);
                         } else {
-                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $cod_usuario, _ROOT, $perfil);
+                            $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $_page->config["portal"]["objroot"], $perfil);
                         }
                     } else {
-                        $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $cod_usuario, _ROOT, _PERFIL_DEFAULT);
+                        $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $_page->config["portal"]["objroot"], _PERFIL_DEFAULT);
                     }
                     $msg = "Usuário criado com êxito.";
                 }
                 
-                
-                    
             } else {
                 $msge = "Senha diferente da confirmação. Digite novamente.";
             }
@@ -150,14 +159,14 @@ if ($_SESSION['usuario']['perfil'] == 1)
     } 
     elseif ($_POST && isset($_POST["btnApagar"]) && $_POST["btnApagar"]=="Apagar" && $cod_usuario > 0) 
     {
-        $_page->_usuario->bloquearUsuario($_page, $cod_usuario);
-        $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($_page, $cod_usuario, $_page->_objeto->Valor($_page, 'cod_objeto'), _PERFIL_DEFAULT);
+        $_page->_usuario->bloquearUsuario($cod_usuario);
+        $_page->_usuario->AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $_page->_objeto->Valor('cod_objeto'), _PERFIL_DEFAULT);
     }
 } else {
     $msge = "Acesso negado a edição deste usuário.";
 }
 
-$url = "Location:"._URL."/do/gerusuario/" . $_page->_objeto->Valor($_page, 'cod_objeto') . ".html?acao=".$acao.$gets;
+$url = "Location:".$_page->config["portal"]["url"]."/do/gerusuario/" . $_page->_objeto->Valor('cod_objeto') . ".html?acao=".$acao.$gets;
 
 if ($msg!="") $url .= "&msg=" . urlencode($msg);
 if ($msge!="") $url .= "&msge=" . urlencode($msge);

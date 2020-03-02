@@ -28,11 +28,11 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title> <?php echo(_PORTAL_NAME); ?> -- <?php echo _VERSIONPROG; ?></title>
+		<title> <?php echo($_page->config["portal"]["nome"]); ?> -- <?php echo _VERSIONPROG; ?></title>
 		<meta name="description" content="Sistema de Gestão de Conteúdo (PUBLICARE)" />
 		<meta name="keywords" content="Gestão de Conteúdo, CMS, PHP, Fácil de usar, PUBLICARE, Formulário, CMS Público Brasileiro" />
                 
-                <base href="<?php echo(_URL); ?>/" target="_self" />
+                <base href="<?php echo($_page->config["portal"]["url"]); ?>/" target="_self" />
 
 		<script src="include/javascript" type="text/javascript"></script>
 		<link href="include/css" rel="stylesheet" type="text/css">    
@@ -49,7 +49,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 					<div class="gn-scrollerpbl">
 						<ul class="gn-menupbl">
 				<?php
-					$menu = $_page->_usuario->Menu($_page);
+					$menu = $_page->_usuario->Menu();
 //                  xd($menu);
 					$cont = 0;
 					foreach ($menu as $item)
@@ -70,7 +70,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 						{
                                                     if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
 							echo "
-								<li><a href='"._URL."/".$item["script"]."/".$_page->_objeto->Valor($_page, 'cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
+								<li><a href='".$_page->config["portal"]["url"]."/".$item["script"]."/".$_page->_objeto->Valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
 						}
 					}
 				?>
@@ -85,7 +85,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 			<!-- === Final === Usuário logado === -->
 			
 			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_URL); ?>do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
+			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_page->config["portal"]["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
 			<!-- === Final === Logout === -->
 			
 		</ul> 

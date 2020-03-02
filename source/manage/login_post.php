@@ -24,7 +24,9 @@ $usuario = isset($_POST['login']) ? htmlspecialchars($_POST['login'], ENT_QUOTES
 // recebe dados de senha e trata para evitar sql injection
 $senha = isset($_POST["password"]) ? htmlspecialchars($_POST['password'], ENT_QUOTES, "UTF-8") : "";
 // recebe codigo do objeto e trata para evitar sql injection
-$cod_objeto = isset($_REQUEST["cod_objeto"]) ? (int) htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8") : _ROOT;
+$cod_objeto = isset($_REQUEST["cod_objeto"]) ? (int) htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8") : $_page->config["portal"]["objroot"];
+
+
 
 // se tiver informado usuario e senha
 if ($usuario != "" && $senha != "") {
@@ -53,31 +55,31 @@ if ($usuario != "" && $senha != "") {
     // se tiver estourado o maximo de tentativas, exibe mensagem para usuario esperar
     if ($_SESSION['_LOGIN_TENTATIVAS'] >= $maximotentativas * 100) {
         $_SESSION['_LOGIN_DATA'] = date("Y-m-d H:i:s");
-        header("Location:" . _URL . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Muitas tentativas. Aguarde " . $tempoespera . " minutos para tenta novamente."));
+        header("Location:" . $_page->config["portal"]["url"] . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Muitas tentativas. Aguarde " . $tempoespera . " minutos para tenta novamente."));
         exit();
     }
 
     // se não tiver estourado o maximo de tentativas, envia dados para login
     else {
-//        xd("parou");
-        if (!$_page->_usuario->Login($_page, $usuario, $senha)) {
+        if (!$_page->_usuario->Login($usuario, $senha)) {
             $_SESSION['_LOGIN_TENTATIVAS'] ++;
             $_SESSION['_LOGIN_DATA'] = date("Y-m-d H:i:s");
-            header("Location:" . _URL . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Usuário/Senha incorretos."));
+            header("Location:" . $_page->config["portal"]["url"] . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Usuário/Senha incorretos."));
             exit();
         } else {
             unset($_SESSION['_LOGIN_TENTATIVAS']);
             unset($_SESSION['_LOGIN_DATA']);
+//xd($_SESSION);
             if ($_SESSION["usuario"]['altera_senha'] == 1)
             {
                 header("Location: /do/gerdadospessoais/" . $cod_objeto . ".html?LoginMessage=" . urlencode("É necessário alterar a senha"));
                 exit();
             }
             $obj = new Objeto($_page, $cod_objeto);
-            header("Location:" . _URL . $obj->Valor($_page, "url") . "?LoginMessage=" . urlencode("Login realizado com sucesso"));
+            header("Location:" . $_page->config["portal"]["url"] . $obj->Valor("url") . "?LoginMessage=" . urlencode("Login realizado com sucesso"));
         }
     }
 } else {
-    header("Location:" . _URL . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Informe os dados de usuário e senha"));
+    header("Location:" . $_page->config["portal"]["url"] . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Informe os dados de usuário e senha"));
     exit();
 }

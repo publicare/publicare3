@@ -38,7 +38,7 @@ global $PORTAL_NAME, $cod_objeto, $_page, $menu;
 					<div class="gn-scrollerpbl">
 						<ul class="gn-menupbl">
 				<?php
-					$menu = $_page->_usuario->Menu($_page);
+					$menu = $_page->_usuario->Menu();
 					$cont = 0;
 					foreach ($menu as $item)
 					{
@@ -58,7 +58,7 @@ global $PORTAL_NAME, $cod_objeto, $_page, $menu;
 						{
                                                     if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
 							echo "
-								<li><a href='"._URL."/".$item["script"]."/".$_page->_objeto->Valor($_page, 'cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
+								<li><a href='".$_page->config["portal"]["url"]."/".$item["script"]."/".$_page->_objeto->Valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
 						}
 					}
 				?>
@@ -73,7 +73,7 @@ global $PORTAL_NAME, $cod_objeto, $_page, $menu;
 			<!-- === Final === Usuário logado === -->
 			
 			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo(_URL); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
+			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_page->config["portal"]["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
 			<!-- === Final === Logout === -->
 			
 		</ul> 

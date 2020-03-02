@@ -12,9 +12,10 @@
  * de ADEQUAÇÃO a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
  */
+global $_page;
 
 $prefixo = isset($_REQUEST['prefixo'])?htmlspecialchars($_REQUEST['prefixo'], ENT_QUOTES, "UTF-8"):"";
-$cod_objeto = isset($_REQUEST['cod_objeto'])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):_ROOT;
-if ($cod_objeto==0) $cod_objeto = _ROOT;
+$cod_objeto = isset($_REQUEST['cod_objeto'])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$_page->config["portal"]["objroot"];
+if ($cod_objeto==0) $cod_objeto = $_page->config["portal"]["objroot"];
 
-header("Location:"._URL.'/manage/new_'.$prefixo.'/'.$cod_objeto.'.html');
+header("Location:".$_page->config["portal"]["url"].'/manage/new_'.$prefixo.'/'.$cod_objeto.'.html');

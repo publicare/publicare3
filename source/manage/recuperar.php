@@ -15,16 +15,7 @@
 
 global $_page;
 
-$sql = "select count(cod_objeto) as total from objeto where apagado=1";
-$rs = $_page->_db->ExecSQL($sql);
-$total = $rs->fields["total"];
-
-$ord1 = isset($_GET["ord1"])?$_GET["ord1"]:"titulo";
-$ord2 = isset($_GET["ord2"])?$_GET["ord2"]:"asc";
-if ($ord2=="asc") $ordf = $ord1;
-else $ordf = "-".$ord1;
-
-$inicio = isset($inicio)?$inicio:0;
+$inicio = 0;
 ?>
 
 <script type="text/javascript">
@@ -33,7 +24,7 @@ $(document).ready(function(){
             .dataTable({
                 responsive: true,
                 language: linguagemDataTable,
-                order: [[ 1, "asc" ]],
+                order: [[ 3, "desc" ]],
             });
             
     $(".btnAcao").click(function(){
@@ -59,16 +50,16 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Recuperar objetos apagados</b></h3></div>
 
-	<form action="do/recuperar_post/<?php echo $_page->_objeto->Valor($_page, 'cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
+	<form action="do/recuperar_post/<?php echo $_page->_objeto->Valor('cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
 	<div class="panel-body">
 
 		<!-- === Listar Conteúdo === -->
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor($_page, "titulo")); ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor("titulo")); ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a href="<?php echo(_URL); ?><?php echo($_page->_objeto->Valor($_page, "url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>
@@ -87,7 +78,7 @@ $(document).ready(function(){
 					</thead>
 					<tbody>
 <?php
-	$deletedlist = $_page->_administracao->PegaListaDeApagados($_page, $inicio);
+	$deletedlist = $_page->_administracao->PegaListaDeApagados($inicio);
 
 	$count=0;
 	foreach ($deletedlist as $obj)

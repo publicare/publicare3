@@ -15,7 +15,6 @@
 
 global $_page;
 
-
 function ChecaValidade(&$_page, $nome, $prefixo, $cod_pele_atual)
 {
     if ($nome == '')
@@ -34,16 +33,20 @@ function ChecaValidade(&$_page, $nome, $prefixo, $cod_pele_atual)
         }
         else
         {
-            $sql = "select cod_pele from pele where nome = '".$nome."'";
-            if ($cod_pele_atual) $sql .= " and cod_pele <> ".$cod_pele_atual;
-			 		
+            $sql = "SELECT ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$_page->_db->tabelas["pele"]["nome"]." "
+                    . " WHERE ".$_page->_db->tabelas["pele"]["colunas"]["nome"]." = '".$nome."'";
+            if ($cod_pele_atual) $sql .= " AND ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
             $rs = $_page->_db->ExecSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Nome de pele j&aacute; existente. Escolha outro nome.';
             }
-            $sql = "select cod_pele from pele where prefixo = '".$prefixo."'";
-            if ($cod_pele_atual) $sql .= " and cod_pele<>".$cod_pele_atual;
+            
+            $sql = "SELECT ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$_page->_db->tabelas["pele"]["nome"]." "
+                    . " WHERE ".$_page->_db->tabelas["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
+            if ($cod_pele_atual) $sql .= " AND ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
             $rs = $_page->_db->ExecSQL($sql);
             if (!$rs->EOF)
             {
@@ -66,52 +69,30 @@ $msg = ChecaValidade($_page, $nome, $prefixo, $cod_pele);
 // se tiver codigo da pele e for clicado o botao de excluir
 if ($cod_pele > 0 && isset($_POST['delete']))
 {
-	$sql = "UPDATE objeto "
-                    . "SET cod_pele=null "
-                    . "WHERE cod_pele=".$cod_pele;
-	$_page->_db->ExecSQL($sql);
-	
-	$sql = "DELETE "
-			. "FROM pele "
-			. "WHERE cod_pele=".$cod_pele;
-	$_page->_db->ExecSQL($sql);
-	
-	$cod_pele=0;
+    $cod_pele = $_page->_administracao->ApagarPele($cod_pele);
 }
 else
 {
-	// se nao tiver problema nos campos	
-	if ($msg=='')
-	{
-		if ($cod_pele > 0 && isset($_POST['update']))
-		{
-			$skinPublica = " publica = ".$publica;
-			
-			$sql = "UPDATE pele "
-					. "SET nome='".$nome."', "
-					. "prefixo='".$prefixo."', "
-					. "".$skinPublica." "
-					. "WHERE cod_pele=".$cod_pele;
-			$_page->_db->ExecSQL($sql);
-		}
-		elseif ($_POST['new'])
-		{
-			$skinPublica = $publica;
-			
-			$campos=array();
-			$campos['nome'] = $nome;
-			$campos['prefixo'] = $prefixo;
-			$campos['publica'] = $skinPublica;
-			
-			$cod_pele = $_page->_db->Insert('pele', $campos);
-		}
-	}
-	else
-	{
-		header("Location:"._URL."/do/peles/".$_page->_objeto->Valor($_page, "cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
-		exit();
-	}
+    // se nao tiver problema nos campos	
+    if ($msg=='')
+    {
+        // Atualiza
+        if ($cod_pele > 0 && isset($_POST['update']))
+        {
+            $_page->_administracao->AtualizarPele($cod_pele, $nome, $prefixo, $publica);
+        }
+        // cria
+        elseif ($_POST['new'])
+        {
+            $cod_pele = $_page->_administracao->CriaPele($nome, $prefixo, $publica);
+        }
+    }
+    else
+    {
+        header("Location:".$_page->config["portal"]["url"]."/do/peles/".$_page->_objeto->Valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
+        exit();
+    }
 }
 
-header("Location:"._URL."/do/peles/".$_page->_objeto->Valor($_page, "cod_objeto").".html?cod_pele=".$cod_pele);
+header("Location:".$_page->config["portal"]["url"]."/do/peles/".$_page->_objeto->Valor("cod_objeto").".html?cod_pele=".$cod_pele);
 exit();

@@ -15,11 +15,12 @@
 
 global $_page;
 
-if (isset($_POST['objlist'])){
-        foreach($_POST['objlist'] as $obj)
-        {
-                $_page->_administracao->ApagarEmDefinitivo($_page, $obj);
-        }
+if (isset($_POST['objlist']))
+{
+    foreach($_POST['objlist'] as $obj)
+    {
+        $_page->_administracao->ApagarObjeto($obj, true);
+    }
 }
-header ("Location:" . _URL . "/do/apagar_definitivo/".$_page->_objeto->Valor($_page, 'cod_objeto').'.html');
+header ("Location:" . $_page->config["portal"]["url"] . "/do/apagar_definitivo/".$_page->_objeto->Valor('cod_objeto').'.html');
 

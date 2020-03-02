@@ -14,14 +14,14 @@
  */
 global $_page;
 
-$_page->_objeto->PegaListaDeFilhos($_page, '*');
+$_page->_objeto->PegaListaDeFilhos('*');
 
 $lstStatus = array("", "Privado", "Publicado", "Rejeitado", "Submetido");
 ?>
 <style>trMouseAction1:hover { background: #fff; }</style>
 <ul class="nav nav-tabs">
-  <li class="active"><a href="do/list_content/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Listar Conteúdo</a></li>
-  <li><a href="do/pilha/<?php echo($_page->_objeto->Valor($_page, 'cod_objeto')) ?>.html">Pilha</a></li>
+  <li class="active"><a href="do/list_content/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
+  <li><a href="do/pilha/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Pilha</a></li>
 </ul>
 <script>
 $(document).ready(function(){
@@ -58,8 +58,8 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Listar Conteúdo</b></h3></div>
 	
-    <form action="do/list_content_post.php/<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
-        <input type="hidden" name="return_obj" value="<?php echo($_page->_objeto->Valor($_page, "cod_objeto")); ?>">
+    <form action="do/list_content_post.php/<?php echo($_page->_objeto->Valor("cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
+        <input type="hidden" name="return_obj" value="<?php echo($_page->_objeto->Valor("cod_objeto")); ?>">
 
         <div class="panel-footer">
             <!-- === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
@@ -103,14 +103,14 @@ elseif ($_SESSION['usuario']['perfil'] == _PERFIL_AUTOR)
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor($_page, "titulo")); ?></h3></div>
+                        <div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor("titulo")); ?></h3></div>
                         <div class="col-sm-3 text-right titulo-icones">
-                            <a class="ABranco" href="<?php echo(_URL); ?><?php echo($_page->_objeto->Valor($_page, "url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a class="ABranco" href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($_page->_objeto->Valor($_page, "cod_objeto") != _ROOT)
+if ($_page->_objeto->Valor("cod_objeto") != $_page->config["portal"]["objroot"])
 { 
 ?>
-                            <a class="ABranco" href="do/list_content/<?php echo($_page->_objeto->Valor($_page, "cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a class="ABranco" href="do/list_content/<?php echo($_page->_objeto->Valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>
@@ -140,45 +140,45 @@ for ($i=0; $i < $_page->_objeto->quantidade; $i++)
 {
     $obj = $_page->_objeto->filhos[$i];
     $style_status = "";
-    if ($obj->Valor($_page, "cod_status") == _STATUS_SUBMETIDO) $style_status = "color: blue !important;";
-    elseif ($obj->Valor($_page, "cod_status") == _STATUS_PRIVADO || $obj->Valor($_page, "cod_status") == _STATUS_REJEITADO) $style_status = "color: red !important;";
+    if ($obj->Valor("cod_status") == _STATUS_SUBMETIDO) $style_status = "color: blue !important;";
+    elseif ($obj->Valor("cod_status") == _STATUS_PRIVADO || $obj->Valor("cod_status") == _STATUS_REJEITADO) $style_status = "color: red !important;";
 ?>
                             <tr style="<?php echo($style_status); ?>">
                                 <td>
 <?php
-    if (($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor($_page, "cod_usuario")==$_SESSION['usuario']['cod_usuario']) 
+    if (($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']) 
             || $_SESSION['usuario']['perfil']<=_PERFIL_EDITOR)
     {
 ?>
-                                    <input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo($obj->Valor($_page, "cod_objeto"));?>" class="chkObj">
+                                    <input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo($obj->Valor("cod_objeto"));?>" class="chkObj">
 <?php
     } else { echo("&nbsp;"); }
 ?>
                                 </td>
-                                <td><?php echo($obj->Valor($_page, "cod_objeto")); ?></td>
-                                <td><?php echo($obj->Valor($_page, "titulo")); ?></td>
-                                <td><?php echo($obj->Valor($_page, "classe")); ?></td>
-                                <td><?php echo($obj->Valor($_page, "peso")); ?></td>
+                                <td><?php echo($obj->Valor("cod_objeto")); ?></td>
+                                <td><?php echo($obj->Valor("titulo")); ?></td>
+                                <td><?php echo($obj->Valor("classe")); ?></td>
+                                <td><?php echo($obj->Valor("peso")); ?></td>
                                 <td><?php 
-                                $vdata = preg_split("[ - ]", $obj->Valor($_page, "data_publicacao"));
+                                $vdata = preg_split("[ - ]", $obj->Valor("data_publicacao"));
                                 echo($vdata[0]); 
                                 ?></td>
-                                <td><?php echo($lstStatus[$obj->Valor($_page, "cod_status")]); ?></td>
+                                <td><?php echo($lstStatus[$obj->Valor("cod_status")]); ?></td>
                                 <td>
 <?php
-    if ($_SESSION['usuario']['perfil']<=_PERFIL_AUTOR || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor($_page, "cod_usuario")==$_SESSION['usuario']['cod_usuario']))
+    if ($_SESSION['usuario']['perfil']<=_PERFIL_AUTOR || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
     {
 ?>
-                                    <a href="<?php echo(_URL); ?>/manage/edit/<?php echo($obj->Valor($_page, "cod_objeto")); ?>.html" title='Editar Objeto' class='margin-left5' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a>
+                                    <a href="<?php echo($_page->config["portal"]["url"]); ?>/manage/edit/<?php echo($obj->Valor("cod_objeto")); ?>.html" title='Editar Objeto' class='margin-left5' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a>
 <?php
     }
 ?>
-                                    <a href="<?php echo(_URL.$obj->Valor($_page, "url")); ?>" title="Exibir Objeto" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Visualizar objeto' data-placement='left' title='Visualizar objeto' class='margin-left5'><i class='fapbl fapbl-eye font-size16'></i></a>
+                                    <a href="<?php echo($_page->config["portal"]["url"].$obj->Valor("url")); ?>" title="Exibir Objeto" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Visualizar objeto' data-placement='left' title='Visualizar objeto' class='margin-left5'><i class='fapbl fapbl-eye font-size16'></i></a>
 <?php
     if ($obj->PodeTerFilhos())
     {
 ?>
-                                    <a href="<?php echo(_URL); ?>/do/list_content/<?php echo($obj->Valor($_page, "cod_objeto")); ?>.html" title="Listar conteúdo" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Listar conteúdo' data-placement='left' title='Listar conteúdo' class='margin-left5'><i class='fapbl fapbl-folder-open font-size16'></i></a>
+                                    <a href="<?php echo($_page->config["portal"]["url"]); ?>/do/list_content/<?php echo($obj->Valor("cod_objeto")); ?>.html" title="Listar conteúdo" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Listar conteúdo' data-placement='left' title='Listar conteúdo' class='margin-left5'><i class='fapbl fapbl-folder-open font-size16'></i></a>
 <?php
     } 
 ?>
