@@ -30,9 +30,9 @@ global $PORTAL_NAME, $cod_objeto, $_page, $menu;
 </script>
 
 		<!-- === Menu, Usuário logado e Logout === -->
-		<ul id="gn-menupbl" class="gn-menu-mainpbl">
+                <ul id="gn-menupbl" class="gn-menu-mainpbl">
 			<!-- === Menu === -->
-			<li class="gn-triggerpbl">
+                        <li class="gn-triggerpbl">
 				<a class="gn-iconpbl gn-icon-menupbl"><span>Menu</span></a>
 				<nav class="gn-menu-wrapperpbl">
 					<div class="gn-scrollerpbl">
@@ -73,7 +73,7 @@ global $PORTAL_NAME, $cod_objeto, $_page, $menu;
 			<!-- === Final === Usuário logado === -->
 			
 			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_page->config["portal"]["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
+			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_page->config["portal"]["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Sair</span></a></li>
 			<!-- === Final === Logout === -->
 			
 		</ul> 

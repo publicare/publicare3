@@ -184,7 +184,9 @@ class DBLayer
             if ($this->config["bd"]["tipo"] == "oracle11")
             {
                 define('ADODB_ASSOC_CASE', 0);
+                putenv("NLS_COMP=LINGUISTIC");
                 putenv("NLS_LANG=AMERICAN_AMERICA.AL32UTF8");
+                putenv("NLS_SORT=BINARY_CI");
                 $this->con = ADONewConnection("oci8");
             }
             else
@@ -245,7 +247,7 @@ class DBLayer
                 case "mssql":
                     break;
                 case "oracle11":
-//                    $this->con->Execute("ALTER SESSION SET NLS_LANG='AL32UTF8'");
+//                    $this->con->Execute("ALTER SESSION SET NLS_SORT=BINARY_CI;");
                     break;
             }
             $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -533,7 +535,12 @@ class DBLayer
         {
             if ($tab["nome"]==$table)
             {
-                $sql = "SELECT MAX(".$tab["colunas"]["cod_".$id].") as cod FROM ".$table;
+                $id2 = $id;
+                if (substr($id, 0, 4)=="tbl_")
+                {
+                    $id2 = substr($id, 4);
+                }
+                $sql = "SELECT MAX(".$tab["colunas"]["cod_".$id2].") as cod FROM ".$table;
                 $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
                 $this->result=$this->con->Execute($sql);
                 return $this->result->fields["cod"];
@@ -583,6 +590,8 @@ class DBLayer
     function CreateTest($field, $ar_values)	
     {
         $sql = '';
+        //x($ar_values);
+        //x($field);
         foreach ($ar_values as $value)
         {
 

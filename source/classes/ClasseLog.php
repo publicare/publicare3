@@ -97,6 +97,7 @@ class ClasseLog
         $result = array();
         
         $log = $this->PegaLogWorkflow($cod_objeto);
+//        xd($log);
         
         if (count($log) > 0)
         {

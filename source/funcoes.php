@@ -13,8 +13,8 @@
 * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
 */
 
-//    use PHPMailer\PHPMailer\PHPMailer;
-//    use PHPMailer\PHPMailer\SMTP;
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\SMTP;
 
 /**
  * Função para realizar autoload das classes do Publicare
@@ -22,6 +22,27 @@
 spl_autoload_register(function ($class_name) {
     include "classes/" . $class_name . '.php';
 });
+
+function ofuscaEmail($email)
+{
+    $vemail = preg_split("[@]", $email);
+    $tempmail = "";
+    $tamanho = strlen($vemail[0]);
+    $partes = floor($tamanho/3);
+    for ($i=0; $i<strlen($vemail[0]); $i++)
+    {
+        if ($i<$partes || $i>=$tamanho-$partes)
+        {
+            $tempmail .= substr($vemail[0], $i, 1);
+        }
+        else
+        {
+            $tempmail .= "*";
+        }
+    }
+    $tempmail .= "@".$vemail[1];
+    return $tempmail;
+}
 
 /**
  * Recebe string e verifica se tem codigo de objeto no meio
@@ -113,35 +134,35 @@ function array_push_associative(&$arr)
  * @param type $arrArquivoAnexado
  * @return boolean
  */
-function EnviaEmail($destinatario_nome, $destinatario_email, $remetente_nome=-1, $remetente_email=-1, $assunto="", $texConteudo="", $altConteudo="", $arrArquivoAnexado=array())
+function EnviaEmail(&$_page, $destinatario_nome, $destinatario_email, $remetente_nome=-1, $remetente_email=-1, $assunto="", $texConteudo="", $altConteudo="", $arrArquivoAnexado=array())
 {
 
-    
-    $mail = new PHPMailer();
-//    $mail = new PHPMailer(true);
-    
-    try {
-        //Server settings
+    $mail = new PHPMailer($_page->config["email"]["debug"]);
+//    $mail = new PHPMailer();
+    $mail->CharSet = 'UTF-8';
+    if ($_page->config["email"]["debug"] === true)
+    {
         // Ativa verbose debug
-//        $mail->SMTPDebug = SMTP::DEBUG_LOWLEVEL;
-//        $mail->SMTPDebug   = 2;
+        $mail->SMTPDebug = $_page->config["email"]["debugnivel"];
+    }
+    try {
         
         // Envio via smtp
-        if (defined("_PBLMAILSMTP") && _PBLMAILSMTP===true)
+        if (isset($_page->config["email"]["smtp"]) && $_page->config["email"]["smtp"]===true)
         {
             $mail->isSMTP();
-            $mail->Host = _PBLMAILHOST;
-            $mail->Port = _PBLMAILPORT;
+            $mail->Host = $_page->config["email"]["host"];
+            $mail->Port = $_page->config["email"]["porta"];
             
-            if (defined('_PBLMAILSMTPAUTH') && _PBLMAILSMTPAUTH === true)
+            if (isset($_page->config["email"]["auth"]) && $_page->config["email"]["auth"] === true)
             {
                 $mail->SMTPAuth = true;
-                $mail->Username = _PBLMAILUSER;
-                $mail->Password = _PBLMAILPASS;
+                $mail->Username = $_page->config["email"]["usuario"];
+                $mail->Password = $_page->config["email"]["senha"];
                 
                 
                 
-                if (defined('_PBLMAILAUTHENC') && (_PBLMAILAUTHENC === 'tls' ||  _PBLMAILAUTHENC === 'ssl'))
+                if (isset($_page->config["email"]["enc"]) && ($_page->config["email"]["enc"] === 'tls' ||  $_page->config["email"]["enc"] === 'ssl'))
                 {
                     $mail->SMTPOptions = array(
                         'ssl' => array(
@@ -151,11 +172,11 @@ function EnviaEmail($destinatario_nome, $destinatario_email, $remetente_nome=-1,
                         )
                     );
                     
-                    if (_PBLMAILAUTHENC === 'tls')
+                    if ($_page->config["email"]["enc"] === 'tls')
                     {
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     }
-                    if (_PBLMAILAUTHENC === 'ssl')
+                    if ($_page->config["email"]["enc"] === 'ssl')
                     {
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                     }
@@ -163,7 +184,8 @@ function EnviaEmail($destinatario_nome, $destinatario_email, $remetente_nome=-1,
             }
         }
             
-        $mail->setFrom(($remetente_email==-1?$remetente_email:_PBLMAILFROMMAIL), ($remetente_nome==-1?$remetente_nome:_PBLMAILFROMNAME));
+        $mail->setFrom(($remetente_email!=-1?$remetente_email:$_page->config["email"]["from"]), ($remetente_nome!=-1?$remetente_nome:$_page->config["email"]["fromnome"]));
+        $mail->addReplyTo(($remetente_email!=-1?$remetente_email:$_page->config["email"]["from"]), ($remetente_nome!=-1?$remetente_nome:$_page->config["email"]["fromnome"]));
         $mail->addAddress($destinatario_email, $destinatario_nome);
 //        $mail->addAddress('ellen@example.com');
 //        $mail->addReplyTo('info@example.com', 'Information');
@@ -184,7 +206,7 @@ function EnviaEmail($destinatario_nome, $destinatario_email, $remetente_nome=-1,
         }
         else
         {
-            $mail->AltBody = strip_tags(br2nl($texConteudo));
+            $mail->AltBody = strip_tags(br2nl2($texConteudo));
         }
 
         $mail->send();
@@ -194,116 +216,11 @@ function EnviaEmail($destinatario_nome, $destinatario_email, $remetente_nome=-1,
     }
     
     exit();
-    
-//        include_once("lib/phpmailer/class.phpmailer.php");
-
-        // para views antes da versao 2.8.9
-//        $flag = 0;
-//        if ($assunto==-1 && $texConteudo==-1)
-//        {
-//                $tempRem = $remetente_nome;
-//                $tempDes = $remetente_email;
-//                $tempAss = $destinatario_nome;
-//                $tempMsg = $destinatario_email;
-//
-//                // arrumando campo remetente
-//                if (strpos($remetente_nome, "<")!==false)
-//                {
-//                        $remetente_nome = substr($tempRem, 0, strpos($tempRem, "<"));
-//                        $remetente_email = substr($tempRem, strpos($tempRem, "<")+1, strpos($tempRem, ">")-strpos($tempRem, "<")-1);
-//                }
-//                else
-//                {
-//                        $remetente_nome = $remetente_email = $tempRem;
-//                }
-//
-//                // arrumando campo destinatario
-//                $arDes = preg_split("[,|;]", $tempDes);
-//
-//                $destin = array();
-//                for ($i=0; $i<count($arDes); $i++)
-//                {
-//                        $temp = $arDes[$i];
-//                        $destin[] = array("nome"=>"", "email"=>$temp);
-//                }
-//
-//                $assunto = $tempAss;
-//                $texConteudo = $tempMsg;
-//
-//                $flag = 1;
-//        }
-//        else
-//        {
-//                $destin = array(array("nome"=>$destinatario_nome, "email"=>$destinatario_email));
-//        }
-//
-//        $mail = new PHPMailer(true);
-//        $mail->Charset = 'UTF-8';
-//
-//        $retorno = false;
-//
-//        foreach ($arrArquivoAnexado as $arq)
-//        {
-//                $mail->AddAttachment($arq[0], $arq[1]);
-//        }
-//
-//        if (_mailsmtp)
-//        {
-//                // envio smtp
-//                try {
-//                        $mail->SetFrom($remetente_email, $remetente_nome);
-//                        $mail->AddReplyTo($remetente_email, $remetente_nome);
-//                        $mail->IsHTML(true);
-//                        $mail->Subject = $assunto;
-//                        $mail->Body     = $texConteudo;
-//                        $mail->AltBody = $altConteudo;
-//                        $mail->IsSMTP();
-//                        $mail->Host     = _mailhost;
-//                        $mail->Port     = _mailport;
-//                        if (_mailuser!="")
-//                        {
-//                                $mail->SMTPAuth = true;
-//                                $mail->Username = _mailuser;
-//                                $mail->Password = _mailpass;		
-//                        }
-//                        foreach($destin as $dest)
-//                        {
-//                                $mail->AddAddress($dest["email"], $dest["nome"]);
-//                        }
-//                        $mail->Send();
-//                        $retorno = true;
-//                } catch (phpmailerException $e) {
-//                        echo $e->errorMessage();
-//                } catch (Exception $e) {
-//                        echo $e->getMessage();
-//                }
-//        } 
-//        else 
-//        {
-//                // envio simples
-//                try
-//                {
-//                        $mail->SetFrom($remetente_email, $remetente_nome);
-//                        $mail->AddReplyTo($remetente_email, $remetente_nome);
-//                        foreach($destin as $dest)
-//                        {
-//                                $mail->AddAddress($dest["email"], $dest["nome"]);
-//                        }
-//                        $mail->Subject    = $assunto;
-//                        $mail->AltBody    = $altConteudo;
-//                        $mail->MsgHTML($texConteudo);
-//                        $mail->Send();
-//                        $retorno = true;
-//                } catch (phpmailerException $e) {
-//                        echo $e->errorMessage(); 
-//                } catch (Exception $e) {
-//                        echo $e->getMessage();
-//                }
-//        }
-//
-//        return $retorno;
 }
-	
+	function br2nl2($string)
+    {
+        return preg_replace('/\<br(\s*)?\/?\>/i', "\n", $string);
+    }
 	
 	/*FUNÇÃO ÚTIL PARA DEBUG*/
 	function xd($obj)
@@ -420,17 +337,26 @@ function udate($format = 'u', $utimestamp = null) {
     return date(preg_replace('`(?<!\\\\)u`', $milliseconds, $format), $timestamp);
 }
 
+/**
+ * Gera string aleatória, podendo misturar caracteres maiusculos, minusculos, numeros e simbolos
+ * @param int $tamanho - Tamanho da string
+ * @param bool $maiusculas - Adicionar letras maiusculas
+ * @param bool $minusculas - Adicionar letras minusculas
+ * @param bool $numeros - Adicionar números
+ * @param bool $simbolos - adicionar simbolos
+ * @return string
+ */
 function gerar_senha($tamanho, $maiusculas=true, $minusculas=true, $numeros=true, $simbolos=true){
-  $ma = "ABCDEFGHIJKLMNOPQRSTUVYXWZ"; // $ma contem as letras maiúsculas
-  $mi = "abcdefghijklmnopqrstuvyxwz"; // $mi contem as letras minusculas
-  $nu = "0123456789"; // $nu contem os números
-  $si = "!@?-=%#$"; // $si contem os símbolos
-  $senha = "";
+    $ma = "ABCDEFGHIJKLMNOPQRSTUVYXWZ"; // $ma contem as letras maiúsculas
+    $mi = "abcdefghijklmnopqrstuvyxwz"; // $mi contem as letras minusculas
+    $nu = "0123456789"; // $nu contem os números
+    $si = "!@?-=%#$"; // $si contem os símbolos
+    $senha = "";
  
-  if ($maiusculas){
-        // se $maiusculas for "true", a variável $ma é embaralhada e adicionada para a variável $senha
-        $senha .= str_shuffle($ma);
-  }
+    if ($maiusculas){
+          // se $maiusculas for "true", a variável $ma é embaralhada e adicionada para a variável $senha
+          $senha .= str_shuffle($ma);
+    }
  
     if ($minusculas){
         // se $minusculas for "true", a variável $mi é embaralhada e adicionada para a variável $senha
@@ -448,5 +374,5 @@ function gerar_senha($tamanho, $maiusculas=true, $minusculas=true, $numeros=true
     }
  
     // retorna a senha embaralhada com "str_shuffle" com o tamanho definido pela variável $tamanho
-    return substr(str_shuffle($senha),0,$tamanho);
+    return substr(str_shuffle($senha), 0, $tamanho);
 }

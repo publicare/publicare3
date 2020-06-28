@@ -23,6 +23,7 @@ define("EmailNewLine", "\r\n");
 /**
  * Constantes para operações com objetos
  */
+define('_OPERACAO_OBJETO_MOVER', 5);
 define('_OPERACAO_OBJETO_RECUPERAR', 4);
 define('_OPERACAO_OBJETO_REMOVER', 3);
 define('_OPERACAO_OBJETO_EDITAR', 2);

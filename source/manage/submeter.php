@@ -16,7 +16,7 @@
 global $_page;
 ?>
 
-<form action="index.php/do/submeter_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
+<form action="do/submeter_post/<? echo $_page->_objeto->Valor($_page, "cod_objeto");?>.html" method="post">
 	<div class="pblAlinhamentoTabelas">
 	<TABLE WIDTH=500 BORDER=0 CELLPADDING=0 CELLSPACING=8 class="pblTabelaGeral">
 	<TR>

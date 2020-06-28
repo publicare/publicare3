@@ -54,7 +54,7 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objeto Vencidos</b></h3></div>
 	
-		<form action="do/vencidos_post.php/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+		<form action="do/vencidos_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
 		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
@@ -134,7 +134,7 @@ foreach ($arrListaObjetoVencidos as $ListaChave => $ListaTexto)
 								<td><?php if ($show){ ?><input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo($ListaTexto['cod_objeto']); ?>" class="chkObj"><?php } ?></td>
 								<td width="60%"><?=$ListaTexto['titulo']?></td>
 								<td width="30%"><?=ConverteData($ListaTexto['data_validade'],5)?>&nbsp;</td>
-								<td width="10%"><?php if ($show){ ?><a href="/index.php/manage/edit/<?=$ListaTexto['cod_objeto']?>.html" title='Editar este objeto' class=' margin-left5' rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Editar este objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a><?php } ?></td>
+								<td width="10%"><?php if ($show){ ?><a href="/index.php/do/edit/<?=$ListaTexto['cod_objeto']?>.html" title='Editar este objeto' class=' margin-left5' rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Editar este objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a><?php } ?></td>
 							</tr>
 <?php
 }

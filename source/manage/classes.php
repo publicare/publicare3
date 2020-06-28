@@ -39,6 +39,7 @@ $("document").ready(function(){
 if ($acao=="")
 {
 ?>
+        $.fn.dataTable.ext.order.intl("pt");
     $('#tabelaLista')
         .dataTable({
             responsive: true,
@@ -381,7 +382,7 @@ elseif ($acao == "edit" || $acao=="new")
                             <div class="col-md-8 col_3_1">
                                 <label for="prop_cod_referencia_classe" class="titulo">Classe de Referência</label>
                                 <select class="form-control campo" name="prop_cod_referencia_classe" id="prop_cod_referencia_classe">
-                                    <?php echo($_page->_administracao->DropDownClasses($_page, 0, true)); ?>
+                                    <?php echo($_page->_administracao->DropDownClasses(0, true)); ?>
                                 </select>
                             </div>
                             <div class="col-md-4 col_3_2">

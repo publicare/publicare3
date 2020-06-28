@@ -35,7 +35,7 @@ class Usuario
 	public $inicio_secao;
         
         public $_page;
-	
+        
 	/**
 	 * Metodo construtor da classe usuario
 	 * @param Page $_page - Referencia objeto page
@@ -59,7 +59,6 @@ class Usuario
             {
                 $this->cod_perfil = _PERFIL_DEFAULT;
                 if (!isset($_SESSION['usuario']) || !is_array($_SESSION['usuario'])) $_SESSION['usuario'] = array();
-//                        xd($_SESSION['usuario']);
                 $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
             }
 	}
@@ -74,7 +73,7 @@ class Usuario
 	 * @param Int $oculta_root - Indica se eve ocultar usuario root da lista
 	 * @return array
 	 */
-	function listaUsuarios($oculta_root=0)
+	function listaUsuarios($busca="", $ordem="", $dir="", $start=-1, $limit=-1, $oculta_root=1)
 	{
             $sql = "SELECT ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                     . " ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
@@ -90,12 +89,21 @@ class Usuario
                     . " FROM ".$this->_page->_db->tabelas["usuario"]["nome"]." ".$this->_page->_db->tabelas["usuario"]["nick"]." "
                     . " LEFT JOIN ".$this->_page->_db->tabelas["usuario"]["nome"]." t2 "
                         . " ON ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["chefia"]." = t2.".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." "
-                    . " WHERE ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                    . ($oculta_root==1?" AND ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." > 1 ":"")
-                    . " ORDER BY ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"];
+                    . " WHERE ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 ";
+            if ($busca != "")
+            {
+                $sql .= " AND (".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." like '%".$busca."%'"
+                        . " OR ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["login"]." like '%".$busca."%' "
+                        . " OR ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["email"]." like '%".$busca."%' "
+                        . " OR ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["secao"]." like '%".$busca."%' "
+                        . " OR ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["ramal"]." like '%".$busca."%' "
+                        . ") ";
+            }
+            $sql .= ($oculta_root==1?" AND ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." > 1 ":"");
+            $sql .=" ORDER BY ".($ordem!=""?$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"][$ordem]:$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["login"])." ".$dir;
             
-            $rs = $this->_page->_db->ExecSQL($sql);
-            return $rs->getAll();
+            $rs = $this->_page->_db->ExecSQL($sql, $start, $limit);
+            return $rs->getRows();
 	}
 		
 	function EstaLogado($nivelInferior=NULL)
@@ -266,18 +274,89 @@ class Usuario
             $_SESSION['usuario'] = "";
             return false;
 	}
+        
+        function LoginAutoPass($usuario)
+	{
+//            $usuario = htmlspecialchars($usuario, ENT_QUOTES, "UTF-8");
+//            $senha = htmlspecialchars($senha, ENT_QUOTES, "UTF-8");
+            
+            $sql = "";
+            $bind = array();
+
+            if ($this->_page->_db->config["bd"]["tipo"]=="oracle11")
+            {
+                $sql = $this->_page->_db->getCon()->prepare("SELECT ".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["email"]." AS email, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["login"]." AS login, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
+                        . " FROM ".$this->_page->_db->tabelas["usuario"]["nome"]." "
+                        . " WHERE ".$this->_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
+                        . " AND ".$this->_page->_db->tabelas["usuario"]["colunas"]["login"]." = :login");
+                $bind = array("login" => $usuario);
+            }
+            else
+            {
+                $sql = $this->_page->_db->getCon()->prepare("SELECT ".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["email"]." AS email, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["login"]." AS login, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                        . " ".$this->_page->_db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
+                        . " FROM ".$this->_page->_db->tabelas["usuario"]["nome"]." "
+                        . " WHERE ".$this->_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
+                        . " AND ".$this->_page->_db->tabelas["usuario"]["colunas"]["login"]." = ?");
+                $bind = array(1 => $usuario);
+            }
+            
+            $rs = $this->_page->_db->ExecSQL(array($sql, $bind));
+            
+            // encontrou usuário com o login
+            if ($rs->_numOfRows>0)
+            {
+                // popula sessao de usuario
+                $_SESSION["usuario"] = $rs->fields;
+                
+                // atualiza data validade do usuario
+                $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
+                $sql = "UPDATE ".$this->_page->_db->tabelas["usuario"]["nome"]." "
+                        . " SET ".$this->_page->_db->tabelas["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
+                        . "WHERE ".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
+                $rs2 = $this->_page->_db->ExecSQL($sql);
+
+                // carrega permissões do usuario
+                $this->Carregar();
+                return true;
+            }
+
+            $_SESSION['usuario'] = "";
+            return false;
+	}
 		
 	function Logout()
 	{
+//            xd();
             $cod_objeto = $this->_page->config["portal"]["objroot"];
             $_SESSION['usuario'] = "";
             $_SESSION['perfil'] = "";
+            
+            $this->cod_perfil = _PERFIL_DEFAULT;
+            $_SESSION['usuario'] = array();
+            $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
 	}
 		
 	function Carregar()
 	{
             $_SESSION['usuario']['direitos'] = $this->PegaDireitosDoUsuario($_SESSION['usuario']['cod_usuario']);
-//            xd($_SESSION['usuario']);
             $this->CarregarInfoPerfis();
             $this->PegaPerfil();
 	}
@@ -365,6 +444,7 @@ class Usuario
 		
 	function PodeExecutar($script)
 	{
+//            return true;
             if (!isset($this->cod_perfil)) $this->cod_perfil = _PERFIL_DEFAULT;
 //            xd($this->cod_perfil);
             //Administrador Pode Tudo
@@ -498,7 +578,7 @@ class Usuario
 		{
 			switch ($item['script'])
 			{
-				case '/manage/create':
+				case '/do/create':
 					if ($this->_page->_objeto->PodeTerFilhos())
 					{
 						$out[]=$item;
@@ -514,7 +594,7 @@ class Usuario
 					if (($this->_page->_objeto->Valor("cod_objeto")!=$this->_page->config["portal"]["objroot"]) && (!$this->_page->_objeto->Valor("apagado")))
 						$out[]=$item;
 					break;
-				case '/manage/new':
+				case '/do/new':
 					if ($this->_page->_objeto->Valor("temfilhos"))
 						$out[]=$item;
 					break;
@@ -651,6 +731,27 @@ class Usuario
         $rs = $this->_page->_db->ExecSQL($sql);
         return !$rs->EOF;
     }
+    
+    
+    function PegaListaDeUsuariosDoObjeto($cod_objeto, $cod_perfil=-1)
+    {
+        $sql = "SELECT ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
+                . " ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["email"]." AS email, "
+                . " ".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." AS cod_perfil "
+                . "FROM ".$this->_page->_db->tabelas["usuario"]["nome"]." ".$this->_page->_db->tabelas["usuario"]["nick"]." "
+                . "INNER JOIN ".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["nome"]." ".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["nick"]." "
+                . "ON ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." "
+                . "WHERE ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
+                . "AND ".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." = ".$cod_objeto." ";
+        if ($cod_perfil != -1)
+        {
+            $sql .= " AND ".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->_page->_db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." = ".$cod_perfil." ";
+        }
+        $rs = $this->_page->_db->ExecSQL($sql);
+        return $rs->GetRows();
+    }
+    
     
     /**
      * Busca lista de usuarios no banco de dados

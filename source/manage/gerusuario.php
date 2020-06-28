@@ -16,6 +16,64 @@ global $_page;
 
 // pega lista completa de usuários
 $usuarios = $_page->_usuario->listaUsuarios(1);
+if (isset($_GET["ajaxtbl"]))
+{
+    //xd($_POST);
+    $busca = isset($_POST["search"]["value"])&&$_POST["search"]["value"]!=""?htmlspecialchars($_POST["search"]["value"], ENT_QUOTES, "UTF-8"):"";
+    $draw = isset($_POST["draw"])&&$_POST["draw"]!=""?htmlspecialchars($_POST["draw"], ENT_QUOTES, "UTF-8"):"1";
+    $inicio = isset($_POST["start"])&&$_POST["start"]?(int)htmlspecialchars($_POST["start"], ENT_QUOTES, "UTF-8"):-1;
+    $limite = isset($_POST["length"])&&$_POST["length"]?(int)htmlspecialchars($_POST["length"], ENT_QUOTES, "UTF-8"):-1;
+    
+    $ordem = isset($_POST["order"][0]["column"])?$_POST["columns"][(int)$_POST["order"][0]["column"]]["data"]:"";
+    $direcao = isset($_POST["order"][0]["dir"]) && $_POST["order"][0]["dir"]=="desc"?"desc":"asc";
+    
+    $usuarios = $_page->_usuario->listaUsuarios($busca, $ordem, $direcao, $inicio, $limite);
+    $usuarios2 = $_page->_usuario->listaUsuarios($busca, "", $direcao, -1, -1);
+    $usuarios3 = $_page->_usuario->listaUsuarios();
+    $array = array(
+        "draw" => $draw,
+        "recordsTotal" => count($usuarios3),
+        "recordsFiltered" => count($usuarios2),
+        "data" => array()
+    );
+    
+    foreach ($usuarios as $usu)
+    {
+        $usu["permissoes"] = '';
+        $permissoes = $_page->_usuario->PegaDireitosDoUsuario($usu["cod_usuario"]);
+        foreach ($permissoes as $cod=>$perm)                          
+        {
+            $objtemp = new Objeto($_page, $cod);
+            $usu["permissoes"] .= "<br/>".$objtemp->Valor("titulo")." <strong>(".$cod.")</strong> - ".$_page->_usuario->pegaNomePerfil($perm);
+        }
+        
+        $usu["data_atualizacao"] = ConverteData($usu['data_atualizacao'], 5);
+        
+        $usu["acoes"] = '';
+        $usu["acoes"] .= '<a href="do/gerusuario/'.$_page->_objeto->Valor('cod_objeto').'.html?acao=editar&cod='.$usu["cod_usuario"].'" '
+                . ' title="Editar Usuário" '
+                . 'rel="tooltip" '
+                . 'data-animate="animated fadeIn" '
+                . 'data-toggle="tooltip" '
+                . 'data-original-title="Editar Usuário" '
+                . 'data-placement="left" '
+                . 'title="Editar este usuário"><i class="fapbl fapbl-pencil-alt font-size16"></i></a> ';
+        $usu["acoes"] .= '<a href="do/gerusuario/'.$_page->_objeto->Valor('cod_objeto').'.html?acao=bloquear&cod='.$usu["cod_usuario"].'" '
+                . ' title="Apagar Usuário" '
+                . 'rel="tooltip" '
+                . 'data-animate="animated fadeIn" '
+                . 'data-toggle="tooltip" '
+                . 'data-original-title="Apagar Usuário" '
+                . 'data-placement="left" '
+                . 'title="Apagar este usuário"><i class="fapbl fapbl-times-circle font-size16"></i></a> ';
+        
+        $array["data"][] = $usu;
+        
+    }
+    
+    echo(json_encode($array));
+    exit();
+}
 //xd($usuarios);
 $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
 
@@ -62,46 +120,12 @@ if ($acao == "")
                             <th>E-mail</th>
                             <th>Seção</th>
                             <th>Ramal</th>
-                            <th class="none">Chefia</th>
                             <th class="none">Validade</th>
-                            <th class="none">Alterar Senha</th>
-                            <th class="none">AD/LDAP</th>
                             <th class="none">Permissões</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-<?php
-foreach ($usuarios as $usu)
-{
-    $permissoes = $_page->_usuario->PegaDireitosDoUsuario($usu["cod_usuario"]);
-?>
-                        <tr>
-                            <td><?php echo($usu["nome"]); ?></td>
-                            <td><?php echo($usu["login"]); ?></td>
-                            <td><?php echo($usu["email"]); ?></td>
-                            <td><?php echo($usu["secao"]); ?></td>
-                            <td><?php echo($usu["ramal"]); ?></td>
-                            <td><?php echo($usu["nome_chefia"]); ?></td>
-                            <td><?php echo(ConverteData($usu["data_atualizacao"], 2)); ?></td>
-                            <td><?php echo(($usu["altera_senha"]==1?"Sim":"Não")); ?></td>
-                            <td><?php echo(($usu["ldap"]==1?"Sim":"Não")); ?></td>
-                            <td><?php
-foreach ($permissoes as $cod=>$perm)                          
-{
-    $objtemp = new Objeto($_page, $cod);
-    echo "<br/>".$objtemp->Valor("titulo")." <strong>(".$cod.")</strong> - ".$_page->_usuario->pegaNomePerfil($perm);
-}
-                            ?></td>
-                            <td>
-                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html?acao=editar&cod=<?php echo($usu["cod_usuario"]); ?>" title='Editar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Usuário' data-placement='left' title='Editar este usuário'><i class="fapbl fapbl-pencil-alt font-size16"></i></a>
-                                <a href="do/gerusuario/<?php echo $_page->_objeto->Valor('cod_objeto') ?>.html?acao=bloquear&cod=<?php echo($usu["cod_usuario"]); ?>" title='Apagar Usuário' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Usuário' data-placement='left' title='Apagar este usuário'><i class="fapbl fapbl-times-circle font-size16"></i></a>
-                            </td>
-                        </tr>
-<?php
-}
-?>
-                    </tbody>
+                    
                 </table>
             </div>
         </div>
@@ -109,16 +133,40 @@ foreach ($permissoes as $cod=>$perm)
 <script>
 $(document).ready(function() {
     $('#tabela_usuario').DataTable({
-        responsive: true,
-        columnDefs: [
-            { responsivePriority: 1, targets: 0 },
-            { responsivePriority: 2, targets: 1 },
-            { responsivePriority: 3, targets: 8 }
+        "responsive": true,
+        "columnDefs": [
+            { "responsivePriority": 1, "targets": 0 },
+            { "responsivePriority": 2, "targets": 1 },
+            { "responsivePriority": 3, "targets": 5 }
         ],
-        language: linguagemDataTable,
-        order: [[ 1, "asc" ]],
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        pageLength: 10
+        "language": linguagemDataTable,
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "do/gerusuario/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
+            "type": "POST"
+        },
+        "order": [[ 1, "asc" ]],
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "pageLength": 10,
+        "columns": [
+        { "data": "nome" },
+        { "data": "login" },
+        { "data": "email" },
+        { "data": "secao" },
+        { "data": "ramal" },
+        { "data": "data_atualizacao", "searchable": false },
+        { 
+            "data": "permissoes",
+            "orderable": false,
+            "searchable": false
+        },
+        { 
+            "data": "acoes",
+            "orderable": false,
+            "searchable": false
+        }
+    ]
     });
     
     $("#btnAdicionar").click(function(){
