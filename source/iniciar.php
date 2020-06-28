@@ -13,12 +13,27 @@
 * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
 */
 
+
 // inicia sessao caso não esteja iniciada ainda
-if (!isset($_SESSION)) session_start();
+if (!isset($_SESSION)) 
+{
+    // definindo nome de sessao proprio, para evitar roubo de sessao/cookie
+//    session_name(md5('pbl'.$_SERVER["REMOTE_ADDR"]));
+    
+    // utilizando cookies
+    ini_set("session.use_cookies", true);
+    // apenas cookies
+    ini_set("session.use_only_cookies", true);
+    // permite apenas sessoes inicializadas por aqui
+    ini_set("session.use_strict_mode", true);
+    // bloqueia acesso ao cookie de sessao por scripts
+    ini_set("session.cookie_httponly", true);
+    
+    session_start();
+}
 
 // inclui funcoes requeridas pelo publicare
 require ("funcoes.php");
-
 
 // define timezone
 date_default_timezone_set($PBLCONFIG["portal"]["tz"]);
@@ -95,8 +110,8 @@ if (isset($arrUrl[1]))
 
         // formulario de login
         case "login":
-        case "cadastro":
-        case "esquecisenha":
+//        case "cadastro":
+//        case "esquecisenha":
             if (file_exists($_SERVER["DOCUMENT_ROOT"]."/html/template/view_".$arrUrl[1].".php"))
             {
                 $action = "/html/".$arrUrl[1];

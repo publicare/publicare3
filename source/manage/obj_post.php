@@ -42,7 +42,7 @@ $local .= $obj["obj"]->Valor("url");
 
 if (isset($_POST["gravaroutro"]))
 {
-    $local = $_page->config["portal"]["url"]."/manage/new_".$obj["obj"]->Valor('prefixoclasse')."/".$obj["obj"]->Valor('cod_pai').".html";
+    $local = $_page->config["portal"]["url"]."/do/new_".$obj["obj"]->Valor('prefixoclasse')."/".$obj["obj"]->Valor('cod_pai').".html";
 }
 
 header("Location: ".$local);

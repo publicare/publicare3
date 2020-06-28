@@ -682,6 +682,7 @@ class Administracao
             {
                 if (isset($valor['size']) && $valor['size'] > 0)
                 {
+//            xd($array_files);
                     $ar_fld = preg_split("[___]", $key);
                     if (count($ar_fld)>1) { $prop = $ar_fld[1]; }
                     else { $prop = $key; }
@@ -749,6 +750,8 @@ class Administracao
         $tagslist = array();
         $proplist = array();
         
+//        xd($dados);
+        
         foreach ($dados as $key=>$value)
         {
             if ($key!="submit")
@@ -810,8 +813,10 @@ class Administracao
         
         $cod_objeto = $this->_page->_db->Insert($this->_page->_db->tabelas["objeto"]["nome"], $campos);
         
+        
         // grava as propriedades do objeto
         $this->GravarPropriedades($cod_objeto, $dados['cod_classe'], $proplist, $array_files);
+//        xd($proplist);
         // grava as relações de parentesco do objeto
         $this->CriaParentesco($cod_objeto, $dados['cod_pai']);
         // grava as tags
@@ -1309,7 +1314,7 @@ class Administracao
     function CopiarObjeto($cod_objeto, $cod_pai)
     {
         $this->DuplicarObjeto($cod_objeto, $cod_pai);
-        $this->RemoveObjetoDaPilha($_page, $cod_objeto);
+        $this->RemoveObjetoDaPilha($cod_objeto);
     }
 
     /**
@@ -1319,18 +1324,28 @@ class Administracao
      */
     function MoverObjeto($cod_objeto, $cod_pai)
     {
-        if ($cod_objeto==-1)
+        if ($cod_objeto == -1)
         {
-                $cod_objeto=$this->PegaPrimeiroDaPilha();
+                $cod_objeto = $this->PegaPrimeiroDaPilha();
         }
-        $sql = "update objeto set cod_pai=$cod_pai where cod_objeto=$cod_objeto";
+        $sql = "UPDATE ".$this->_page->_db->tabelas["objeto"]["nome"]." "
+                . " SET ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pai"]." = ".$cod_pai." "
+                . " WHERE ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->_page->_db->ExecSQL($sql);
 
         $this->ApagarParentesco($cod_objeto);
         $this->CriaParentesco($cod_objeto, $cod_pai);
+        
+        $this->_page->_log->RegistraLogWorkflow("Objeto movido para ".$cod_pai, $cod_objeto, _OPERACAO_OBJETO_MOVER);
 
-        $sql = "select objeto.cod_pai,objeto.cod_objeto from objeto inner join parentesco on objeto.cod_objeto=parentesco.cod_objeto 
-                        where parentesco.cod_pai=".$cod_objeto." group by objeto.cod_objeto, objeto.cod_pai";
+        $sql = "SELECT ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pai"]." AS cod_pai, "
+                . " ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                . " FROM ".$this->_page->_db->tabelas["objeto"]["nome"]." "
+                . " INNER JOIN ".$this->_page->_db->tabelas["parentesco"]["nome"]." "
+                . " ON ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->_page->_db->tabelas["parentesco"]["nome"].".".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$this->_page->_db->tabelas["parentesco"]["nome"].".".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
+                . " GROUP BY ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"].", "
+                . " ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pai"];
         $res = $this->_page->_db->ExecSQL($sql);
         $row = $res->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
@@ -1339,7 +1354,7 @@ class Administracao
                 $this->CriaParentesco($row[$i]['cod_objeto'], $row[$i]['cod_pai']);
         }
 
-        $this->RemoveObjetoDaPilha($_page, $cod_objeto);
+        $this->RemoveObjetoDaPilha($cod_objeto);
     }
 
     /**
@@ -1349,9 +1364,9 @@ class Administracao
      */
     function ColarComoLink($cod_objeto, $cod_pai)
     {
-        if ($cod_objeto==-1)
+        if ($cod_objeto == -1)
         {
-            $cod_objeto=$this->PegaPrimeiroDaPilha();
+            $cod_objeto = $this->PegaPrimeiroDaPilha();
         }
 
         $orig_obj = $this->_page->_adminobjeto->CriarObjeto($cod_objeto);
@@ -1375,7 +1390,7 @@ class Administracao
 //        xd($novo_cod_objeto);
 
         $this->GravarPropriedades($novo_cod_objeto, $cod_classe_interlink, array('property___link'=>$cod_objeto));
-        $this->RemoveObjetoDaPilha($_page, $cod_objeto);
+        $this->RemoveObjetoDaPilha($cod_objeto);
         $this->CriaParentesco($novo_cod_objeto, $cod_pai);
     }
 
@@ -1402,31 +1417,31 @@ class Administracao
      */
     function DuplicarObjeto($cod_objeto, $cod_pai=-1)
     {
-        if ($cod_objeto==-1)
+        if ($cod_objeto == -1)
         {
-            $cod_objeto=$this->PegaPrimeiroDaPilha();
+            $cod_objeto = $this->PegaPrimeiroDaPilha();
         }
 
         $orig_obj = $this->_page->_adminobjeto->CriarObjeto($cod_objeto);
         $dados = $orig_obj->metadados;
         
-        if ($cod_pai==-1) $cod_pai=$dados['cod_pai'];
+        if ($cod_pai==-1) $cod_pai = $dados['cod_pai'];
 
         $campos = array();
-        $campos['script_exibir'] = $dados['script_exibir'];
-        $campos['cod_pai'] = $cod_pai;
-        $campos['cod_classe'] = $dados['cod_classe'];
-        $campos['cod_usuario'] = $dados['cod_usuario'];
-        if (!is_null($dados['cod_pele'])) $campos['cod_pele'] = $dados['cod_pele'];
-        $campos['cod_status'] = $dados['cod_status'];
-        $campos['titulo'] = $this->_page->_db->Slashes($dados['titulo']);
-        $campos['descricao'] = $this->_page->_db->Slashes($dados['descricao']);
-        $campos['data_publicacao'] = ConverteData($dados['data_publicacao'],27);
-        $campos['data_validade'] = ConverteData($dados['data_validade'],27);
-        $campos['url_amigavel'] = $this->verificaExistenciaUrlAmigavel($dados['url_amigavel']);
-        $campos['peso'] = $dados['peso'];
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["script_exibir"]] = $dados['script_exibir'];
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["cod_pai"]] = $cod_pai;
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["cod_classe"]] = $dados['cod_classe'];
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["cod_usuario"]] = $dados['cod_usuario'];
+        if (!is_null($dados['cod_pele'])) $campos[$this->_page->_db->tabelas['objeto']["colunas"]["cod_pele"]] = $dados['cod_pele'];
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["cod_status"]] = $dados['cod_status'];
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["titulo"]] = $this->_page->_db->Slashes($dados['titulo']);
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["descricao"]] = $this->_page->_db->Slashes($dados['descricao']);
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["data_publicacao"]] = ConverteData($dados['data_publicacao'],27);
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["data_validade"]] = ConverteData($dados['data_validade'],27);
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["url_amigavel"]] = $this->verificaExistenciaUrlAmigavel($dados['url_amigavel']);
+        $campos[$this->_page->_db->tabelas['objeto']["colunas"]["peso"]] = $dados['peso'];
 
-        $cod_objeto = $this->_page->_db->Insert('objeto', $campos);	
+        $cod_objeto = $this->_page->_db->Insert($this->_page->_db->tabelas['objeto']["nome"], $campos);	
         $this->DuplicarPropriedades($cod_objeto, $orig_obj);
         $this->CriaParentesco($cod_objeto, $cod_pai);
 
@@ -1453,6 +1468,7 @@ class Administracao
     function DuplicarPropriedades($destino, $origem)
     {
         $propriedades = $origem->PegaListaDePropriedades();
+        $lista = array();
         foreach ($propriedades as $nome => $valor)
         {
             if ($valor["tipo"]=="tbl_objref" && isset($valor["referencia"]))
@@ -1514,10 +1530,6 @@ class Administracao
                     . " ON ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$this->_page->_db->tabelas["classexobjeto"]["nick"].".".$this->_page->_db->tabelas["classexobjeto"]["colunas"]["cod_classe"]." "
                 . " WHERE ".$this->_page->_db->tabelas["classexobjeto"]["nick"].".".$this->_page->_db->tabelas["classexobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
                 . " ORDER BY ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["nome"];
-        
-//        $sql = "select classe.cod_classe,classe.nome, classe.descricao,classe.prefixo from classexobjeto
-//                        inner join classe on classe.cod_classe=classexobjeto.cod_classe
-//                        where classexobjeto.cod_objeto=$cod_objeto order by classe.nome";
         $rs = $this->_page->_db->ExecSQL($sql);
         return $rs->GetRows();
     }
@@ -1540,32 +1552,40 @@ class Administracao
      */
     function RemoveObjetoDaPilha($cod_objeto, $user=1)
     {
-        $sql = "delete from pilha where ".($user==1?"cod_usuario=".$_SESSION['usuario']['cod_usuario']." and ":"")."cod_objeto=$cod_objeto";
+        $sql = "DELETE FROM ".$this->_page->_db->tabelas["pilha"]["nome"]." "
+                . " WHERE ".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        if ($user == 1)
+        {
+            $sql .= " AND ".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
+        }
         $this->_page->_db->ExecSQL($sql);
     }
 
     /**
      * Limpa pilha do usuário
-     * @param object $_page - Referência de objeto da classe Pagina
      */
-    function LimparPilha(&$_page)
+    function LimparPilha()
     {
-        $sql = "delete from pilha where cod_usuario=".$_SESSION['usuario']['cod_usuario'];
+        $sql = "DELETE FROM ".$this->_page->_db->tabelas["pilha"]["nome"]." "
+                . " WHERE ".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_usuario"]." =" .$_SESSION['usuario']['cod_usuario'];
         $this->_page->_db->ExecSQL($sql);
     }
 
     /**
      * Pega pilha do usuario logado
-     * @param object $_page - Referência de objeto da classe Pagina
      * @return array - lista de objetos na pilha
      */
-    function PegaPilha(&$_page)
+    function PegaPilha()
     {
         $result=array();
         $this->ContadorPilha=0;
-        $sql = "select pilha.cod_objeto as codigo, objeto.titulo as texto from pilha
-                        left join objeto on objeto.cod_objeto=pilha.cod_objeto
-                        where pilha.cod_usuario=".$_SESSION['usuario']['cod_usuario'];
+        $sql = "SELECT ".$this->_page->_db->tabelas["pilha"]["nome"].".".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_objeto"]." AS codigo, "
+                . ""
+                . " ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS texto "
+                . " FROM ".$this->_page->_db->tabelas["pilha"]["nome"]." "
+                . " LEFT JOIN ".$this->_page->_db->tabelas["objeto"]["nome"]." "
+                    . " ON ".$this->_page->_db->tabelas["objeto"]["nome"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->_page->_db->tabelas["pilha"]["nome"].".".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$this->_page->_db->tabelas["pilha"]["nome"].".".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
         $rs = $this->_page->_db->ExecSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
@@ -1578,14 +1598,15 @@ class Administracao
 
     /**
      * Verifica se usuario tem objetos na pilha
-     * @param object $_page - Referência de objeto da classe Pagina
      * @return int - Numero de objetos na pilha
      */
-    function TemPilha(&$_page)
+    function TemPilha()
     {
         if (!$this->ContadorPilha)
         {
-            $sql = "select count(*) as contador from pilha where cod_usuario=".$_SESSION['usuario']['cod_usuario'];
+            $sql = "SELECT COUNT(*) AS contador "
+                    . " FROM ".$this->_page->_db->tabelas["pilha"]["nome"]." "
+                    . " WHERE ".$this->_page->_db->tabelas["pilha"]["colunas"]["cod_usuario"]."=".$_SESSION['usuario']['cod_usuario'];
             $rs = $this->_page->_db->ExecSQL($sql);
             $this->ContadorPilha = $rs->fields["contador"];
         }
@@ -1594,14 +1615,13 @@ class Administracao
 
     /**
      * Busca objetos da pilha e envia resultado para metodo que monta dropdown
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $selecionado - codigo do parametro que deve vir selecionado no <select>
      * @param bool $branco - indica se deve ter um <option> com value em branco
      * @return string - Lista de <option> para o <select>
      */
-    function DropDownPilha(&$_page, $selecionado='', $branco=false)
+    function DropDownPilha($selecionado='', $branco=false)
     {
-        $lista = $this->PegaPilha($_page);
+        $lista = $this->PegaPilha();
         return $this->CriaDropDown($lista, $selecionado, $branco);
     }
     
@@ -1817,12 +1837,11 @@ class Administracao
 
     /**
      * Busca classes e envia valores para metodo que monta dropdown
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $selecionado - Valor que devera vir selecionado no dropdown
      * @param bool $branco - indica se devera ter <option> com value em branco
      * @return string - Lista de <option> para o <select>
      */
-    function DropDownClasses(&$_page, $selecionado, $branco=false)
+    function DropDownClasses($selecionado, $branco=false)
     {
         $lista = $this->PegaListaDeClasses($_page);
         return $this->CriaDropDown($lista, $selecionado, $branco);
@@ -2003,21 +2022,22 @@ class Administracao
      */
     function ApagarPropriedadeDaClasse($cod_propriedade)
     {
-        $sql = "SELECT tipodado.tabela "
-                . "FROM propriedade "
-                . "LEFT JOIN tipodado ON tipodado.cod_tipodado = propriedade.cod_tipodado "
-                . "WHERE propriedade.cod_propriedade=".$cod_propriedade.";";
+        $sql = "SELECT ".$this->_page->_db->tabelas["tipodado"]["nome"].".".$this->_page->_db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela "
+                . " FROM ".$this->_page->_db->tabelas["propriedade"]["nome"]." "
+                . " LEFT JOIN ".$this->_page->_db->tabelas["tipodado"]["nome"]." "
+                    . " ON ".$this->_page->_db->tabelas["tipodado"]["nome"].".".$this->_page->_db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." = ".$this->_page->_db->tabelas["propriedade"]["nome"].".".$this->_page->_db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." "
+                . " WHERE ".$this->_page->_db->tabelas["propriedade"]["nome"].".".$this->_page->_db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
         $rs = $this->_page->_db->ExecSQL($sql);
         $row = $rs->fields;
 
         if (isset($row['tabela']) && $row['tabela']!="")
         {
-            if ($row['tabela']=="tbl_blob")
+            if ($row['tabela'] == "tbl_blob")
             {
-                $sql = "SELECT cod_blob, "
-                        . "arquivo "
-                        . "FROM tbl_blob "
-                        . "WHERE cod_propriedade=".$cod_propriedade;
+                $sql = "SELECT ".$this->_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
+                        . " ".$this->_page->_db->tabelas["tbl_blob"]["colunas"]["arquivo"]." AS arquivo "
+                        . " FROM ".$this->_page->_db->tabelas["tbl_blob"]["nome"]." "
+                        . " WHERE ".$this->_page->_db->tabelas["tbl_blob"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
                 $rs2 = $this->_page->_db->ExecSQL($sql);
 
                 while ($row2 = $rs2->FetchRow())
@@ -2027,29 +2047,26 @@ class Administracao
                     {
                         $checkDelete = unlink($this->_page->config["portal"]["uploadpath"]."/".Blob::identificaPasta($this->_page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext);
                     }
-                    if (defined ("_THUMBDIR"))
-                    {
-                        if (file_exists(_THUMBDIR.$row2['cod_blob'].'.'.$file_ext)) unlink(_THUMBDIR.$row2['cod_blob'].'.'.$file_ext);
-                    }
                 }
             }
             
-            $sql = "DELETE FROM ".$row['tabela']." WHERE cod_propriedade=".$cod_propriedade;
+            $sql = "DELETE FROM ".$this->_page->_db->tabelas[$row['tabela']]["nome"]." "
+                    . " WHERE ".$this->_page->_db->tabelas[$row['tabela']]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
             $this->_page->_db->ExecSQL($sql);
         }
         
-        $sql = "DELETE FROM propriedade WHERE cod_propriedade=".$cod_propriedade;
+        $sql = "DELETE FROM ".$this->_page->_db->tabelas["propriedade"]["nome"]." "
+                . " WHERE ".$this->_page->_db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
         $this->_page->_db->ExecSQL($sql);
     }
 
     /**
      * Renomeia propriedade
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $cod_classe - Codigo da classe
      * @param string $nomeatual - Nome atual da propriedade
      * @param string $nome - novo nome da propriedade
      */
-    function RenomearPropriedadeDaClasse(&$_page, $cod_classe, $nomeatual, $nome)
+    function RenomearPropriedadeDaClasse($cod_classe, $nomeatual, $nome)
     {
         $sql = "update propriedade set nome='$nome' where nome='$nomeatual' and cod_classe=$cod_classe";
         $this->_page->_db->ExecSQL($sql);
@@ -2086,12 +2103,11 @@ class Administracao
 
     /**
      * Busca lista de seções de usuários e envia retorno para funcao que monta dropdown
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $selecionado - Campo que deverá estar seleiconado
      * @param bool $branco - indica se deverá conter elemento <option> com value em branco
      * @return string - lista de <options> para popular <select>
      */
-    function DropDownUsuarioSecao(&$_page, $selecionado=0, $branco=false){
+    function DropDownUsuarioSecao($selecionado=0, $branco=false){
         $lista = $this->PegaListaDeSecao($_page);
         return $this->CriaDropDown($lista,$selecionado,$branco,40);
     }
@@ -2110,13 +2126,12 @@ class Administracao
 
     /**
      * Busca lista de usuarios e envia retorno para funcao que monta dropdown
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $selecionado - Campo que deverá estar seleiconado
      * @param bool $branco - indica se deverá conter elemento <option> com value em branco
      * @param string $secao - seção para buscar usuários
      * @return string - lista de <options> para popular <select>
      */
-    function DropDownUsuarios(&$_page, $selecionado, $branco=false, $secao=NULL)
+    function DropDownUsuarios($selecionado, $branco=false, $secao=NULL)
     {
         $lista = $this->_page->_usuario->PegaListaDeUsuarios($secao);
         return $this->CriaDropDown($lista,$selecionado,$branco,20);
@@ -2128,28 +2143,6 @@ class Administracao
      */
     function ApagarClasse($cod_classe)
     {
-        // apagando objetos da classe
-//        $sql = "select cod_objeto from objeto where cod_classe=".$cod_classe;
-//        $rs = $this->_page->_db->ExecSQL($sql);
-//        while ($row = $rs->FetchRow())
-//        {
-//            $this->ApagarObjeto($_page, $row['cod_objeto'],true);
-//        }
-
-        // apagando propriedades da classe
-//        $sql = "delete from propriedade where cod_classe=".$cod_classe;
-//        $this->_page->_db->ExecSQL($sql);
-
-        // apagando relacionamentos entre classes
-//$sql = "delete from classexfilhos where cod_classe=".$cod_classe;
-//        $this->_page->_db->ExecSQL($sql);
-//        $sql = "delete from classexfilhos where cod_classe_filho=".$cod_classe;
-//        $this->_page->_db->ExecSQL($sql);
-
-        // apagando relacionamentos entre classes e objetos
-//        $sql = "delete from classexobjeto where cod_classe=".$cod_classe;
-//        $this->_page->_db->ExecSQL($sql);
-
         // apagando a classe
         $sql  = "DELETE "
                 . " FROM ".$this->_page->_db->tabelas["classe"]["nome"]." "
@@ -2159,10 +2152,9 @@ class Administracao
     
     /**
      * Cria view automaticamente para a classe, caso não exista na pasta de template do portal
-     * @param type $_page
      * @param type $cod_classe
      */
-    function CriarTemplateClasse(&$_page, $cod_classe)
+    function CriarTemplateClasse($cod_classe)
     {
         $dados = $this->PegaInfoDaClasse($cod_classe);
         $prefixo = $dados["classe"]["prefixo"];
@@ -2230,15 +2222,17 @@ $str .= "*  <hr /> \r\n"
      * @param int $limit - dados para paginação da busca
      * @return array - Lista de objetos apagados
      */
-    function PegaListaDeApagados($start=-1, $limit=-1)
+    function PegaListaDeApagados($inicio, $start=-1, $limit=-1)
     {
         $out=array();
-        $sql = "SELECT ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+        $sql = "SELECT distinct ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
                 . " ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["data_exclusao"]." AS data_exclusao, "
                 . " ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
                 . " ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                 . " ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["nome"]." AS classe "
                 . " FROM ".$this->_page->_db->tabelas["objeto"]["nome"]." ".$this->_page->_db->tabelas["objeto"]["nick"]." "
+//                . " LEFT JOIN ".$this->_page->_db->tabelas["parentesco"]["nome"]." ".$this->_page->_db->tabelas["parentesco"]["nick"]." "
+//                . " ON ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->_page->_db->tabelas["parentesco"]["nick"].".".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
                 . " LEFT JOIN ".$this->_page->_db->tabelas["classe"]["nome"]." ".$this->_page->_db->tabelas["classe"]["nick"]." "
                 . " ON ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["cod_classe"]." "
                 . " WHERE ".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 1 "
@@ -2304,12 +2298,12 @@ $str .= "*  <hr /> \r\n"
     
     /**
      * Apaga registros de log do objeto
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $cod_objeto - Codigo do objeto a ser apagado
      */
-    function ApagarLogWorkflow(&$_page, $cod_objeto)
+    function ApagarLogWorkflow($cod_objeto)
     {
-        $sql = "delete from logworkflow where cod_objeto=".$cod_objeto;
+        $sql = "DELETE FROM ".$this->_page->_db->tabelas["logworkflow"]["nome"]." "
+                . " WHERE ".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->_page->_db->ExecSQL($sql);
     }
 
@@ -2327,7 +2321,7 @@ $str .= "*  <hr /> \r\n"
 
         for ($c=0; $c<sizeof($row); $c++)
         {
-            ApagarEmDefinitivo($row[$c]["cod_objeto"]);
+            $this->ApagarEmDefinitivo($row[$c]["cod_objeto"]);
         }
 
         $this->_page->_db->ExecSQL("DELETE FROM ".$this->_page->_db->tabelas["objeto"]["nome"]." "
@@ -2347,50 +2341,32 @@ $str .= "*  <hr /> \r\n"
                     . " WHERE (".$this->_page->_db->tabelas["parentesco"]["nick"].".".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
                     . " OR ".$this->_page->_db->tabelas["parentesco"]["nick"].".".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
                     . " AND (".$this->_page->_db->tabelas["objeto"]["nick"].".".$this->_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 1) ";
-            $res = $this->_page->_db->ExecSQL($sql);
+        $res = $this->_page->_db->ExecSQL($sql);
 
-            while ($row = $res->FetchRow())
+        while ($row = $res->FetchRow())
+        {
+            $sql = "UPDATE ".$this->_page->_db->tabelas["objeto"]["nome"]." "
+                    . " SET ".$this->_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 0, "
+                    . " ".$this->_page->_db->tabelas["objeto"]["colunas"]["data_exclusao"]." = null "
+                    . " WHERE ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
+            $this->_page->_db->ExecSQL($sql);
+
+            $this->_page->_log->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_RECUPERAR);
+
+            if ($row["cod_objeto"] != $cod_objeto)
             {
-                $sql = "UPDATE ".$this->_page->_db->tabelas["objeto"]["nome"]." "
-                        . " SET ".$this->_page->_db->tabelas["objeto"]["colunas"]["apagado"]." = 0, "
-                        . " ".$this->_page->_db->tabelas["objeto"]["colunas"]["data_exclusao"]." = null "
-                        . " WHERE ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
-                $this->_page->_db->ExecSQL($sql);
-                
-                $this->_page->_log->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_RECUPERAR);
-            
-                if ($row["cod_objeto"] != $cod_objeto)
-                {
-                    $this->RecuperarObjeto($row["cod_objeto"]);
-                }
+                $this->RecuperarObjeto($row["cod_objeto"]);
             }
-//        $sql = "select parentesco.cod_objeto, 
-//        cod_status, 
-//        cod_classe 
-//        from parentesco 
-//        inner join objeto on parentesco.cod_objeto=objeto.cod_objeto 
-//        where parentesco.cod_pai=$cod_objeto 
-//        or parentesco.cod_objeto=$cod_objeto";
-//        $res=$this->_page->_db->ExecSQL($sql);
-//        $row = $res->GetRows();
-//
-//        for ($i=0; $i<sizeof($row); $i++)
-//        {
-//            $sql = "update objeto set apagado=0 ";
-//            $sql .= " where cod_objeto=".$row[$i]['cod_objeto'];
-//            $this->_page->_db->ExecSQL($sql);
-//        }
-//        $this->_page->_log->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_RECUPERAR);
+        }
     }
 
     /**
      * Verifica se propriedade tem preenchimento obrigatorio
-     * @param object $_page - Referência de objeto da classe Pagina
      * @param int $cod_classe - Codigo da classe que propriedade pertence
      * @param array $propriedades - Lista de propriedades
      * @return boolean
      */
-    function ValidarPropriedades(&$_page, $cod_classe, $propriedades)
+    function ValidarPropriedades($cod_classe, $propriedades)
     {
         $lista = $this->PegaPropriedadesDaClasse($cod_classe);
         foreach ($lista as $prop)
@@ -2402,20 +2378,25 @@ $str .= "*  <hr /> \r\n"
     
     /**
      * Grava objeto
-     * @param type $post
-     * @param type $acao
-     * @param type $publicar
-     * @param type $cod
+     * @param array $post
+     * @param string $acao
+     * @param int $publicar
+     * @param int $cod
      * @return \Objeto
      */
     function GravarObjeto($post, $acao, $publicar=0, &$cod)
     {
         $retorno = array();
         // executa scripts antes da gravacao do objeto
+        
+        $_POST = $post;
         $execAntes = $this->_page->_adminobjeto->ExecutaScript($post['cod_classe'], $post['cod_pele'], 'antes');
+        $post = $_POST;
         
         $executa = false;
         $cod = 0;
+        
+//        xd($post);
         
         if ($acao=="create")
         {

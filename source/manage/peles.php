@@ -101,7 +101,7 @@ if ($erro!="")
 }
 ?>
         <!-- === Nova Pele === -->
-        <form action="do/peles_post.php/<?php echo $_page->_objeto->Valor("cod_objeto") ?>.html" method="post">
+        <form action="do/peles_post/<?php echo $_page->_objeto->Valor("cod_objeto") ?>.html" method="post">
             <div class="panel panel-info">
                 <div class="panel-heading"><?php if ($cod_pele > 0) { ?>Editar Pele - código: <?php echo($cod_pele); ?><?php } else { ?>Nova Pele<?php } ?></div>
                 <div class="panel-body">

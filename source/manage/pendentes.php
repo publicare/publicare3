@@ -67,7 +67,7 @@ $(document).ready(function(){
 <!-- === Objetos aguardando aprovação === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objetos aguardando aprovação</b></h3></div>
-		<form action="/do/list_content_post.php/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="pendentes" id="pendentes" method="POST">
+		<form action="/do/list_content_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="pendentes" id="pendentes" method="POST">
 		<input type="hidden" name="return_obj" value="<?php echo $_page->_objeto->Valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
@@ -146,7 +146,7 @@ if ($_page->_objeto->Valor("cod_objeto") != $_page->config["portal"]["objroot"])
 								<td><?php if ($show){ ?><input type="checkbox" id="objlist[]" name="objlist[]" value="<?=$obj["cod_objeto"]?>" class="chkObj"><?php } ?></td>
 								<td width="85%"><?=$obj["titulo"]?></td>
 								<td width="15%">
-									<? if ($show){ ?><a href="/index.php/manage/edit/<?=$obj["cod_objeto"]?>.html" title='Editar este objeto' class=' margin-left5' rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Editar este objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a><? } ?>
+									<? if ($show){ ?><a href="/index.php/do/edit/<?=$obj["cod_objeto"]?>.html" title='Editar este objeto' class=' margin-left5' rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Editar este objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a><? } ?>
 									<a href="/index.php/content/view/<?=$obj['cod_objeto']?>.html" title="Exibir Objeto" rel='tooltip' data-color-class = 'primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='Visualizar objeto' data-placement='left' title='Visualizar objeto' class=' margin-left5'><i class='fapbl fapbl-eye font-size16'></i></a>
 							<?php
 								foreach($loglist as $log)

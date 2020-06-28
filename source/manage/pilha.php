@@ -37,13 +37,13 @@ if (($_page->_objeto->PodeTerFilhos()))
     <form action="do/pilha_post/<?php echo $_page->_objeto->Valor("cod_objeto");?>.html" method="POST" name="objmanage" id="objmanage">
         <div class="panel-body">
             <select class="pblSelectForm" name="cod_objmanage">
-            <?php echo $_page->_administracao->DropDownPilha($_page) ?>
+            <?php echo $_page->_administracao->DropDownPilha() ?>
             </select>
         </div>
         
         <div class="panel-footer">
 <?php
-    if ($_page->_administracao->TemPilha($_page))
+    if ($_page->_administracao->TemPilha())
     {
 ?>
             <div id="divBotoesAcao"><center>

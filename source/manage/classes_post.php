@@ -89,6 +89,8 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
     // Recupera dados da classe
     $classinfo = $_page->_administracao->PegaInfoDaClasse($cod_classe);
     
+//    xd($props);
+    
     // Verifica / apaga / altera / adiciona propriedades
     foreach ($props as $propp)
     {
@@ -118,6 +120,7 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
             // alterar propriedade
             else
             {
+//            xd($propp);
                 $_page->_administracao->AtualizarDadosDaPropriedade($cod_propriedade, $dados);
             }
         }

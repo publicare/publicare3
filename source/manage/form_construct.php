@@ -252,7 +252,7 @@ foreach ($classe["prop"] as $prop)
         // texto avançado
         case 8:
 ?>
-                            <textarea name="property___<?php echo($prop["nome"]); ?>" id="property___<?php echo($prop["nome"]); ?>" class="form-control texto-avancado avancado <?php echo($obrigatorio); ?>"><?php echo($valor); ?></textarea>
+                            <textarea name="property___<?php echo($prop["nome"]); ?>" id="property___<?php echo($prop["nome"]); ?>" class="form-control texto-avancado avancado"><?php echo($valor); ?></textarea>
                             
                             <script>
                                 new Jodit('#property___<?php echo($prop["nome"]); ?>', {

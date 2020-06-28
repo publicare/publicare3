@@ -318,9 +318,9 @@ class Blob
                         $nome = limpaString($filename);
                         $nome = substr($nome, 0, strlen($nome)-strlen($file_ext)).".".$file_ext;
                         
-                        header("Content-length: $size");
+                        header("Content-length: ".$size);
                         header("Content-Disposition: attachment; filename=".$nome."");
-                        header("Content-type: $this->tipos_baixar[$file_ext]");
+                        header("Content-type: ".$this->tipos_baixar[$file_ext]);
                         
                         $this->readfile_chunked($this->_page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
                         
@@ -893,11 +893,11 @@ class Blob
            }
 
            $campos = array();
-           $campos['cod_propriedade'] = (int)$info['cod_propriedade'];
-           $campos['cod_objeto'] = (int)$objeto->Valor("cod_objeto");
-           $campos['arquivo'] = $nome_original_capa;
-           $campos['tamanho'] = filesize($path_arquivo . $arquivo_temp);
-           $name = $_page->_db->Insert($info['tabela'], $campos);
+           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['cod_propriedade']] = (int)$info['cod_propriedade'];
+           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->Valor("cod_objeto");
+           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['arquivo']] = $nome_original_capa;
+           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['tamanho']] = filesize($path_arquivo . $arquivo_temp);
+           $name = $_page->_db->Insert($_page->_db->tabelas[$info['tabela']]["nome"], $campos);
            $filetype = Blob::PegaExtensaoArquivo($arquivo_temp);
            
 
@@ -925,6 +925,6 @@ class Blob
 
        $_page->_administracao->cacheFlush();
    }
-
+   
 }
 

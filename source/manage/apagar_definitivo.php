@@ -6,9 +6,9 @@
  * @package publicare
  *
  * Este arquivo é parte do programa Publicare
- * Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU 
+ * Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU
  * como publicada pela Fundação do Software Livre (FSF); na versão 3 da Licença, ou (na sua opinião) qualquer versão.
- * Este programa é distribuído na esperança de que possa ser  útil, mas SEM NENHUMA GARANTIA; sem uma garantia implícita 
+ * Este programa é distribuído na esperança de que possa ser  útil, mas SEM NENHUMA GARANTIA; sem uma garantia implícita
  * de ADEQUAÇÃO a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
  */
@@ -33,12 +33,12 @@ $(document).ready(function(){
                 language: linguagemDataTable,
                 order: [[ 1, "asc" ]],
             });
-            
+
     $(".btnAcao").click(function(){
         $("#divMensagemGravar").show();
         $("#divBotoesAcao").hide();
     });
-    
+
     $("#btnInverter").click(function(){
         $(".chkObj").each(function(){
             if ($(this).prop("checked")) {
@@ -51,13 +51,13 @@ $(document).ready(function(){
 });
 </script>
 <script src="include/javascript_datatable" type="text/javascript"></script>
-<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
+<link href="include/css_datatable" rel="stylesheet" type="text/css">
 
 <!-- === Apagar em definitivo === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Apagar em definitivo</b></h3></div>
 
-	<form action="do/apagar_definitivo_post.php/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+	<form action="do/apagar_definitivo_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
 	<div class="panel-body">
 
 		<!-- === Listar Conteúdo === -->
@@ -87,7 +87,7 @@ $(document).ready(function(){
 					<tbody>
 
 <?php
-	$deletedlist=$_page->_administracao->PegaListaDeApagados();
+	$deletedlist=$_page->_administracao->PegaListaDeApagados(1);
 	$count=0;
 	foreach ($deletedlist as $obj)
 	{
@@ -138,7 +138,7 @@ $(document).ready(function(){
     <div class="panel-footer" style="text-align: right;">
 		<input type="button" name="purge" value="Inverter Sele&ccedil;&atilde;o" class="btn btn-warning" id="btnInverter">
 		<input type="submit" name="undelete" value="Apagar Selecionados em Definitivo" class="btn btn-danger">
-    </div> 
+    </div>
 	</form>
 </div>
 <!-- === Final === Recuperar objetos apagados === -->

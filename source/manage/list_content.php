@@ -14,6 +14,106 @@
  */
 global $_page;
 
+if (isset($_GET["ajaxtbl"]))
+{
+    //xd($_POST);
+    $busca = isset($_POST["search"]["value"])&&$_POST["search"]["value"]!=""?htmlspecialchars($_POST["search"]["value"], ENT_QUOTES, "UTF-8"):"";
+    $draw = isset($_POST["draw"])&&$_POST["draw"]!=""?htmlspecialchars($_POST["draw"], ENT_QUOTES, "UTF-8"):"1";
+    $qry = "";
+    if ($busca != "")
+    {
+        $qry .= "titulo like %".$busca."%";
+        $qry .= "||classe like %".$busca."%";
+        if(is_numeric($busca))
+        {
+            $qry .= "||cod_objeto like %".$busca."%";
+        }
+    }
+    //$qry = "titulo like %a%";
+    $ordem = isset($_POST["order"][0]["column"])?$_POST["columns"][(int)$_POST["order"][0]["column"]]["data"]:"";
+    if (isset($_POST["order"][0]["dir"]) && $_POST["order"][0]["dir"]=="desc")
+    {
+        $ordem = "-".$ordem;
+    }
+    $inicio = isset($_POST["start"])&&$_POST["start"]?(int)htmlspecialchars($_POST["start"], ENT_QUOTES, "UTF-8"):-1;
+    $limite = isset($_POST["length"])&&$_POST["length"]?(int)htmlspecialchars($_POST["length"], ENT_QUOTES, "UTF-8"):-1;
+    $pai = $_page->_objeto->Valor("cod_objeto");
+    $niveis = 0;
+    $objetos = $_page->_adminobjeto->LocalizarObjetos('*', $qry, $ordem, $inicio, $limite, $pai, $niveis);
+    $objetos2 = $_page->_adminobjeto->LocalizarObjetos('*', $qry, $ordem, -1, -1, $pai, $niveis);
+    $objetostotal = $_page->_adminobjeto->LocalizarObjetos('*', "", "", -1, -1, $pai, $niveis);
+    $array = array(
+        "draw" => $draw,
+        "recordsTotal" => count($objetostotal),
+        "recordsFiltered" => count($objetos2),
+        "data" => array()
+    );
+    foreach ($objetos as $obj)
+    {
+        if ($obj->metadados["cod_status"] == _STATUS_PRIVADO || $obj->metadados["cod_status"] == _STATUS_REJEITADO)
+        {
+            $obj->metadados["titulo"] = "<font color='red'>".$obj->metadados["titulo"]."</font>";
+        }
+        elseif ($obj->metadados["cod_status"] == _STATUS_SUBMETIDO)
+        {
+            $obj->metadados["titulo"] = "<font color='blue'>".$obj->metadados["titulo"]."</font>";
+        }
+        $obj->metadados["checkbox"] = "";
+        if ($_SESSION['usuario']['perfil'] < _PERFIL_AUTOR 
+                || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
+        {
+            $obj->metadados["checkbox"] .= '<input type="checkbox" '
+                    . 'id="objlist_'.$obj->Valor("cod_objeto").'" '
+                    . 'name="objlist[]" '
+                    . 'value="'.$obj->Valor("cod_objeto").'" class="chkObj">';
+        }
+        
+        $obj->metadados["acoes"] = "";
+        if ($_SESSION['usuario']['perfil'] < _PERFIL_AUTOR 
+                || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
+        {
+            $obj->metadados["acoes"] .= '<a href="'.$_page->config["portal"]["url"].'/do/edit/'.$obj->Valor("cod_objeto").'.html" '
+                    . 'title="Editar Objeto" '
+                    . 'class="margin-left5" '
+                    . 'rel="tooltip" '
+                    . 'data-animate="animated fadeIn" '
+                    . 'data-toggle="tooltip" '
+                    . 'data-original-title="Editar Objeto" '
+                    . 'data-placement="left" '
+                    . 'title="Editar este objeto"><i class="fapbl fapbl-pencil-alt font-size16"></i></a>';
+        }
+        $obj->metadados["acoes"] .= "<a href='".$_page->config["portal"]["url"].$obj->Valor("url")."' "
+                . "title='Exibir Objeto' "
+                . "rel='tooltip' "
+                . "data-animate='animated fadeIn' "
+                . "data-toggle='tooltip' "
+                . "data-original-title='Visualizar objeto' "
+                . "data-placement='left' "
+                . "title='Visualizar objeto' "
+                . "class='margin-left5'><i class='fapbl fapbl-eye font-size16'></i></a>";
+        if ($obj->PodeTerFilhos())
+        {
+            $obj->metadados["acoes"] .= "<a href='".$_page->config["portal"]["url"]."/do/list_content/".$obj->Valor("cod_objeto").".html' "
+                    . "title='Listar conteúdo' "
+                    . "rel='tooltip' "
+                    . "data-animate='animated fadeIn' "
+                    . "data-toggle='tooltip' "
+                    . "data-original-title='Listar conteúdo' "
+                    . "data-placement='left' "
+                    . "title='Listar conteúdo' "
+                    . "class='margin-left5'><i class='fapbl fapbl-folder-open font-size16'></i></a>";
+        }
+
+        $array["data"][] = $obj->metadados;
+        
+    }
+    
+    echo(json_encode($array));
+    exit();
+//    $objetos = $_page->_adminobjeto->LocalizarObjetos('*', $qry, $ordem='', $inicio=-1, $limite=-1, $pai=-1, $niveis=-1, $apagados=false, $likeas='', $likenocase='', $tags='')
+ //   xd($array);
+}
+
 $_page->_objeto->PegaListaDeFilhos('*');
 
 $lstStatus = array("", "Privado", "Publicado", "Rejeitado", "Submetido");
@@ -30,9 +130,36 @@ $(document).ready(function(){
     
     $('#tabelaLista')
             .dataTable({
-                responsive: true,
-                language: linguagemDataTable,
-                order: [[ 1, "asc" ]]
+                "responsive": true,
+                "language": linguagemDataTable,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "do/list_content/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
+                    "type": "POST"
+                },
+                "order": [[ 2, "asc" ]],
+                "columns": [
+                    { 
+                        "data": "checkbox",
+                        "orderable": false,
+                        "searchable": false
+                    },
+                    { "data": "cod_objeto" },
+                    { "data": "titulo" },
+                    { "data": "classe" },
+                    { 
+                        "data": "peso",
+                        "searchable": false
+                    },
+                    { "data": "data_publicacao" },
+                    { "data": "status" },
+                    { 
+                        "data": "acoes",
+                        "orderable": false,
+                        "searchable": false
+                    }
+                ]
             });
             
     $(".btnAcao").click(function(){
@@ -58,7 +185,7 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Listar Conteúdo</b></h3></div>
 	
-    <form action="do/list_content_post.php/<?php echo($_page->_objeto->Valor("cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
+    <form action="do/list_content_post/<?php echo($_page->_objeto->Valor("cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
         <input type="hidden" name="return_obj" value="<?php echo($_page->_objeto->Valor("cod_objeto")); ?>">
 
         <div class="panel-footer">
@@ -134,60 +261,6 @@ if ($_page->_objeto->Valor("cod_objeto") != $_page->config["portal"]["objroot"])
                                 <th>A&ccedil;&otilde;es</th>
                             </tr>
                         </thead>
-                        <tbody>
-<?php
-for ($i=0; $i < $_page->_objeto->quantidade; $i++)
-{
-    $obj = $_page->_objeto->filhos[$i];
-    $style_status = "";
-    if ($obj->Valor("cod_status") == _STATUS_SUBMETIDO) $style_status = "color: blue !important;";
-    elseif ($obj->Valor("cod_status") == _STATUS_PRIVADO || $obj->Valor("cod_status") == _STATUS_REJEITADO) $style_status = "color: red !important;";
-?>
-                            <tr style="<?php echo($style_status); ?>">
-                                <td>
-<?php
-    if (($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']) 
-            || $_SESSION['usuario']['perfil']<=_PERFIL_EDITOR)
-    {
-?>
-                                    <input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo($obj->Valor("cod_objeto"));?>" class="chkObj">
-<?php
-    } else { echo("&nbsp;"); }
-?>
-                                </td>
-                                <td><?php echo($obj->Valor("cod_objeto")); ?></td>
-                                <td><?php echo($obj->Valor("titulo")); ?></td>
-                                <td><?php echo($obj->Valor("classe")); ?></td>
-                                <td><?php echo($obj->Valor("peso")); ?></td>
-                                <td><?php 
-                                $vdata = preg_split("[ - ]", $obj->Valor("data_publicacao"));
-                                echo($vdata[0]); 
-                                ?></td>
-                                <td><?php echo($lstStatus[$obj->Valor("cod_status")]); ?></td>
-                                <td>
-<?php
-    if ($_SESSION['usuario']['perfil']<=_PERFIL_AUTOR || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
-    {
-?>
-                                    <a href="<?php echo($_page->config["portal"]["url"]); ?>/manage/edit/<?php echo($obj->Valor("cod_objeto")); ?>.html" title='Editar Objeto' class='margin-left5' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Objeto' data-placement='left' title='Editar este objeto'><i class='fapbl fapbl-pencil-alt font-size16'></i></a>
-<?php
-    }
-?>
-                                    <a href="<?php echo($_page->config["portal"]["url"].$obj->Valor("url")); ?>" title="Exibir Objeto" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Visualizar objeto' data-placement='left' title='Visualizar objeto' class='margin-left5'><i class='fapbl fapbl-eye font-size16'></i></a>
-<?php
-    if ($obj->PodeTerFilhos())
-    {
-?>
-                                    <a href="<?php echo($_page->config["portal"]["url"]); ?>/do/list_content/<?php echo($obj->Valor("cod_objeto")); ?>.html" title="Listar conteúdo" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Listar conteúdo' data-placement='left' title='Listar conteúdo' class='margin-left5'><i class='fapbl fapbl-folder-open font-size16'></i></a>
-<?php
-    } 
-?>
-                                </td>
-                            </tr>
-<?php
-}
-?>
-                        </tbody>
                     </table>
                     <!-- === Final === Tabela Listar Conteúdo (DATATABLE) === -->
 

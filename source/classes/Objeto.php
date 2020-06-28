@@ -69,8 +69,17 @@ class Objeto
         $this->metadados['data_publicacao'] = ConverteData($this->metadados['data_publicacao'],1);
         $this->metadados['data_validade'] = ConverteData($this->metadados['data_validade'],1);
         //INCLUIDO O TITULO DO OBJETO NA URL
-        if ($this->metadados['url_amigavel'] && $this->metadados['url_amigavel']!="") $this->metadados['url'] = "/".$this->metadados['url_amigavel'];
-        else $this->metadados['url']='/index.php/content/view/'.$this->metadados['cod_objeto']."/".limpaString($this->metadados['titulo']).".html";
+        if ($this->metadados['url_amigavel'] 
+                && $this->metadados['url_amigavel']!="") 
+        {
+            $this->metadados['url'] = "/".$this->metadados['url_amigavel'];
+//            $this->metadados['url'] = "/".$this->_page->config["portal"]["pasta"]."/".$this->metadados['url_amigavel'];
+//            $this->metadados['url'] = str_replace("//", "/", $this->metadados['url']);
+        }
+        else 
+        {
+            $this->metadados['url']='/content/view/'.$this->metadados['cod_objeto']."/".limpaString($this->metadados['titulo']).".html";
+        }
         $this->metadados['tags'] = $this->_page->_adminobjeto->PegaTags($this->metadados['cod_objeto']);
     }
 

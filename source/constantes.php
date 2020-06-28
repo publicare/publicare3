@@ -23,6 +23,7 @@ define("EmailNewLine", "\r\n");
 /**
  * Constantes para operações com objetos
  */
+define('_OPERACAO_OBJETO_MOVER', 5);
 define('_OPERACAO_OBJETO_RECUPERAR', 4);
 define('_OPERACAO_OBJETO_REMOVER', 3);
 define('_OPERACAO_OBJETO_EDITAR', 2);
@@ -52,4 +53,4 @@ define('_PERFIL_DEFAULT', 6);
 /**
  * Versao
  */
-define('_VERSIONPROG','Publicare 3.2.2 - 10/02/2020');
+define('_VERSIONPROG','Publicare 3.3.0 - 28/06/2020');

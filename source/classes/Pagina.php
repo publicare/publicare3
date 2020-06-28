@@ -93,6 +93,8 @@ class Pagina
     public $TempoDeExecucao;
     
     public $config;
+    
+    public $acao;
 
     /**
      * Método construtor
@@ -172,7 +174,7 @@ class Pagina
      */
     function Executar($acao,$incluirheader=false, $irpararaiz=false)
     {
-        
+        $this->acao = $acao;
         $acaoCompleta = "";
         // quebrando string de acao pelas barras "/"
         $vacao = preg_split("[\/]", $acao);
@@ -189,10 +191,10 @@ class Pagina
         $incluir["view"]["arquivo"] = "";
         $incluir["view"]["parse"] = true;
         
-        
         // informa se header sera incluido ou nao
         if (isset($_GET["naoincluirheader"])) $incluirheader = false;
         else $incluirheader = true;
+        
         
         // verifica acoes com blobs
         // estas acoes foram adicionadas no inicio do metodo para que a carga de imagens seja mais rapida
@@ -218,10 +220,9 @@ class Pagina
             $prefixo = $_GET["nome"];
             $this->_blob->IconeBlob($prefixo);
         }
-        elseif (strpos($acao,"/do/")!==false || strpos($acao,"/manage/")!==false)
+        elseif (strpos($acao,"/do/")!==false)
         {
-
-            if ($acao == "/do/login_post")
+            if ($acao == "/do/login_post" || $acao == "/do/esquecisenha_post")
             {
                 $incluirheader = false;
                 $acaoSistema = $vacao[count($vacao)-1];
@@ -230,9 +231,7 @@ class Pagina
             }
             elseif ($this->_usuario->PodeExecutar($acao))
             {
-                
                 $this->IncluirAdmin();
-//                $tmpArrPerfilObjeto = $this->_usuario->PegaDireitosDoUsuario($this, $_SESSION['usuario']['cod_usuario']);
                 
                 // verifica se eh operacao com pilhas
                 // Copiar para pilha
@@ -262,21 +261,22 @@ class Pagina
                     }
                     return true;
                 }
-                // Acao new_[prefixo classe] - Criação de novo objeto
-                elseif (preg_match('|\/manage\/(.*?)_.*|is', $acao, $matches))
+                else 
                 {
-                    $incluir["view"]["arquivo"] = 'manage/'.$matches[1].'_basic.php';
-                    $incluir["view"]["parse"] = false;
-                }
-                // Editar objeto
-                elseif ($acao=='/manage/edit')
-                {
-                    $incluir["view"]["arquivo"] = 'manage/edit_basic.php';
-                    $incluir["view"]["parse"] = false;
+                    $acaoSistema = $vacao[count($vacao)-1];
+                    if (($acaoSistema != "new_post" && strpos($acaoSistema, "new_")!==false)
+                            || $acaoSistema=="edit")
+                    {
+                        $incluir["view"]["arquivo"] = 'manage/form_construct.php';
+                        $incluir["view"]["parse"] = false;
+                    }
+                    else
+                    {
+                        $incluir["view"]["arquivo"] = 'manage/'.$acaoSistema.".php";
+                        $incluir["view"]["parse"] = false;
+                    }
                 }
                 
-                
-//                xd($acao);
                 // Inclui header do publicare caso nao seja post nem tenha get naoincluirheader
                 if (!strpos($acao,'_post') && $incluirheader)
                 {
@@ -291,30 +291,10 @@ class Pagina
                 {
                     $incluirheader = false;
                 }
-                
-                // identifica qual acao do sistema devera executar
-                $acaoSistema = $vacao[count($vacao)-1];
 
-                // Se não tiver o include definido ainda, procura arquivos para incluir
-                if ($incluir["view"]["arquivo"] == "")
-                {
-                    // caso exista ".php" na acao, inclui o arquivo diretamente
-                    if (strpos($acaoSistema, '.php')!==false)
-                    {
-                        $incluir["view"]["arquivo"] = 'manage/'.$acaoSistema;
-                        $incluir["view"]["parse"] = false;
-                    }
-                    // caso nao tenha, inclui o arquivo adicionando extensao .php
-                    else
-                    {
-                        $incluir["view"]["arquivo"] = 'manage/'.$acaoSistema.'.php';
-                        $incluir["view"]["parse"] = false;
-                    }
-                }
             }
             else
             {
-//                xd($acao);
                 $this->ExibirMensagemProibido($acao);
             }
         }
