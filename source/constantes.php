@@ -53,4 +53,4 @@ define('_PERFIL_DEFAULT', 6);
 /**
  * Versao
  */
-define('_VERSIONPROG','Publicare 3.2.2 - 10/02/2020');
+define('_VERSIONPROG','Publicare 3.3.0 - 28/06/2020');
