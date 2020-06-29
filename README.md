@@ -23,9 +23,13 @@ As classes são usadas para criar objetos.
 ### Metadados
 
 São os dados que todos os objetos possuem, independente da classe que pertencem.
+São informações que ficam guardadas na tabela de objetos
 Os metadados são:
-- titulo
-- descricao
+
+#### titulo
+O título do objeto
+
+#### descricao
 - data_publicacao
 - data_validade
 - peso
