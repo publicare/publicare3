@@ -11,6 +11,7 @@ Assim, até mesmo o número de pessoas produzindo páginas para publicação dir
 
 ### O que é um Sistema de Gerenciamento de Conteúdo?
 Um gerenciador de conteúdo é uma ferramenta que permite integrar e automatizar todos os processos relacionados à criação, personalização, controle de acesso e disponibilização de conteúdos em portais web.
+
 Entende-se aqui por conteúdo não somente as informações que estão estruturadas nos bancos de dados da organização, como também aquelas não ou semi-estruturadas, não se limitando apenas a textos HTML, mas também áudio, vídeo, etc.
 
 ## Conceitos
@@ -23,15 +24,34 @@ As classes são usadas para criar objetos.
 ### Metadados
 
 São os dados que todos os objetos possuem, independente da classe que pertencem.
+
+São informações que ficam guardadas na tabela de objetos.
+
 Os metadados são:
-- titulo
-- descricao
-- data_publicacao
-- data_validade
-- peso
-- cod_pele
-- cod_classe
-- prefixo_classe 
+
+#### titulo
+O título do objeto
+
+#### descricao
+Descrição do objeto. Normalmente usado para metatag description. Até 200 caracteres. 
+
+#### data_publicacao
+Data a partir do qual o objeto ficará visível para os usuários.
+
+#### data_validade
+Data a partir do qual o objeto ficará invisível para os usuários do site.
+
+#### peso
+Utilizado normalmente para ordenar os objetos através do comando localizar.
+
+#### cod_pele
+O código da pele a qual o objeto pertence. Caso nenhuma pele seja definida utiliza a pele padrão.
+
+#### cod_classe
+O código da classe ao qual o objeto pertence
+
+#### prefixo_classe 
+O prefixo da classe do objeto.
 
 ### Objeto
 
@@ -56,12 +76,15 @@ Por exemplo, um arquivo é um objeto filho que reside em uma pasta, que é o obj
 ### Pele
 
 Pele é um conjunto de templates com header e footer próprios.
+
 Ao ser aplicado a um objeto, todos os filhos recebem a mesma pele, recursivamente.
 
 ### Template
 
-Template, ou script de exibição, é o modelo de exibição de um objeto.
-Define onde e como as propriedades serão exibidas.
-Cada classe tem o seu próprio template.
+Template, ou script de exibição, é o modelo de exibição de um objeto. Define onde e como as propriedades e metadados serão exibidos.
+
+Cada classe tem o seu próprio template. 
+Ao renderizar um objeto, o publicare verifica a qual classe pertence o objeto e procura o template correspondente, se não encontrar o arquivo correspondente renderiza usando o template ```view_basic.php```.
+
 Todo portal criado com o Publicare tem um template padrão, o ```<portal_root>/html/template/view_basic.php```, utilizado para exibir todas as propriedades do objeto.
 
