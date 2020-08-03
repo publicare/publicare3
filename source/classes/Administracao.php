@@ -2,15 +2,30 @@
 /**
  * Publicare - O CMS Público Brasileiro
  * @description Arquivo
- * @copyright GPL © 2007
+ * @copyright MIT © 2020
  * @package publicare
  *
  * Este arquivo é parte do programa Publicare
- * Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU 
- * como publicada pela Fundação do Software Livre (FSF); na versão 3 da Licença, ou (na sua opinião) qualquer versão.
- * Este programa é distribuído na esperança de que possa ser  útil, mas SEM NENHUMA GARANTIA; sem uma garantia implícita 
- * de ADEQUAÇÃO a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU para maiores detalhes.
- * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2020 Publicare
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
 */
 
 /**
@@ -790,11 +805,11 @@ class Administracao
 
         // prepara dados para gravação, prevenção de sql injection
         $campos = array();
-        $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["script_exibir"]] = htmlspecialchars($dados['script_exibir'], ENT_QUOTES, "UTF-8");
+        $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["script_exibir"]] = isset($dados['script_exibir'])?htmlspecialchars($dados['script_exibir'], ENT_QUOTES, "UTF-8"):"";
         $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pai"]] = (int)htmlspecialchars($dados['cod_pai'], ENT_QUOTES, "UTF-8");
         $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_classe"]] = (int)htmlspecialchars($dados['cod_classe'], ENT_QUOTES, "UTF-8");
-        $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_usuario"]] = (int)htmlspecialchars($dados['cod_usuario'], ENT_QUOTES, "UTF-8");
-        $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pele"]] = (int)htmlspecialchars($dados['cod_pele'], ENT_QUOTES, "UTF-8");
+        $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_usuario"]] = isset($dados['cod_usuario'])?(int)htmlspecialchars($dados['cod_usuario'], ENT_QUOTES, "UTF-8"):$_SESSION['usuario']['cod_usuario'];
+        $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pele"]] = isset($dados['cod_pele'])?(int)htmlspecialchars($dados['cod_pele'], ENT_QUOTES, "UTF-8"):"";
         $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["cod_status"]] = (int)htmlspecialchars($dados['cod_status'], ENT_QUOTES, "UTF-8");
         $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["titulo"]] = htmlspecialchars($dados['titulo'], ENT_QUOTES, "UTF-8");
         $campos[$this->_page->_db->tabelas["objeto"]["colunas"]["descricao"]] = htmlspecialchars($dados['descricao'], ENT_QUOTES, "UTF-8");
@@ -1872,7 +1887,8 @@ class Administracao
                     $ext = pathinfo($arquivo);
                     if((isset($ext["extension"]) && in_array($ext["extension"], $tipos)) 
                             && $arquivo != "view_protegido.php" 
-                            && substr($arquivo, 0, 5) == "view_") $default[] = $arquivo;
+                            && substr($arquivo, 0, 5) == "view_"
+                            && substr($arquivo, 0, 6) != "view__") $default[] = $arquivo;
                 }
             }
             closedir($dir);
@@ -2186,7 +2202,7 @@ $str .= "*  <hr /> \r\n"
         . "*/ \r\n"
         . "?> \r\n"
         . "\r\n"
-        . "<script>window.location='/content/view/<@= #cod_pai@>.html';</script>\r\n";
+        . "<script>/*window.location='/content/view/<@= #cod_pai@>.html';*/</script>\r\n";
 
         if (!file_exists($pasta.$nome_arquivo))
         {
