@@ -2,15 +2,30 @@
 /**
  * Publicare - O CMS Público Brasileiro
  * @description Arquivo
- * @copyright GPL © 2007
+ * @copyright MIT © 2020
  * @package publicare
  *
  * Este arquivo é parte do programa Publicare
- * Publicare é um software livre; você pode redistribuí-lo e/ou modificá-lo dentro dos termos da Licença Pública Geral GNU 
- * como publicada pela Fundação do Software Livre (FSF); na versão 3 da Licença, ou (na sua opinião) qualquer versão.
- * Este programa é distribuído na esperança de que possa ser  útil, mas SEM NENHUMA GARANTIA; sem uma garantia implícita 
- * de ADEQUAÇÃO a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU para maiores detalhes.
- * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2020 Publicare
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 global $_page, $action;
@@ -116,6 +131,14 @@ else
 }
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
+<?php
+if ($edit === true && $_page->_usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
+{
+?>
+                <a href="do/qrcode/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+<?php                
+}
+?>
             </div>
             <!-- === Final === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
             <!-- === Mensagem de ação === -->
@@ -138,16 +161,7 @@ else
                         </div>
                     </div>
                     
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="data_publicacao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual o objeto ficar&aacute; vis&iacute;vel.' data-placement='top' title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual objeto ficar&aacute; vis&iacute;vel.'></i> Data publica&ccedil;&atilde;o <small><small>* <br />(#data_publicacao)</small></small></label>
-                        <div class="col-md-3">
-                            <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor("data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
-                        </div>
-                        <label class="col-md-3 col-form-label" for="data_validade"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data validade informa a data/hora a partir da qual objeto deixar&aacute; de ser vis&iacute;vel.' data-placement='top' title='O campo data validade informa a data/hora a partir da qual o objeto deixar&aacute; de ser vis&iacute;vel.'></i> Data validade <small><small>* <br />(#data_validade)</small></small></label>
-                        <div class="col-md-3">
-                            <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor("data_validade")):$dataValidade." ".$horaAtual) ?>" />
-                        </div>
-                    </div>
+                    
 <?php
 $propsegura = "";
 $propobrigatoria = "";
@@ -281,89 +295,118 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                     <input type="hidden" name="propriedade_obrigatoria" value="<?php echo($propobrigatoria); ?>" />
                 </div>
             </div>
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    Dados avançados
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            SEO
+                        </div>
+                        <div class="panel-body">
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="descricao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo Descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.' data-placement='top' title='O campo descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.'></i> Descri&ccedil;&atilde;o <small><small><br />(#descricao)</small></small></label>
+                                <div class="col-md-8">
+                                    <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$_page->_objeto->Valor("descricao"):""); ?></textarea>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="url_amigavel"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".' data-placement='top' title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".'></i> URL Amigável <small><small><br />(#url_amigavel)</small></small></label>
+                                <div class="col-md-8">
+                                    <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$_page->_objeto->Valor("url_amigavel"):""); ?>" />
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="tags"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.' data-placement='top' title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.'></i> TAGS <small><small><br />(#tags)</small></small></label>
+                                <div class="col-md-8">
+                                    <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$_page->_objeto->Valor("tags"):""); ?></textarea>
+                                </div>
+                            </div> 
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="peso"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.' data-placement='top' title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.'></i> Peso <small><small><br />(#peso)</small></small></label>
+                                <div class="col-md-8">
+                                    <input type="number" name="peso" id="peso" class="form-control required" value="<?php echo($peso); ?>" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="descricao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo Descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.' data-placement='top' title='O campo descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.'></i> Descri&ccedil;&atilde;o <small><small><br />(#descricao)</small></small></label>
-                        <div class="col-md-9">
-                            <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$_page->_objeto->Valor("descricao"):""); ?></textarea>
+                <div class="col-md-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Dados avançados
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="url_amigavel"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".' data-placement='top' title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".'></i> URL Amigável <small><small><br />(#url_amigavel)</small></small></label>
-                        <div class="col-md-9">
-                            <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$_page->_objeto->Valor("url_amigavel"):""); ?>" />
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="tags"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.' data-placement='top' title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.'></i> TAGS <small><small><br />(#tags)</small></small></label>
-                        <div class="col-md-9">
-                            <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$_page->_objeto->Valor("tags"):""); ?></textarea>
-                        </div>
-                    </div>                    
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="cod_pele"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Pele <small><small><br />(#cod_pele)</small></small></label>
-                        <div class="col-md-9">
-                            <select class="form-control" name="cod_pele" id="cod_pele">
-                                <option value="">- Pele Padrão -</option>
-<?php
+                        <div class="panel-body">
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="data_publicacao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual o objeto ficar&aacute; vis&iacute;vel.' data-placement='top' title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual objeto ficar&aacute; vis&iacute;vel.'></i> Data publica&ccedil;&atilde;o <small><small>* <br />(#data_publicacao)</small></small></label>
+                                <div class="col-md-8">
+                                    <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor("data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="data_validade"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data validade informa a data/hora a partir da qual objeto deixar&aacute; de ser vis&iacute;vel.' data-placement='top' title='O campo data validade informa a data/hora a partir da qual o objeto deixar&aacute; de ser vis&iacute;vel.'></i> Data validade <small><small>* <br />(#data_validade)</small></small></label>
+                                <div class="col-md-8">
+                                    <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $_page->_objeto->Valor("data_validade")):$dataValidade." ".$horaAtual) ?>" />
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="cod_pele"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Pele <small><small><br />(#cod_pele)</small></small></label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="cod_pele" id="cod_pele">
+                                        <option value="">- Pele Padrão -</option>
+        <?php
 
-foreach ($peles as $pele)
-{
-?>
-                                <option value="<?php echo($pele["codigo"]); ?>" <?php if($pele["codigo"]==$cod_pele) {echo("selected");} ?>><?php echo($pele["texto"]); ?></option>
-<?php
-}
-?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="script_exibir"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Script de exibição    </label>
-                        <div class="col-md-9">
-                            <select class="form-control" name="script_exibir" id="script_exibir">
-                                <option value="">. selecione .</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto</label>
-                        <div class="col-md-9">
-<?php
-$usuarios = $_page->_administracao->PegaListadeDependentes($cod_usuario);
-if ($usuarios === false)
-{
-?>
-                            <input type="hidden" value="<?php echo($cod_usuario); ?>" name="cod_usuario" /> Reservado ao administrador
-<?php
-}
-else
-{
-?>
-                            <select class="form-control required" name="cod_usuario" id="cod_usuario">
-                                <option value="">. selecione .</option>
-<?php
-    foreach ($usuarios as $usu)
-    {
-?>
-                                <option value="<?php echo($usu["codigo"]); ?>" <?php if($cod_usuario == $usu["codigo"]) {echo "selected";} ?>><?php echo("(" . $usu["secao"] . ") " . $usu["texto"]); ?></option>
+        foreach ($peles as $pele)
+        {
+        ?>
+                                        <option value="<?php echo($pele["codigo"]); ?>" <?php if($pele["codigo"]==$cod_pele) {echo("selected");} ?>><?php echo($pele["texto"]); ?></option>
+        <?php
+        }
+        ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="script_exibir"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Script de exibição <small><small><br />(#script_exibir)</small></small></label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="script_exibir" id="script_exibir">
+                                        <option value="">. selecione .</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label" for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto <small><small><br />(#cod_usuario)</small></small></label>
+                                <div class="col-md-8">
+        <?php
+        $usuarios = $_page->_administracao->PegaListadeDependentes($cod_usuario);
+        if ($usuarios === false)
+        {
+        ?>
+                                    <input type="hidden" value="<?php echo($cod_usuario); ?>" name="cod_usuario" /> Reservado ao administrador
+        <?php
+        }
+        else
+        {
+        ?>
+                                    <select class="form-control required" name="cod_usuario" id="cod_usuario">
+                                        <option value="">. selecione .</option>
+        <?php
+            foreach ($usuarios as $usu)
+            {
+        ?>
+                                        <option value="<?php echo($usu["codigo"]); ?>" <?php if($cod_usuario == $usu["codigo"]) {echo "selected";} ?>><?php echo("(" . $usu["secao"] . ") " . $usu["texto"]); ?></option>
 
-<?php
-    }
-?>
-                            </select>
-<?php
-}
-?>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="peso"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.' data-placement='top' title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.'></i> Peso <small><small><br />(#peso)</small></small></label>
-                        <div class="col-md-9">
-                            <input type="number" name="peso" id="peso" class="form-control required" value="<?php echo($peso); ?>" />
+        <?php
+            }
+        ?>
+                                    </select>
+        <?php
+        }
+        ?>
+                                </div>
+                            </div>
+        <?php
+        //}
+        ?>
+                            
                         </div>
                     </div>
                 </div>
@@ -389,6 +432,14 @@ else
 }
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
+<?php
+if ($edit === true && $_page->_usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
+{
+?>
+                <a href="do/qrcode/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+<?php                
+}
+?>
             </div>
             <!-- === Final === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
             <!-- === Mensagem de ação === -->
