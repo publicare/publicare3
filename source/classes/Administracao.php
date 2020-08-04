@@ -847,6 +847,15 @@ class Administracao
     {
         $obj = new Objeto($this->_page, $cod_objeto);
         $obj->PegaListaDePropriedades();
+        $classe = $this->PegaInfoDaClasse($obj->Valor("cod_classe"));
+        unset($classe["todas"]);
+        unset($classe["obj_conta"]);
+        unset($classe["objetos"]);
+        unset($obj->_page);
+        unset($obj->ponteiro);
+        unset($obj->quantidade);
+//        unset($obj->ArrayMetadados);
+        $obj->classe = $classe;
         $arr_obj = serialize($obj);
         $ip = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0');
         
@@ -1514,7 +1523,7 @@ class Administracao
     {
         $out=array();
         $sql = "SELECT "
-                . " ".$this->_page->_db->tabelas["classexfilhos"]["nick"].".".$this->_page->_db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." AS cod_classe_filho, "
+                . " ".$this->_page->_db->tabelas["classexfilhos"]["nick"].".".$this->_page->_db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." AS cod_classe, "
                 . " ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["nome"]." AS nome, "
                 . " ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["descricao"]." AS descricao, "
                 . " ".$this->_page->_db->tabelas["classe"]["nick"].".".$this->_page->_db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo "

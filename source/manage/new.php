@@ -55,8 +55,29 @@ $("document").ready(function(){
 <?php
 $lista = $_page->_administracao->ListaDeClassesPermitidas($_page->_objeto->Valor("cod_classe"));
 $lista2 = $_page->_administracao->ListaDeClassesPermitidasNoObjeto($_page->_objeto->Valor("cod_objeto"));
-$lista=array_merge($lista,$lista2);
-//xd($lista);
+//x($lista);
+//x($lista2);
+foreach ($lista2 as $l)
+{
+    $encontrado = false;
+    foreach ($lista as $li)
+    {
+        if ($l["cod_classe"] == $li["cod_classe"])
+        {
+            $encontrado = true;
+            break;
+        }
+    }
+    if (!$encontrado)
+    {
+        $lista[] = $l;
+    }
+}
+
+usort($lista, function($a, $b){
+    return strtolower($a["nome"])>strtolower($b["nome"]);
+});
+
 foreach($lista as $row)
 {
 ?>

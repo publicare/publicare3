@@ -21,7 +21,7 @@
 			<!-- === Footer (Copyright e versão) === -->		
 			<div id="footer-tela">
 				<div class="row">
-					<div class="col-sm-8">Publicare - O CMS Público Brasileiro © 2018 - Todos os direitos reservados</div>
+					<div class="col-sm-8">Publicare - O CMS Público Brasileiro</div>
 					<div class="col-sm-4 text-right"><?php echo _VERSIONPROG; ?></div>
 				</div>
 			</div>
