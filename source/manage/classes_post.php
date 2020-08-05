@@ -45,7 +45,7 @@ $ic_classe = isset($_POST['ic_classe'])?htmlspecialchars($_POST["ic_classe"], EN
 
 // Apaga a classe
 if (isset($_POST['apagar_classe']) && $_POST['apagar_classe'] == "1" && $cod_classe > 0) {
-    $_page->_administracao->ApagarClasse($_POST['cod_classe']);
+    $_page->_administracao->apagarClasse($_POST['cod_classe']);
     $cod_classe = 0;
 }
 // criar / editar classe
@@ -137,7 +137,7 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
             // apagar propriedade
             if ($propp["ativa"] == 0)
             {
-                $_page->_administracao->ApagarPropriedadeDaClasse($cod_propriedade);
+                $_page->_administracao->apagarPropriedadeDaClasse($cod_propriedade);
             }
             // alterar propriedade
             else
@@ -149,7 +149,7 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
         // nova propriedade
         else
         {
-            $_page->_administracao->AcrescentarPropriedadeAClasse($cod_classe, $dados);
+            $_page->_administracao->acrescentarPropriedadeAClasse($cod_classe, $dados);
         }
     }
     

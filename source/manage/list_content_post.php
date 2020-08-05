@@ -37,7 +37,7 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']))
     {
         if (isset($_POST['delete'])) 
         {
-            $_page->_administracao->ApagarObjeto($obj);
+            $_page->_administracao->apagarObjeto($obj);
         }
         if (isset($_POST['duplicate']))
         {

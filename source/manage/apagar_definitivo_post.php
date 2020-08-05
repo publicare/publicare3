@@ -34,7 +34,7 @@ if (isset($_POST['objlist']))
 {
     foreach($_POST['objlist'] as $obj)
     {
-        $_page->_administracao->ApagarObjeto($obj, true);
+        $_page->_administracao->apagarObjeto($obj, true);
     }
 }
 header ("Location:" . $_page->config["portal"]["url"] . "/do/apagar_definitivo/".$_page->_objeto->Valor('cod_objeto').'.html');

@@ -29,6 +29,6 @@
  */
 global $_page, $cod_objeto;
 
-	$_page->_administracao->ApagarObjeto($cod_objeto);
+	$_page->_administracao->apagarObjeto($cod_objeto);
 	header("Location:".$_page->config["portal"]["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");
 ?>

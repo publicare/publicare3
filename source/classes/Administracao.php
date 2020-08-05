@@ -56,7 +56,7 @@ class Administracao
      * @param int $cod_classe - Codigo da classe
      * @param array $novo - Dados da propriedade
      */
-    function AcrescentarPropriedadeAClasse($cod_classe, $novo)
+    function acrescentarPropriedadeAClasse($cod_classe, $novo)
     {
         $sql = "INSERT INTO ".$this->_page->_db->tabelas["propriedade"]["nome"]." ("
                 . " ".$this->_page->_db->tabelas["propriedade"]["colunas"]["cod_classe"].", "
@@ -115,7 +115,7 @@ class Administracao
      * @param bool $log - Indica se deve gerar log ou não
      * @return int - Código do objeto alterado
      */
-    function AlterarObjeto($dados, $log = true)
+    function alterarObjeto($dados, $log = true)
     {	
         $fieldlist = array();
         $valorlist = array();
@@ -197,9 +197,9 @@ class Administracao
                 . "WHERE ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->_page->_db->ExecSQL($sql);
 
-        $this->ApagarPropriedades($cod_objeto, false);
+        $this->apagarPropriedades($cod_objeto, false);
         $this->GravarPropriedades($cod_objeto, $cod_classe, $proplist);
-        $this->GravarTags($cod_objeto, $tagslist);
+        $this->gravarTags($cod_objeto, $tagslist);
 			
         if ($log)
         {
@@ -508,7 +508,7 @@ class Administracao
      * @param int $cod_objeto - Codigo do objeto a remover as propriedades
      * @param bool $tudo - Indica se deve apagar blobs também
      */
-    function ApagarPropriedades($cod_objeto, $tudo = true)
+    function apagarPropriedades($cod_objeto, $tudo = true)
     {
         $sql = "SELECT ".$this->_page->_db->tabelas["tipodado"]["nick"].".".$this->_page->_db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela "
                 . " FROM ".$this->_page->_db->tabelas["objeto"]["nome"]." ".$this->_page->_db->tabelas["objeto"]["nick"]."  "
@@ -835,12 +835,74 @@ class Administracao
         // grava as relações de parentesco do objeto
         $this->CriaParentesco($cod_objeto, $dados['cod_pai']);
         // grava as tags
-        $this->GravarTags($cod_objeto, $tagslist);
+        $this->gravarTags($cod_objeto, $tagslist);
         
         // grava o log
         if ($log) $this->_page->_log->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
         
         return $cod_objeto;
+    }
+    
+    public function getIpAddress() {
+        // Check for shared internet/ISP IP
+        if (!empty($_SERVER['HTTP_CLIENT_IP']) && $this->validateIp($_SERVER['HTTP_CLIENT_IP']))
+        {
+            return $_SERVER['HTTP_CLIENT_IP'];
+        }
+
+        // Check for IPs passing through proxies
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) 
+        {
+        // Check if multiple IP addresses exist in var
+            $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            foreach ($iplist as $ip) 
+            {
+                if ($this->validateIp($ip))
+                {
+                    return $ip;
+                }
+            }
+        }
+        
+        if (!empty($_SERVER['HTTP_X_FORWARDED']) && $this->validateIp($_SERVER['HTTP_X_FORWARDED']))
+        {
+            return $_SERVER['HTTP_X_FORWARDED'];
+        }
+        if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && $this->validateIp($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+        {
+            return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+        }
+        if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && $this->validateIp($_SERVER['HTTP_FORWARDED_FOR']))
+        {
+            return $_SERVER['HTTP_FORWARDED_FOR'];
+        }
+        if (!empty($_SERVER['HTTP_FORWARDED']) && $this->validateIp($_SERVER['HTTP_FORWARDED']))
+        {
+            return $_SERVER['HTTP_FORWARDED'];
+        }
+
+        // Return unreliable IP address since all else failed
+        return $_SERVER['REMOTE_ADDR'];
+    }
+
+    /**
+     * Ensures an IP address is both a valid IP address and does not fall within
+     * a private network range.
+     *
+     * @access public
+     * @param string $ip
+     */
+    public function validateIp($ip) {
+        if (filter_var($ip, FILTER_VALIDATE_IP, 
+                            FILTER_FLAG_IPV4 | 
+                            FILTER_FLAG_IPV6 |
+                            FILTER_FLAG_NO_PRIV_RANGE | 
+                            FILTER_FLAG_NO_RES_RANGE) === false)
+        {
+            return false;
+        }
+        self::$ip = $ip;
+        return true;
     }
     
     function GravaVersao($cod_objeto)
@@ -857,7 +919,7 @@ class Administracao
 //        unset($obj->ArrayMetadados);
         $obj->classe = $classe;
         $arr_obj = serialize($obj);
-        $ip = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0');
+        $ip = $this->getIpAddress();
         
         $sql = "";
         $bind = array();
@@ -931,11 +993,11 @@ class Administracao
      * @param int $cod_objeto - Codigo do objeto
      * @param array $tagslist - Lista de tags
      */
-    function GravarTags($cod_objeto, $tagslist)
+    function gravarTags($cod_objeto, $tagslist)
     {
         if (is_array($tagslist) && count($tagslist)>=1)
         {
-            $this->ApagarTags($cod_objeto);
+            $this->apagarTags($cod_objeto);
 
             foreach ($tagslist as $tag)
             {
@@ -971,7 +1033,7 @@ class Administracao
      * outro objeto utilizando
      * @param int $cod_objeto - Codigo do objeto
      */
-    function ApagarTags($cod_objeto)
+    function apagarTags($cod_objeto)
     {
         $sql = "DELETE FROM ".$this->_page->_db->tabelas["tagxobjeto"]["nome"]." "
                 . " WHERE ".$this->_page->_db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
@@ -986,7 +1048,7 @@ class Administracao
      * Remove pele do banco de dados e desativa de objetos
      * @param int $cod_pele - Codigo da pele
      */
-    function ApagarPele($cod_pele)
+    function apagarPele($cod_pele)
     {
         $sql = "UPDATE ".$this->_page->_db->tabelas["objeto"]["nome"]." "
                 . "SET ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_pele"]." = null "
@@ -1037,7 +1099,7 @@ class Administracao
      * Apaga lista de relação de parentesco de objeto
      * @param int $cod_objeto - Codigo do objeto
      */
-    function ApagarParentesco($cod_objeto)
+    function apagarParentesco($cod_objeto)
     {
         $this->_page->_db->ExecSQL("DELETE FROM ".$this->_page->_db->tabelas["parentesco"]["nome"]." "
                 . " WHERE ".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
@@ -1088,7 +1150,7 @@ class Administracao
      * @param int $cod_objeto - Codigo do objeto a ser apagado
      * @param bool $definitivo - indica se deve apagar realmente, ou mandar para lixeira
      */
-    function ApagarObjeto($cod_objeto, $definitivo = false)
+    function apagarObjeto($cod_objeto, $definitivo = false)
     {
         if (!$definitivo)
         {
@@ -1120,13 +1182,13 @@ class Administracao
             
                 if ($row["cod_objeto"] != $cod_objeto)
                 {
-                    $this->ApagarObjeto($row["cod_objeto"], false);
+                    $this->apagarObjeto($row["cod_objeto"], false);
                 }
             }
         }
         else
         {
-            $this->ApagarEmDefinitivo($cod_objeto);
+            $this->apagarEmDefinitivo($cod_objeto);
         }
 
         $this->cacheFlush();
@@ -1152,7 +1214,7 @@ class Administracao
      * @param int $cod_objeto - Codigo do objeto
      * @return boolean
      */
-    function UsuarioEDono($cod_usuario, $cod_objeto)
+    function usuarioEDono($cod_usuario, $cod_objeto)
     {
         $sql = "select cod_objeto from objeto where cod_objeto=$cod_objeto and cod_usuario=$cod_usuario";
         $rs = $this->_page->_db->ExecSQL($sql);
@@ -1183,9 +1245,9 @@ class Administracao
     function RejeitarObjeto($mensagem, $cod_objeto)
     {
         if (($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) || ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR)
-                || (($_SESSION['usuario']['perfil']==_PERFIL_AUTOR) && $this->UsuarioEdono($_SESSION['usuario']['cod_usuario'], $cod_objeto)))
+                || (($_SESSION['usuario']['perfil']==_PERFIL_AUTOR) && $this->usuarioEdono($_SESSION['usuario']['cod_usuario'], $cod_objeto)))
         {
-            $this->TrocaStatusObjeto($mensagem, $cod_objeto, _STATUS_REJEITADO);
+            $this->trocaStatusObjeto($mensagem, $cod_objeto, _STATUS_REJEITADO);
             $this->_page->_db->ExecSQL("DELETE FROM ".$this->_page->_db->tabelas["pendencia"]["nome"]." "
                             . " WHERE ".$this->_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
         }
@@ -1201,7 +1263,7 @@ class Administracao
         if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
         {
 //            xd($mensagem);
-            $this->TrocaStatusObjeto($mensagem, $cod_objeto, _STATUS_PUBLICADO);
+            $this->trocaStatusObjeto($mensagem, $cod_objeto, _STATUS_PUBLICADO);
             $this->_page->_db->ExecSQL("DELETE FROM ".$this->_page->_db->tabelas["pendencia"]["nome"]." "
                             . " WHERE ".$this->_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
 
@@ -1247,7 +1309,7 @@ class Administracao
     {			
         if (($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) || ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR))
         {
-            $this->TrocaStatusObjeto($mensagem, $cod_objeto, _STATUS_PRIVADO);
+            $this->trocaStatusObjeto($mensagem, $cod_objeto, _STATUS_PRIVADO);
         }
     }
 
@@ -1260,9 +1322,9 @@ class Administracao
     {
         $dadosObjeto = $this->_page->_adminobjeto->PegaDadosObjetoPeloID($cod_objeto);
 
-        if ((($_SESSION['usuario']['perfil']==_PERFIL_AUTOR) || ($this->UsuarioEdono($_SESSION['usuario']['cod_usuario'],$cod_objeto))) && ($dadosObjeto['cod_status'] == _STATUS_PRIVADO))
+        if ((($_SESSION['usuario']['perfil']==_PERFIL_AUTOR) || ($this->usuarioEdono($_SESSION['usuario']['cod_usuario'],$cod_objeto))) && ($dadosObjeto['cod_status'] == _STATUS_PRIVADO))
         {
-            $this->TrocaStatusObjeto($mensagem, $cod_objeto, _STATUS_SUBMETIDO);
+            $this->trocaStatusObjeto($mensagem, $cod_objeto, _STATUS_SUBMETIDO);
 
             $sql = "select ".$_SESSION["usuario"]["chefia"]." as cod_usuario,".$cod_objeto." as cod_objeto from usuarioxobjetoxperfil inner join parentesco on (usuarioxobjetoxperfil.cod_objeto=parentesco.cod_pai or usuarioxobjetoxperfil.cod_objeto=parentesco.cod_objeto) where parentesco.cod_objeto=".$cod_objeto." group by cod_usuario, cod_usuario";
             $rs = $this->_page->_db->ExecSQL($sql, 1, 1);
@@ -1288,7 +1350,7 @@ class Administracao
      */
     function RemovePendencia($mensagem, $cod_objeto)
     {
-        $this->TrocaStatusObjeto($mensagem, $cod_objeto, _STATUS_PRIVADO);
+        $this->trocaStatusObjeto($mensagem, $cod_objeto, _STATUS_PRIVADO);
         $sql = "DELETE FROM ".$this->_page->_db->tabelas["pendencia"]["nome"]." "
                 . " WHERE ".$this->_page->_db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->_page->_db->ExecSQL($sql);
@@ -1300,7 +1362,7 @@ class Administracao
      * @param int $cod_objeto - Codigo do objeto
      * @param int $cod_status - Codigo do novo status
      */
-    function TrocaStatusObjeto($mensagem, $cod_objeto, $cod_status)
+    function trocaStatusObjeto($mensagem, $cod_objeto, $cod_status)
     {
         if ($cod_objeto != $this->_page->config["portal"]["objroot"])
         {
@@ -1329,7 +1391,43 @@ class Administracao
 
         return $status;
     }
+    
+    function pegaVersao($cod_versaoobjeto)
+    {
+        $sql = "SELECT ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." AS cod_versaoobjeto, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["versao"]." AS versao, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["data_criacao"]." AS data_criacao, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["conteudo"]." AS conteudo, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["ip"]." AS ip "
+                . " FROM ".$this->_page->_db->tabelas["versaoobjeto"]["nome"]." "
+                . " WHERE ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." = ".$cod_versaoobjeto." "
+                . " ORDER BY ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["versao"]." ";
+        $res = $this->_page->_db->ExecSQL($sql);
+        return $res->GetRows();
+    }
 
+    /**
+     * Busca versões do objeto no banco
+     * @param int $cod_objeto
+     * @return array
+     */
+    function pegaVersoes($cod_objeto)
+    {
+        $sql = "SELECT ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." AS cod_versaoobjeto, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["versao"]." AS versao, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["data_criacao"]." AS data_criacao, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["ip"]." AS ip "
+                . " FROM ".$this->_page->_db->tabelas["versaoobjeto"]["nome"]." "
+                . " WHERE ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " ORDER BY ".$this->_page->_db->tabelas["versaoobjeto"]["colunas"]["versao"]." ";
+        $res = $this->_page->_db->ExecSQL($sql);
+        return $res->GetRows();
+    }
+    
     /**
      * Cria cópia de determinado objeto
      * @param int $cod_objeto - codigo do objeto a ser copiado
@@ -1357,7 +1455,7 @@ class Administracao
                 . " WHERE ".$this->_page->_db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->_page->_db->ExecSQL($sql);
 
-        $this->ApagarParentesco($cod_objeto);
+        $this->apagarParentesco($cod_objeto);
         $this->CriaParentesco($cod_objeto, $cod_pai);
         
         $this->_page->_log->RegistraLogWorkflow("Objeto movido para ".$cod_pai, $cod_objeto, _OPERACAO_OBJETO_MOVER);
@@ -1374,7 +1472,7 @@ class Administracao
         $row = $res->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
-                $this->ApagarParentesco($row[$i]['cod_objeto']);
+                $this->apagarParentesco($row[$i]['cod_objeto']);
                 $this->CriaParentesco($row[$i]['cod_objeto'], $row[$i]['cod_pai']);
         }
 
@@ -2045,7 +2143,7 @@ class Administracao
      * @param int $cod_classe - Codigo da classe
      * @param string $nome - Nome da propriedade a ser apagada
      */
-    function ApagarPropriedadeDaClasse($cod_propriedade)
+    function apagarPropriedadeDaClasse($cod_propriedade)
     {
         $sql = "SELECT ".$this->_page->_db->tabelas["tipodado"]["nome"].".".$this->_page->_db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela "
                 . " FROM ".$this->_page->_db->tabelas["propriedade"]["nome"]." "
@@ -2166,7 +2264,7 @@ class Administracao
      * Apaga classe do banco de dados e objetos que pertencam a ela
      * @param int $cod_classe - Codigo da classe a ser apagada
      */
-    function ApagarClasse($cod_classe)
+    function apagarClasse($cod_classe)
     {
         // apagando a classe
         $sql  = "DELETE "
@@ -2314,7 +2412,7 @@ $str .= "*  <hr /> \r\n"
      * Apaga registros de log do objeto
      * @param int $cod_objeto - Codigo do objeto a ser apagado
      */
-    function ApagarLogObjeto($cod_objeto)
+    function apagarLogObjeto($cod_objeto)
     {
         $sql = "DELETE FROM ".$this->_page->_db->tabelas["logobjeto"]["nome"]." "
                 . " WHERE ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
@@ -2325,7 +2423,7 @@ $str .= "*  <hr /> \r\n"
      * Apaga registros de log do objeto
      * @param int $cod_objeto - Codigo do objeto a ser apagado
      */
-    function ApagarLogWorkflow($cod_objeto)
+    function apagarLogWorkflow($cod_objeto)
     {
         $sql = "DELETE FROM ".$this->_page->_db->tabelas["logworkflow"]["nome"]." "
                 . " WHERE ".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
@@ -2336,7 +2434,7 @@ $str .= "*  <hr /> \r\n"
      * Apaga objeto em definitivo - fisicamente
      * @param int $cod_objeto - Codigo do objeto a ser apagado
      */
-    function ApagarEmDefinitivo($cod_objeto)
+    function apagarEmDefinitivo($cod_objeto)
     {
         $sql = "SELECT ".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
                 . " FROM ".$this->_page->_db->tabelas["parentesco"]["nome"]." "
@@ -2346,7 +2444,7 @@ $str .= "*  <hr /> \r\n"
 
         for ($c=0; $c<sizeof($row); $c++)
         {
-            $this->ApagarEmDefinitivo($row[$c]["cod_objeto"]);
+            $this->apagarEmDefinitivo($row[$c]["cod_objeto"]);
         }
 
         $this->_page->_db->ExecSQL("DELETE FROM ".$this->_page->_db->tabelas["objeto"]["nome"]." "
@@ -2391,7 +2489,7 @@ $str .= "*  <hr /> \r\n"
      * @param array $propriedades - Lista de propriedades
      * @return boolean
      */
-    function ValidarPropriedades($cod_classe, $propriedades)
+    function validarPropriedades($cod_classe, $propriedades)
     {
         $lista = $this->PegaPropriedadesDaClasse($cod_classe);
         foreach ($lista as $prop)
@@ -2430,7 +2528,7 @@ $str .= "*  <hr /> \r\n"
         }
         elseif ($acao=="edit")
         {
-            $cod = $this->AlterarObjeto($post);
+            $cod = $this->alterarObjeto($post);
             $executa = true;
         }
         

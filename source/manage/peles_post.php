@@ -84,7 +84,7 @@ $msg = ChecaValidade($_page, $nome, $prefixo, $cod_pele);
 // se tiver codigo da pele e for clicado o botao de excluir
 if ($cod_pele > 0 && isset($_POST['delete']))
 {
-    $cod_pele = $_page->_administracao->ApagarPele($cod_pele);
+    $cod_pele = $_page->_administracao->apagarPele($cod_pele);
 }
 else
 {
