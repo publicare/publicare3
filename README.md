@@ -100,6 +100,46 @@ Funciona com as tags especiais ```<@``` e ```@>```
 
 ## Variaveis PBL
 
+## Macros PBL
+A linguagem PBL tem algumas variáveis especiais, que são disponibilizadas automaticamente para utilização nos templates. 
+
+Para utilizar um **Macro** usamos o simbolo ```%``` e depois o nome em caixa alta.
+
+Macros disponíveis são:
+
+### DIA
+%DIA - Retorna o dia atual
+
+### MES
+%MES - Retorna o mês atual
+
+### ANO
+%ANO - Retorna o ano atual
+
+### DATA
+%DATA - Retorna a data atual no formato d/m/Y
+
+### ROOT
+%ROOT - Retorna o código do objeto root do portal
+
+### INDICE
+%INDICE - Retorna o índice do objeto da iteração. Utilizado dentro de laços do comando **localizar**, **filhos** ou outros comandos que funcionem como laço.
+
+### FIM
+%FIM - Retorna o indice do ultimo elemento dp laço. Utilizado dentro de laços do comando **localizar**, **filhos** ou outros comandos que funcionem como laço.
+
+### COD_OBJETO
+%COD_OBJETO - Retorna o código do objeto da iteração atual.  Utilizado dentro de laços do comando **localizar**, **filhos** ou outros comandos que funcionem como laço.
+
+### COD_PAI
+%COD_PAI - Retorna o código do pai do objeto da iteração atual.  Utilizado dentro de laços do comando **localizar**, **filhos** ou outros comandos que funcionem como laço.
+
+### TAGS
+%TAGS - Retorna o conjunto de Tags do objeto da iteração atual.  Utilizado dentro de laços do comando **localizar**, **filhos** ou outros comandos que funcionem como laço.
+
+### QUANTIDADE
+%QUANTIDADE - Retorna o número total de objetos do comando localizar.
+
 ## Comandos PBL
 
 ### ECO
