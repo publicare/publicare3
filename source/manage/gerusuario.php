@@ -30,7 +30,7 @@
 global $page;
 
 // pega lista completa de usuários
-$usuarios = $page->usuario->listaUsuarios(1);
+$usuarios = $page->usuario->listarUsuarios(1);
 if (isset($_GET["ajaxtbl"]))
 {
     //xd($_POST);
@@ -42,9 +42,9 @@ if (isset($_GET["ajaxtbl"]))
     $ordem = isset($_POST["order"][0]["column"])?$_POST["columns"][(int)$_POST["order"][0]["column"]]["data"]:"";
     $direcao = isset($_POST["order"][0]["dir"]) && $_POST["order"][0]["dir"]=="desc"?"desc":"asc";
     
-    $usuarios = $page->usuario->listaUsuarios($busca, $ordem, $direcao, $inicio, $limite);
-    $usuarios2 = $page->usuario->listaUsuarios($busca, "", $direcao, -1, -1);
-    $usuarios3 = $page->usuario->listaUsuarios();
+    $usuarios = $page->usuario->listarUsuarios($busca, $ordem, $direcao, $inicio, $limite);
+    $usuarios2 = $page->usuario->listarUsuarios($busca, "", $direcao, -1, -1);
+    $usuarios3 = $page->usuario->listarUsuarios();
     $array = array(
         "draw" => $draw,
         "recordsTotal" => count($usuarios3),
@@ -55,17 +55,17 @@ if (isset($_GET["ajaxtbl"]))
     foreach ($usuarios as $usu)
     {
         $usu["permissoes"] = '';
-        $permissoes = $page->usuario->PegaDireitosDoUsuario($usu["cod_usuario"]);
+        $permissoes = $page->usuario->pegarDireitosUsuario($usu["cod_usuario"]);
         foreach ($permissoes as $cod=>$perm)                          
         {
             $objtemp = new Objeto($page, $cod);
-            $usu["permissoes"] .= "<br/>".$objtemp->Valor("titulo")." <strong>(".$cod.")</strong> - ".$page->usuario->pegaNomePerfil($perm);
+            $usu["permissoes"] .= "<br/>".$objtemp->valor("titulo")." <strong>(".$cod.")</strong> - ".$page->usuario->pegarNomePerfil($perm);
         }
         
         $usu["data_atualizacao"] = ConverteData($usu['data_atualizacao'], 5);
         
         $usu["acoes"] = '';
-        $usu["acoes"] .= '<a href="do/gerusuario/'.$page->objeto->Valor('cod_objeto').'.html?acao=editar&cod='.$usu["cod_usuario"].'" '
+        $usu["acoes"] .= '<a href="do/gerusuario/'.$page->objeto->valor('cod_objeto').'.html?acao=editar&cod='.$usu["cod_usuario"].'" '
                 . ' title="Editar Usuário" '
                 . 'rel="tooltip" '
                 . 'data-animate="animated fadeIn" '
@@ -73,7 +73,7 @@ if (isset($_GET["ajaxtbl"]))
                 . 'data-original-title="Editar Usuário" '
                 . 'data-placement="left" '
                 . 'title="Editar este usuário"><i class="fapbl fapbl-pencil-alt font-size16"></i></a> ';
-        $usu["acoes"] .= '<a href="do/gerusuario/'.$page->objeto->Valor('cod_objeto').'.html?acao=bloquear&cod='.$usu["cod_usuario"].'" '
+        $usu["acoes"] .= '<a href="do/gerusuario/'.$page->objeto->valor('cod_objeto').'.html?acao=bloquear&cod='.$usu["cod_usuario"].'" '
                 . ' title="Apagar Usuário" '
                 . 'rel="tooltip" '
                 . 'data-animate="animated fadeIn" '
@@ -98,10 +98,10 @@ $cod = isset($_REQUEST["cod"]) ? (int)htmlspecialchars($_REQUEST["cod"], ENT_QUO
 ?>
 <!-- === Menu === --> 
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li class="active"><a href="do/gerusuario/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="do/classes/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li><a href="do/peles/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li><a href="do/indexportal/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+    <li class="active"><a href="do/gerusuario/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li><a href="do/classes/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li><a href="do/peles/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -158,7 +158,7 @@ $(document).ready(function() {
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "do/gerusuario/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
+            "url": "do/gerusuario/<?php echo($page->objeto->valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
             "type": "POST"
         },
         "order": [[ 1, "asc" ]],
@@ -185,7 +185,7 @@ $(document).ready(function() {
     });
     
     $("#btnAdicionar").click(function(){
-        document.location.href="do/gerusuario/<?php echo $page->objeto->Valor('cod_objeto') ?>.html?acao=novo";
+        document.location.href="do/gerusuario/<?php echo $page->objeto->valor('cod_objeto') ?>.html?acao=novo";
     });
 });
 </script>
@@ -215,8 +215,8 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
     else
     {
         $titPagina = "Alterar";
-        $usuario = $page->usuario->PegaInformacaoUsuario($cod);
-        $tmpArrPerfilObjeto = $page->usuario->PegaDireitosDoUsuario($cod);
+        $usuario = $page->usuario->pegarInformacoesUsuario($cod);
+        $tmpArrPerfilObjeto = $page->usuario->pegarDireitosUsuario($cod);
     }
 ?>
     <script src="include/javascript_datepicker" type="text/javascript"></script>
@@ -228,7 +228,7 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
                 <h3 class="font-size20" style="line-height: 30px;"><?php echo($titPagina); ?> usuário</h3>
             </div>
 			
-            <form action="do/gerusuario_post/<?php echo $page->objeto->Valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
+            <form action="do/gerusuario_post/<?php echo $page->objeto->valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <div class="panel-body">
                 				
                     <input type="hidden" name="cod_usuario" id="cod_usuario" value="<?php echo isset($usuario['cod_usuario']) ? $usuario['cod_usuario'] : ""; ?>" />
@@ -314,12 +314,12 @@ if (defined("_ldaphost") && _ldaphost!="")
                             </div>
                             <?php
                             $tmpDisabled = "";
-                            if (isset($tmpArrPerfilObjeto['1']) && ($tmpArrPerfilObjeto['1'] == _PERFIL_ADMINISTRADOR) && ($page->objeto->Valor('cod_objeto') != $page->config["portal"]["objroot"])) {
+                            if (isset($tmpArrPerfilObjeto['1']) && ($tmpArrPerfilObjeto['1'] == _PERFIL_ADMINISTRADOR) && ($page->objeto->valor('cod_objeto') != $page->config["portal"]["objroot"])) {
                                 $tmpPerfilObjetoAtual = _PERFIL_ADMINISTRADOR;
                                 $tmpDisabled = "disabled";
                             } else {
-                                if (isset($tmpArrPerfilObjeto[$page->objeto->Valor('cod_objeto')]))
-                                    $tmpPerfilObjetoAtual = $tmpArrPerfilObjeto[$page->objeto->Valor('cod_objeto')];
+                                if (isset($tmpArrPerfilObjeto[$page->objeto->valor('cod_objeto')]))
+                                    $tmpPerfilObjetoAtual = $tmpArrPerfilObjeto[$page->objeto->valor('cod_objeto')];
                                 else
                                     $tmpPerfilObjetoAtual = $tmpPerfilObjetoAtualNovo;
                             }
@@ -363,7 +363,7 @@ if (defined("_ldaphost") && _ldaphost!="")
 //                                while (list($key, $val) = each($tmpArrPerfilObjeto)) {
                                     echo '<input type="checkbox" id="checkadmperfil[]" name="checkadmperfil[]" value="' . $key . '">&nbsp;';
                                     echo " [$key] - ";
-                                    $tmpCheckPerfil = Usuario::VerificaPerfil($val);
+                                    $tmpCheckPerfil = Usuario::verificarPerfil($val);
                                     echo $tmpCheckPerfil;
                                     echo "<br />\n";
                                 }
@@ -406,7 +406,7 @@ $(document).ready(function() {
         document.getElementById("PassValue").value = complexity; 
     });
     $("#btnCancelar").click(function(){
-        document.location.href="do/gerusuario/<?php echo($page->objeto->Valor("cod_objeto")); ?>.html";
+        document.location.href="do/gerusuario/<?php echo($page->objeto->valor("cod_objeto")); ?>.html";
     });
     $("#ldap").click(function(){
         if (this.checked)
@@ -427,11 +427,11 @@ $(document).ready(function() {
 }
 elseif ($acao=="bloquear" && $cod > 0)
 {
-    $usuario = $page->usuario->PegaInformacaoUsuario($cod);
+    $usuario = $page->usuario->pegarInformacoesUsuario($cod);
     
     if (!$usuario)
     {
-        echo "<script>document.location.href='do/gerusuario/".$page->objeto->Valor("cod_objeto").".html?msge=".urlencode("Usuário não encontrado")."';</script>";
+        echo "<script>document.location.href='do/gerusuario/".$page->objeto->valor("cod_objeto").".html?msge=".urlencode("Usuário não encontrado")."';</script>";
         exit();
     }
 ?>
@@ -440,7 +440,7 @@ elseif ($acao=="bloquear" && $cod > 0)
             <div class="panel-heading">
                 <h3 class="font-size20" style="line-height: 30px;">Apagar usuário</h3>
             </div>
-            <form action="do/gerusuario_post/<?php echo $page->objeto->Valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
+            <form action="do/gerusuario_post/<?php echo $page->objeto->valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <input type="hidden" name="cod_usuario" value="<?php echo($cod); ?>" />
                 <div class="panel-body">
                     <p>Deseja realmente apagar o usuário <b>"<?php echo($usuario["nome"]); ?>"</b>?</p>
@@ -452,7 +452,7 @@ elseif ($acao=="bloquear" && $cod > 0)
 <script>
     $("document").ready(function(){
         $("#btnBNao").click(function(){
-            document.location.href='do/gerusuario/".$page->objeto->Valor($page, "cod_objeto").".html';
+            document.location.href='do/gerusuario/".$page->objeto->valor($page, "cod_objeto").".html';
         });
     });
 </script>

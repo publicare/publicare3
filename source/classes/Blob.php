@@ -798,7 +798,7 @@ class Blob
         exit(0);
     }
     
-    function IconeBlob($prefixo)
+    function iconeBlob($prefixo)
     {
         $icone = $this->verificaExistenciaIconeBlob($prefixo);
         
@@ -873,7 +873,7 @@ class Blob
        $objeto = new Objeto($page, $cod_objeto);
        
        // carregando propriedades
-       $objeto->Valor($prop_pdf);
+       $objeto->valor($prop_pdf);
        // definindo variaveis como path e nomes dos arquivos
        $arquivo = $objeto->propriedades[$prop_pdf]["cod_blob"] . "." . $objeto->propriedades[$prop_pdf]["tipo_blob"];
        $nome_original = $objeto->propriedades[$prop_pdf]["valor"];
@@ -882,7 +882,7 @@ class Blob
        $arquivo_temp = "temp_" . $objeto->propriedades[$prop_pdf]["cod_blob"] . ".jpg";
    //    Blob::identificaPasta($codigo_blob)
        $path_arquivo = $page->config["portal"]["uploadpath"] . Blob::identificaPasta($page, $objeto->propriedades[$prop_pdf]["cod_blob"]) . "/";
-       $cod_classe = $objeto->Valor("cod_classe");
+       $cod_classe = $objeto->valor("cod_classe");
        // usando gosthScript para gerar JPG da parimeira página do PDF
        $comando = "gs -sDEVICE=jpeg -dJPEGQ=75 -quiet -dSAFER -dBATCH -dNOPAUSE -dFirstPage=1 -dLastPage=1 -sOutputFile=".$path_arquivo.$arquivo_temp." ".$path_arquivo.$arquivo;
        $msg = shell_exec($comando);
@@ -909,7 +909,7 @@ class Blob
 
            $campos = array();
            $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_propriedade']] = (int)$info['cod_propriedade'];
-           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->Valor("cod_objeto");
+           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->valor("cod_objeto");
            $campos[$page->db->tabelas["tbl_blob"]["colunas"]['arquivo']] = $nome_original_capa;
            $campos[$page->db->tabelas["tbl_blob"]["colunas"]['tamanho']] = filesize($path_arquivo . $arquivo_temp);
            $name = $page->db->Insert($page->db->tabelas[$info['tabela']]["nome"], $campos);

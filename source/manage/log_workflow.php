@@ -30,7 +30,7 @@
 
 global $page, $loglist;
 
-	$loglist = $page->log->PegaLogWorkflow($page->objeto->Valor("cod_objeto"));
+	$loglist = $page->log->PegaLogWorkflow($page->objeto->valor("cod_objeto"));
 //	if (count ($loglist))
 //	{
 		
@@ -49,9 +49,9 @@ global $page, $loglist;
 
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li><a href="do/preview/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li class="active"><a href="do/log_workflow/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Workflow</a></li>
-  <li><a href="do/log_objeto/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Log Status</a></li>
+  <li><a href="do/preview/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li class="active"><a href="do/log_workflow/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Workflow</a></li>
+  <li><a href="do/log_objeto/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -64,9 +64,9 @@ global $page, $loglist;
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->Valor("titulo")); echo " <i>[cod: ".$page->objeto->Valor("cod_objeto")."]</i>"; ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); echo " <i>[cod: ".$page->objeto->valor("cod_objeto")."]</i>"; ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a class="ABranco" href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a class="ABranco" href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>

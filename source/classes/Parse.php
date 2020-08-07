@@ -46,12 +46,12 @@ class Parse
         if (!defined ("_PARSEINITIALIZED"))
         {
             define ("_PARSEINITIALIZED", 1);
-            $this->Initialize();
+            $this->initialize();
         }
 
     }
 
-    function Initialize()
+    function initialize()
     {
 		
         $this->InitCmd = '<?php'."\n"
@@ -66,7 +66,7 @@ class Parse
                             .'list($usec, $sec) = explode(" ", microtime());'."\n"
                             .'$_seed=(float) $sec + ((float) $usec * 100000);'."\n"
                             .'mt_srand($_seed);'."\n"
-                            .'//x($_OBJ_->Valor($page, "cod_status"));'."\n"
+                            .'//x($_OBJ_->valor($page, "cod_status"));'."\n"
                             .'$_GETARRAY=$_GET;'."\n"
                             .'?>';
 		
@@ -112,9 +112,9 @@ class Parse
             'ROOT'=> '$page->config["portal"]["objroot"]',
             'INDICE' => '$_LOOP_["count"]',
             'FIM' => '$_LOOP_["max"]',
-            'COD_OBJETO' => '$_OBJ_->Valor("cod_objeto")',
-            'COD_PAI' => '$_OBJ_->Valor("cod_pai")',
-            'TAGS' => '$_OBJ_->Valor("tags")',
+            'COD_OBJETO' => '$_OBJ_->valor("cod_objeto")',
+            'COD_PAI' => '$_OBJ_->valor("cod_pai")',
+            'TAGS' => '$_OBJ_->valor("tags")',
             'QUANTIDADE' => '$_LOOP_["max"]',
         );
 
@@ -286,7 +286,7 @@ class Parse
             "filhos" => array (
                 'opentag' => 'filhos',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->PegaListaDeFilhos(<#P:classes#>, <#P:ordem#>, <#P:inicio#>, <#P:limite#>)) {'."\n"
+                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->pegarListaFilhos(<#P:classes#>, <#P:ordem#>, <#P:inicio#>, <#P:limite#>)) {'."\n"
                     .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                     .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
                     .'$_LOOP_=array();'."\n"
@@ -296,7 +296,7 @@ class Parse
                     .'$_LOOP_["max"]=<#P:nome#>_max;'."\n"
                     .'$_LOOP_["obj"]=$_OBJ_;'."\n"
                     .'array_push($_STACK_,$_OBJ_);'."\n"
-                    .'while (<#P:nome#> = $_LOOP_["obj"]->PegaProximoFilho()) {'."\n"
+                    .'while (<#P:nome#> = $_LOOP_["obj"]->pegarProximoFilho()) {'."\n"
                         .'$_OBJ_ = <#P:nome#>;'."\n"
                         .'$_LOOP_["count"]++;'."\n"
                         .'$_LOOP_["array"][] = $_OBJ_;'."\n"
@@ -346,7 +346,7 @@ class Parse
             "aleatorio" => array (
                 'opentag' => 'aleatorio',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->PegaListaDeFilhos(<#P:classes#>, <#P:ordem#>)) {'."\n"
+                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->pegarListaFilhos(<#P:classes#>, <#P:ordem#>)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
                         .'$_LOOP_=array();'."\n"
@@ -356,14 +356,14 @@ class Parse
                         .'array_push($_STACK_,$_OBJ_);'."\n"
                         .'$array_result=array();'."\n"
                         .'if (<#P:quantidade#> >= <#P:nome#>_max) {'."\n"
-                            .'while ($obj=&$_OBJ_->PegaProximoFilho()) $_LOOP_["array"][]=&$obj;'."\n"
+                            .'while ($obj=&$_OBJ_->pegarProximoFilho()) $_LOOP_["array"][]=&$obj;'."\n"
                         .'} else {'."\n"
                             .'for ($f=0;$f<<#P:quantidade#>;$f++) {'."\n"
                                 .'do {'."\n"
                                     .'$index = mt_rand(0,<#P:nome#>_max-1);'."\n"
                                 .'} while (in_array($index,$array_result));'."\n"
                                 .'$array_result[]=$index;'."\n"
-                                .'$_LOOP_["array"][$index] = $_OBJ_->VaiParaFilho($index);'."\n"
+                                .'$_LOOP_["array"][$index] = $_OBJ_->vaiParaFilho($index);'."\n"
                             .'}'."\n"
                         .'}'."\n"
                         .'$_LOOP_["max"] = count($_LOOP_["array"]);'."\n"
@@ -552,7 +552,7 @@ class Parse
             
             "incluimenu" => array(
                 'regex' => '',
-                'output' => '<?php if ($page->usuario->EstaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
+                'output' => '<?php if ($page->usuario->estaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
                 'parameters' => false,
                 'helptext' => 'O comando <strong>incluimenu</strong> deve ser escrito assim: <strong>&lt;@incluimenu@&gt;</strong>',
             ),
@@ -561,7 +561,7 @@ class Parse
                 'opentag' => 'menu',
                 'regex' => '',
                 'output' => '<?php if ($_SESSION["usuario"]["cod_usuario"]) {'."\n"
-                        .'$_MENU = $page->usuario->Menu();'."\n"
+                        .'$_MENU = $page->usuario->menu();'."\n"
                         .'foreach ($_MENU as $_OPCAO) {?>'."\n",
                 'parameters' => false,
                 'paramitens' => false,
@@ -592,7 +592,7 @@ class Parse
             
             "incluir" => array (
                 'regex' => '|(.*)|',
-                'output' => '<?php $page->parser->Start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
+                'output' => '<?php $page->parser->start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
                 'parameters' => 1,
                 'helptext' => 'O comando <strong>incluir</strong> deve ser escrito assim: <strong>&lt;@incluir arquivo=[{string}]@&gt;</strong>',
                 'paramitens' => array (
@@ -604,10 +604,10 @@ class Parse
                 'regex' => '|(.*)|',
                 //'output' => '<?php (<#P:pele#>) ? $tmpDir = "/html/skin/".<#P:pele#> : $tmpDir = "/html/template"; '."\n"
                 //.'$extensao=(file_exists($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".php"))?"php":"pbl";'."\n"
-                //.'($page->usuario->EstaLogadoMilitarizado()===true) ? $page->parser->Start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->Start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.pbl");',
+                //.'($page->usuario->estaLogadoMilitarizado()===true) ? $page->parser->start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.pbl");',
                 'output' => '<?php (<#P:pele#>) ? $tmpDir = "/html/skin/".<#P:pele#> : $tmpDir = "/html/template"; '."\n"
                     .'$extensao=(file_exists($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".php"))?"php":"pbl";'."\n"
-                    .'($page->usuario->EstaLogadoMilitarizado()===true) ? $page->parser->Start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->Start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.php"); ?>',
+                    .'($page->usuario->estaLogadoMilitarizado()===true) ? $page->parser->start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.php"); ?>',
                 'parameters'=> 1,
                 'helptext' => 'O comando <strong>protegido</strong> deve ser escrito assim: <strong>&lt;@protegido view=[{nome_de_arquivo}] pele=[{prefixo_pele}]@&gt;</strong>',
                 'paramitens' => array (
@@ -621,14 +621,14 @@ class Parse
                 'regex' => '|(.*)|',
                 'output' => '<?php '."\n"
                     .'global $_BLOBTAMANHO, $_BLOBLINK, $_BLOBDOWNLOAD, $_BLOBVIEW, $_BLOBTIPO, $_THUMBVIEW, $_BLOBICONE;'."\n"
-                    .'if ($_OBJ_->TamanhoBlob(<#P:nome#>)) {'."\n"
-                    .'$_BLOBTAMANHO = $_OBJ_->TamanhoBlob(<#P:nome#>);'."\n"
-                    .'$_BLOBLINK = $_OBJ_->LinkBlob(<#P:nome#>);'."\n"
-                    .'$_BLOBDOWNLOAD = $_OBJ_->DownloadBlob(<#P:nome#>);'."\n"
-                    .'$_BLOBVIEW = $_OBJ_->ExibirBlob(<#P:nome#>, <#P:largura#>, <#P:altura#>);'."\n"
-                    .'$_BLOBTIPO = $_OBJ_->TipoBlob(<#P:nome#>);'."\n"
-                    .'$_THUMBVIEW = $_OBJ_->ExibirThumb(<#P:nome#>);'."\n"
-                    .'$_BLOBICONE = $_OBJ_->IconeBlob(<#P:nome#>);'."\n"
+                    .'if ($_OBJ_->tamanhoBlob(<#P:nome#>)) {'."\n"
+                    .'$_BLOBTAMANHO = $_OBJ_->tamanhoBlob(<#P:nome#>);'."\n"
+                    .'$_BLOBLINK = $_OBJ_->linkBlob(<#P:nome#>);'."\n"
+                    .'$_BLOBDOWNLOAD = $_OBJ_->baixarBlob(<#P:nome#>);'."\n"
+                    .'$_BLOBVIEW = $_OBJ_->exibirBlob(<#P:nome#>, <#P:largura#>, <#P:altura#>);'."\n"
+                    .'$_BLOBTIPO = $_OBJ_->tipoBlob(<#P:nome#>);'."\n"
+                    .'$_THUMBVIEW = $_OBJ_->exibirThumb(<#P:nome#>);'."\n"
+                    .'$_BLOBICONE = $_OBJ_->iconeBlob(<#P:nome#>);'."\n"
                     .'?>',
                 'parameters'=> 1,
                 'helptext' => 'O comando <strong>usarblob</strong> deve ser escrito assim: <strong>&lt;@usarblob nome=[{string}] largura=[{integer}] altura=[{integer}] @&gt;</strong>',
@@ -691,11 +691,11 @@ class Parse
             "iconeclasse" => array (
                 'regex' => '',
                 'output' => '<?php  '."\n"
-                    .'if ($_OBJ_->Valor("prefixoclasse")=="arquivo") '."\n"
+                    .'if ($_OBJ_->valor("prefixoclasse")=="arquivo") '."\n"
                     .'{'."\n"
-                    .'  echo "<img src=\"".$_OBJ_->IconeBlob("conteudo")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->Valor("classe")."\" />";'."\n"
+                    .'  echo "<img src=\"".$_OBJ_->iconeBlob("conteudo")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->valor("classe")."\" />";'."\n"
                     .'} else {'."\n"
-                    .'  echo "<img src=\"/blob/iconeclasse?nome=".$_OBJ_->Valor("prefixoclasse")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->Valor("classe")."\" />";'."\n"
+                    .'  echo "<img src=\"/blob/iconeclasse?nome=".$_OBJ_->valor("prefixoclasse")."\" border=\"0\" align=\"absmiddle\" title=\"".$_OBJ_->valor("classe")."\" />";'."\n"
                     .'} ?>'."\n",
                 'parameters'=> false,
             ),
@@ -743,7 +743,7 @@ class Parse
         );
     }
 
-	function Start($file,$type=0)
+	function start($file,$type=0)
 	{
 		$this->tags=array();
 		$buffer = "";
@@ -765,7 +765,7 @@ class Parse
 		else $buffer=$file;
 
 		$out='';
-		$this->ErrorMessage='';
+		$this->errorMessage='';
 		$this->showcode=0;
 		if (preg_match('|(.*?)<@debug_on@>(.*)|is',$buffer,$item))
 		{
@@ -790,11 +790,11 @@ class Parse
 
 					echo '<BR><HR><P></pre>';
 				}
-				$line = trim($cmd[1]).$this->ParseCommand($cmd[2],$cmd[3]).trim($cmd[4]);
+				$line = trim($cmd[1]).$this->parseCommand($cmd[2],$cmd[3]).trim($cmd[4]);
 			}
 			$out .="\n".$line;
 		}
-		$this->CheckTags();
+		$this->checkTags();
 		if ($this->showcode)
 		{
 			echo '<P>';
@@ -818,7 +818,7 @@ exit;*/
 		//return $this->InitCmd.$out;
 	}
 
-	function CheckTags()
+	function checkTags()
 	{
 		if ($this->debug)
 		{
@@ -830,14 +830,14 @@ exit;*/
 		{
 			if (count($tag))
 			{
-				$this->Error("Comando <strong>".$tagname."</strong> n&atilde;o foi fechado.",0);
+				$this->error("Comando <strong>".$tagname."</strong> n&atilde;o foi fechado.",0);
 				echo $this->cmdArray[$key]['closeerror'];
 				exit;
 			}
 		}
 	}
 
-	function Error($msg,$showhelp=true)
+	function error($msg,$showhelp=true)
 	{
 		echo "<B>Publicare Script Debuger</b><br>";
 
@@ -847,7 +847,7 @@ exit;*/
 		exit;
 	}
 
-	function ParseCommand($cmd,$buffer)
+	function parseCommand($cmd,$buffer)
 	{
 		if ($this->debug)
 		{
@@ -865,7 +865,7 @@ exit;*/
 				//echo "close:".$this->command['closetag']."<BR>";
 				if ((!is_array($this->tags[$this->command['closetag']])) || (!array_pop ($this->tags[$this->command['closetag']])))
 				{
-					$this->Error ("O comando <font color=blue><strong>".$cmd."</strong></font> deve ser precedido de um comando <font color=blue><strong>".$this->command['closetag']."</strong></font>.",false);
+					$this->error ("O comando <font color=blue><strong>".$cmd."</strong></font> deve ser precedido de um comando <font color=blue><strong>".$this->command['closetag']."</strong></font>.",false);
 				}
 			}
 
@@ -893,9 +893,9 @@ exit;*/
 					for ($f=1;$f<count($item);$f++)
 					{
 						if ($f == $this->command['parameters'])
-							$outparam=$this->ParseParams($item[$f]);
+							$outparam=$this->parseParams($item[$f]);
 						else
-							$outitem[$f]=$this->ParseValue($f,$item[$f]);
+							$outitem[$f]=$this->parseValue($f,$item[$f]);
 					}
 
 					if ($this->debug)
@@ -926,7 +926,7 @@ exit;*/
 				}
 				else
 				{
-					$this->Error("Comando <font color=blue><strong>'$cmd'</strong></font> n&atilde;o identificado");
+					$this->error("Comando <font color=blue><strong>'$cmd'</strong></font> n&atilde;o identificado");
 				}
 			}
 			else
@@ -936,11 +936,11 @@ exit;*/
 		}
 		//No REGEX
 		else
-			$this->Error("Comando <font color=blue><strong>'$cmd'</strong></font> n&atilde;o identificado");
+			$this->error("Comando <font color=blue><strong>'$cmd'</strong></font> n&atilde;o identificado");
 
 	}
 
-	function ParseParams($buffer)
+	function parseParams($buffer)
 	{
 		$buffer=trim ($buffer);
 		while (preg_match("|(.*?)\=\s*\[(.*?)\](.*)|is",$buffer,$item))
@@ -948,10 +948,10 @@ exit;*/
 			//var_dump($buffer);
 			$item[1]=trim($item[1]);
 			//echo $item[2];
-			$value=$this->Evaluate($item[2],$this->command['paramitens'][$item[1]]);
+			$value=$this->evaluate($item[2],$this->command['paramitens'][$item[1]]);
 			if (!$this->command['paramitens'][$item[1]])
 			{
-				$this->Error("Par&acirc;metro <font color=blue><strong>".$item[1]."</strong></font> n&atilde;o identificado.");
+				$this->error("Par&acirc;metro <font color=blue><strong>".$item[1]."</strong></font> n&atilde;o identificado.");
 			}
 			else
 			{
@@ -966,18 +966,18 @@ exit;*/
 			{
 				if (!isset($out[$param]))
 				{
-					$this->Error("O par&acirc;metro <font color=blue><strong>$param</strong></font> &eacute; obrigat&oacute;rio.");
+					$this->error("O par&acirc;metro <font color=blue><strong>$param</strong></font> &eacute; obrigat&oacute;rio.");
 				}
 			}
 		}
-		$out=$this->AddDefaultParams($out);
+		$out=$this->addDefaultParams($out);
 		//echo '<BR>Saida do AddDefault<BR>';
 		//var_dump($out);
 		//echo '<p>';
 		return $out;
 	}
 
-	function AddDefaultParams($array)
+	function addDefaultParams($array)
 	{
 		//echo 'Default<BR>';
 		//var_dump($array);
@@ -1010,24 +1010,24 @@ exit;*/
 		return $array;
 	}
 
-	function ParseValue($pos,$value)
+	function parseValue($pos,$value)
 	{
 		$value=trim($value);
 		$check=$this->command['itens'];
 		if ($check=='')
 		{
-			$this->Error("Item <font color=blue><strong>$value</strong></font> na posi&ccedil;&atilde;o <font color=blue><strong>'$pos'</strong></font> n&atilde;o existe na defini&ccedil;&atilde;o da fun&ccedil;&atilde;o");
+			$this->error("Item <font color=blue><strong>$value</strong></font> na posi&ccedil;&atilde;o <font color=blue><strong>'$pos'</strong></font> n&atilde;o existe na defini&ccedil;&atilde;o da fun&ccedil;&atilde;o");
 			return false;
 		}
 		else
 		{
-			$value=$this->Evaluate($value,$check[$pos]);
+			$value=$this->evaluate($value,$check[$pos]);
 			//echo $value;
 			return $value;
 		}
 	}
 
-	function Evaluate($expression,$type=false)
+	function evaluate($expression,$type=false)
 	{
 		$exp=$expression;
 		$pout='/(.*?)(\'|")(.*)/is';
@@ -1049,13 +1049,13 @@ exit;*/
 						switch ($passo2[2])
 						{
 							case '#':
-								$out .= $this->ParseObjectData("#".$passo2[3]);
+								$out .= $this->parseObjectData("#".$passo2[3]);
 								break;
 							case '$':
 								$out .= '$GLOBALS["'.$passo2[3].'"]';
 								break;
 							case '%':
-								$out .= $this->ParseMacro("%".$passo2[3]);
+								$out .= $this->parseMacro("%".$passo2[3]);
 								break;
 						}
 					}
@@ -1094,7 +1094,7 @@ exit;*/
 				}
 				else
 				{
-					$this->Error ('A express&atilde;o <font color="blue">'.$exp.'</font> tem um n&uacute;mero &iacute;mpar de aspas ou plics');
+					$this->error ('A express&atilde;o <font color="blue">'.$exp.'</font> tem um n&uacute;mero &iacute;mpar de aspas ou plics');
 				}
 			}
 
@@ -1103,7 +1103,7 @@ exit;*/
 		return $out;
 	}
 
-	function ParseObjectData($data)
+	function parseObjectData($data)
 	{
 		$array = explode("#",$data);
 		//echo "ARRAY DE DADOS: <BR>";
@@ -1111,16 +1111,16 @@ exit;*/
 		//echo '<BR>';
 		if (count ($array)>2)
 		{
-			return '$'.$array[1].'->Valor("'.$array[2].'");';
+			return '$'.$array[1].'->valor("'.$array[2].'");';
 		}
 		else
 		{
 //			echo "*$array[1]*";
-			return '$_OBJ_->Valor("'.$array[1].'")';
+			return '$_OBJ_->valor("'.$array[1].'")';
 		}
 	}
 
-	function ParseMacro ($data)
+	function parseMacro ($data)
 	{
 		return $this->macros[substr($data,1)];
 	}

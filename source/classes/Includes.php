@@ -44,10 +44,10 @@ class Includes
     {
         $this->_tipo = $tipo;
         $this->_ext = $ext;
-        $this->adicionaArquivos($scripts);
+        $this->adicionarArquivos($scripts);
     }
     
-    public function adicionaArquivos($scripts = array())
+    public function adicionarArquivos($scripts = array())
     {
         global $PBLCONFIG;
         

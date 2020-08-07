@@ -32,6 +32,6 @@ global $page;
 
 $mensagem = (string)filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-$page->administracao->publicarObjeto("Publicada versão ".$page->objeto->Valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $page->objeto->Valor('cod_objeto'));
-header("Location:".$page->config["portal"]["url"]."/".$page->objeto->Valor('url_amigavel'));
+$page->administracao->publicarObjeto("Publicada versão ".$page->objeto->valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $page->objeto->valor('cod_objeto'));
+header("Location:".$page->config["portal"]["url"]."/".$page->objeto->valor('url_amigavel'));
 ?>

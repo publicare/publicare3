@@ -38,7 +38,7 @@ global $PORTAL_NAME, $cod_objeto, $page, $menu;
 					<div class="gn-scrollerpbl">
 						<ul class="gn-menupbl">
 				<?php
-					$menu = $page->usuario->Menu();
+					$menu = $page->usuario->menu();
 					$cont = 0;
 					foreach ($menu as $item)
 					{
@@ -58,7 +58,7 @@ global $PORTAL_NAME, $cod_objeto, $page, $menu;
 						{
                                                     if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
 							echo "
-								<li><a href='".$page->config["portal"]["url"]."/".$item["script"]."/".$page->objeto->Valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
+								<li><a href='".$page->config["portal"]["url"]."/".$item["script"]."/".$page->objeto->valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
 						}
 					}
 				?>

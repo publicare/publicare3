@@ -31,10 +31,10 @@ global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
 ?>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-          <li class="active"><a href="do/indexportal/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-          <li><a href="do/gerusuario/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-          <li><a href="do/classes/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-          <li><a href="do/peles/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+          <li class="active"><a href="do/indexportal/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+          <li><a href="do/gerusuario/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+          <li><a href="do/classes/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+          <li><a href="do/peles/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 

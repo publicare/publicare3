@@ -69,8 +69,8 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objeto Vencidos</b></h3></div>
 	
-		<form action="do/vencidos_post/<?=$page->objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
-		<input type="hidden" name="return_obj" value="<?php echo $page->objeto->Valor("cod_objeto")?>">
+		<form action="do/vencidos_post/<?=$page->objeto->valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+		<input type="hidden" name="return_obj" value="<?php echo $page->objeto->valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
 		<div class="panel-footer">
@@ -104,14 +104,14 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 			<div class="panel panel-info modelo_propriedade">
 				<div class="panel-heading">
 					<div class="row">
-						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo $page->objeto->Valor("titulo")?></h3></div>
+						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo $page->objeto->valor("titulo")?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
-                            <a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($page->objeto->Valor("cod_objeto") != $page->config["portal"]["objroot"])
+if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
 { 
 ?>
-                            <a href="do/list_content/<?php echo($page->objeto->Valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="do/list_content/<?php echo($page->objeto->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>

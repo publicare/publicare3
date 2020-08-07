@@ -32,19 +32,19 @@ global $page;
 
 if (isset($_GET["naoincluirheader"]))
 {
-    QRcode::png($page->config["portal"]["url"]."/".$page->objeto->Valor("url_amigavel"), false, QR_ECLEVEL_H, 20);
+    QRcode::png($page->config["portal"]["url"]."/".$page->objeto->valor("url_amigavel"), false, QR_ECLEVEL_H, 20);
     exit();
 }
-$classname = $page->objeto->Valor("prefixoclasse");
-$classe = $page->administracao->pegarInfoDaClasse($page->objeto->Valor("cod_classe"));
+$classname = $page->objeto->valor("prefixoclasse");
+$classe = $page->administracao->pegarInfoDaClasse($page->objeto->valor("cod_classe"));
 ?>
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3><b>QRCode</b></h3>
         <p class="padding-top10">
-            <strong>QRcode para</strong>: <?php echo($page->objeto->Valor("titulo")) ?> (<?php echo($page->objeto->Valor("cod_objeto")) ?>) - <strong><?php echo($page->config["portal"]["url"]."/".$page->objeto->Valor("url_amigavel")); ?></strong><br />
+            <strong>QRcode para</strong>: <?php echo($page->objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>) - <strong><?php echo($page->config["portal"]["url"]."/".$page->objeto->valor("url_amigavel")); ?></strong><br />
             <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
-            <strong>Vers&atilde;o</strong>: <?php echo($page->objeto->Valor("versao")) ?>
+            <strong>Vers&atilde;o</strong>: <?php echo($page->objeto->valor("versao")) ?>
         </p>
     </div>
     
@@ -54,16 +54,16 @@ $classe = $page->administracao->pegarInfoDaClasse($page->objeto->Valor("cod_clas
             <div class="panel panel-info modelo_propriedade">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->Valor("titulo")); ?></h3></div>
+                        <div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); ?></h3></div>
                         <div class="col-sm-3 text-right titulo-icones">
-                                <a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                                <a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
                         </div>
                     </div>
                 </div>
 
                 <div class="panel-body">									   
-                    <label for="message" class="padding-bottom10"><?php echo($page->config["portal"]["url"]."/".$page->objeto->Valor("url_amigavel")); ?></label><br />
-                    <img src="do/qrcode/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html?naoincluirheader" style="width: 50%;" />
+                    <label for="message" class="padding-bottom10"><?php echo($page->config["portal"]["url"]."/".$page->objeto->valor("url_amigavel")); ?></label><br />
+                    <img src="do/qrcode/<?php echo($page->objeto->valor('cod_objeto')) ?>.html?naoincluirheader" style="width: 50%;" />
                 </div>
             </div>
             <!-- === Final === Objeto === -->

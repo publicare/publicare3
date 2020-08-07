@@ -170,7 +170,7 @@ class Pagina
     /**
      * Inclui classes de administracao e instancia objetos
      */
-    function IncluirAdmin()
+    function incluirAdmin()
     {
 //        xd("aa");
         $this->administracao = new Administracao($this);
@@ -185,7 +185,7 @@ class Pagina
      * @param boolean $irpararaiz - Volta para raiz depois de executar a funcao
      * @return boolean
      */
-    function Executar($acao, $incluirheader=false, $irpararaiz=false)
+    function executar($acao, $incluirheader=false, $irpararaiz=false)
     {
         $this->acao = $acao;
         $acaoCompleta = "";
@@ -231,7 +231,7 @@ class Pagina
         elseif ($acao == "/blob/iconeblob")
         {
             $prefixo = $_GET["nome"];
-            $this->blob->IconeBlob($prefixo);
+            $this->blob->iconeBlob($prefixo);
         }
         elseif (strpos($acao,"/do/")!==false)
         {
@@ -242,9 +242,9 @@ class Pagina
                 $incluir["view"]["arquivo"] = 'manage/'.$acaoSistema.".php";
                 $incluir["view"]["parse"] = false;
             }
-            elseif ($this->usuario->PodeExecutar($acao))
+            elseif ($this->usuario->podeExecutar($acao))
             {
-                $this->IncluirAdmin();
+                $this->incluirAdmin();
                 
                 // verifica se eh operacao com pilhas
                 // Copiar para pilha
@@ -257,7 +257,7 @@ class Pagina
                 // Mover objeto
                 elseif ($acao=='/do/paste')
                 {
-                    if ($this->objeto->PodeTerFilhos())
+                    if ($this->objeto->podeTerFilhos())
                     {
                         $this->administracao->moverObjeto(-1, $cod_objeto);
                         $acao = '/content/view';
@@ -267,7 +267,7 @@ class Pagina
                 // Colar como copia
                 elseif ($acao=='/do/pastecopy')
                 {
-                    if ($this->objeto->PodeTerFilhos())
+                    if ($this->objeto->podeTerFilhos())
                     {
                         $this->administracao->duplicarObjeto(-1, $cod_objeto);
                         $acao = '/content/view';
@@ -308,7 +308,7 @@ class Pagina
             }
             else
             {
-                $this->ExibirMensagemProibido($acao);
+                $this->exibirMensagemProibido($acao);
             }
         }
         // resultado de busca
@@ -335,11 +335,11 @@ class Pagina
         // Ver pagina
         elseif ($acao == "/content/view")
         {
-            if ($this->usuario->PodeExecutar($acao))
+            if ($this->usuario->podeExecutar($acao))
             {
-                if ($this->objeto->Valor('apagado') && $_SESSION["usuario"]["perfil"] > _PERFIL_EDITOR)
+                if ($this->objeto->valor('apagado') && $_SESSION["usuario"]["perfil"] > _PERFIL_EDITOR)
                 {
-                    $this->ExibirMensagemProibido($acao);
+                    $this->exibirMensagemProibido($acao);
                     return false;
                 }
 
@@ -354,7 +354,7 @@ class Pagina
                     if ((isset($_GET['execview'])) && (!preg_match("/_protegido.*/", $tmpScriptAtual)))
                     {
                         // verifica existencia da view dentro da pasta da pele
-                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->Valor('prefixopele')."/view_".$_GET['execview'].".php"))
+                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->valor('prefixopele')."/view_".$_GET['execview'].".php"))
                         {
                             $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php";
                             $incluir["view"]["parse"] = true;
@@ -440,7 +440,7 @@ class Pagina
             }
             else
             {
-                $this->ExibirMensagemProibido($acao);
+                $this->exibirMensagemProibido($acao);
             }
         }
         
@@ -451,9 +451,9 @@ class Pagina
         {
             if ($incluir["header"]["parse"])
             {
-//                $this->parser->Start($buffer, 1);
+//                $this->parser->start($buffer, 1);
 //                $buffer .= file_get_contents($incluir["header"]["arquivo"]);
-                $this->parser->Start($incluir["header"]["arquivo"]);
+                $this->parser->start($incluir["header"]["arquivo"]);
             }
             else
             {
@@ -470,7 +470,7 @@ class Pagina
 //            echo "\n<!-- ".substr($incluir[0], strrpos($incluir[0], '/'))." -->";
 //            echo "\n<!-- robot_contents -->\n";
 //            $buffer .= file_get_contents($incluir["view"]["arquivo"]);
-            $this->parser->Start($incluir["view"]["arquivo"]);
+            $this->parser->start($incluir["view"]["arquivo"]);
 //            echo "\n<!-- /robot_contents -->\n";
 //            $buffer .= "\n<!-- /robot_contents -->\n";
         }
@@ -484,7 +484,7 @@ class Pagina
             if ($incluir["footer"]["parse"])
             {
 //                $buffer .= file_get_contents($incluir["footer"]["arquivo"]);
-                $this->parser->Start($incluir["footer"]["arquivo"]);
+                $this->parser->start($incluir["footer"]["arquivo"]);
             }
             else
             {
@@ -496,12 +496,12 @@ class Pagina
         $this->TempoDeExecucao = $this->getmicrotime() - $this->inicio;
 //        $buffer .= "\n<!-- TEMPO DE EXECUCAO: ".$this->TempoDeExecucao." -->";
         
-        if ($buffer != "") $this->parser->Start($buffer, 1);
+        if ($buffer != "") $this->parser->start($buffer, 1);
         
         return true;
     }
 
-	function AdicionarAviso($txt,$fatal=false)
+	function adicionarAviso($txt,$fatal=false)
 	{
 		$this->avisos[]=$txt;
 		if ($fatal)
@@ -518,7 +518,7 @@ class Pagina
      * Exibe mensagem de proibido
      * @param string $acao
      */
-    function ExibirMensagemProibido($acao)
+    function exibirMensagemProibido($acao)
     {
         $header = $_SERVER['DOCUMENT_ROOT']."/html/template/basic_header.php";
         $footer = $_SERVER['DOCUMENT_ROOT']."/html/template/basic_footer.php";
@@ -562,11 +562,11 @@ class Pagina
         
         if ($header != "")
         {
-            $this->parser->Start($header);
+            $this->parser->start($header);
         }
         if ($parse === true)
         {
-            $this->parser->Start($pagina);
+            $this->parser->start($pagina);
         }
         else
         {
@@ -574,93 +574,12 @@ class Pagina
         }
         if ($footer != "")
         {
-            $this->parser->Start($footer);
+            $this->parser->start($footer);
         }
         
         exit();
     }
 
-	
-	
-	function BoxPublicareTop($titulo,$botoes='')
-	{
-		global $titulo;
-		
-		$cols = 0;
-
-		if ($botoes=='')
-		{
-			$botoes='exibir,voltar';
-		}
-		if (!is_array($botoes))
-		{
-			$botoes=explode(",",$botoes);
-		}
-		
-		echo '
-		<TABLE WIDTH="550" BORDER="0" CELLPADDING="0" CELLSPACING="0" background="/html/imagens/portalimages/form_top_bg.png">
-		<TR>
-			<TD width="100%"><img border=0 src="/html/imagens/portalimages/form_'.$titulo.'_top.png" ALT=""></td>';
-
-		
-		if (in_array('exibir',$botoes))
-		{
-			$cols++;
-			echo '
-			<td><a class="ABranco" href="/index.php/content/view/'.$this->objeto->Valor("cod_objeto").'.html"><img border=0 src="/html/imagens/portalimages/button_exibir.png" ALT="Exibir Objeto"</a></td>';
-		}
-		
-		if (in_array('pai',$botoes))
-		{
-			if ($this->objeto->Valor("cod_objeto")!=$page->config["portal"]["objroot"])
-			{
-				$cols++;
-				echo '
-			<td><a class="ABranco" href="/index.php/do/list_content/<? echo $this->objeto->Valor($this, "cod_pai")?>.html"><img border=0 src="/html/imagens/portalimages/button_parent.png" ALT="Listar Conte&uacute;do do Pai"</a></td>';
-			}
-		}
-
-		if (in_array('voltar',$botoes))
-		{
-			$cols++;
-			echo '<TD><a href="#" onclick="history.back()"><img border=0 src="/html/imagens/portalimages/button_back.png" ALT="Voltar"></a></TD>';
-		}
-
-		echo '
-		</TR>
-		<TR>
-			<TD colspan="'.($cols+1).'" background="/html/imagens/portalimages/form_top_02.png">
-				<img align="top" src="/html/imagens/portalimages/neutro.png" width=75 height=31><font class="pblFormTextTitle">'.$this->objeto->Valor("titulo").'</font></td>
-		</TR>
-	</table>
-	<table width="550" border="0" cellpadding="3" cellspacing="0" background="/html/imagens/portalimages/form_bg.png">
-	<tr>
-		<td>';
-	}
-
-	function BoxPublicareBottom()
-	{
-?>
-		</td>
-	</tr>
-	</table>
-	<img src="/html/imagens/portalimages/form_bottom.png">
-<?
-	}
-
-	function BoxSimplesTop()
-	{
-?>
-		<img src="/html/imagens/portalimages/form_top_fio.png"><table width="550" border="0" cellpadding="4" cellspacing="2" background="/html/imagens/portalimages/form_bg.png">
-		<tr>
-			<td class="pblFormTitle">
-<?
-	}
-
-	function BoxSimplesBottom()
-	{
-		BoxPublicareBottom();
-	}
 		
 }
 ?>

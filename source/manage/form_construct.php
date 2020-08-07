@@ -53,13 +53,13 @@ if (strpos($action,"edit") === false)
     $classe = $page->administracao->pegarInfoDaClasse($page->administracao->codigoClasse($classname));
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
-    $dadosPai = $page->adminobjeto->pegarDadosObjetoId($page->objeto->Valor("cod_objeto"));
+    $dadosPai = $page->adminobjeto->pegarDadosObjetoId($page->objeto->valor("cod_objeto"));
 }
 // Edição de objeto
 else
 {
-    $classname = $page->objeto->Valor("prefixoclasse");
-    $classe = $page->administracao->pegarInfoDaClasse($page->objeto->Valor("cod_classe"));
+    $classname = $page->objeto->valor("prefixoclasse");
+    $classe = $page->administracao->pegarInfoDaClasse($page->objeto->valor("cod_classe"));
     $edit = true;
     $titulo = "Editar";
 }
@@ -73,7 +73,7 @@ if ($versao > 0)
     if (is_array($objtmp) && count($objtmp)>0)
     {
         $conteudo = unserialize($objtmp[0]["conteudo"]);
-        if ($conteudo->Valor("cod_objeto") == $objeto->Valor("cod_objeto"))
+        if ($conteudo->valor("cod_objeto") == $objeto->valor("cod_objeto"))
         {
             $objeto->metadados = $conteudo->metadados;
             $objeto->propriedades = $conteudo->propriedades;
@@ -85,19 +85,19 @@ if ($versao > 0)
 // view atual
 $scriptAtual = ($edit)?$page->objeto->metadados['script_exibir']:"";
 // codigo do usuario dono do objeto
-$cod_usuario = ($edit)?$page->objeto->Valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
+$cod_usuario = ($edit)?$page->objeto->valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
 // peso do objeto
-$peso = ($edit)?$objeto->Valor("peso"):0;
+$peso = ($edit)?$objeto->valor("peso"):0;
 // codigo do objeto pai
-$cod_pai = ($edit)?$page->objeto->Valor("cod_pai"):$page->objeto->Valor("cod_objeto");
+$cod_pai = ($edit)?$page->objeto->valor("cod_pai"):$page->objeto->valor("cod_objeto");
 // código da pele
-$cod_pele = ($edit)?$objeto->Valor("cod_pele"):(int)$dadosPai["cod_pele"];
+$cod_pele = ($edit)?$objeto->valor("cod_pele"):(int)$dadosPai["cod_pele"];
 
 // Redefinido para que o STATUS de todos os objetos, 
 // independentemente do nivel do usuario, sejam sempre DESPUBLICADOS
 $new_status = 0;
 // o unico objeto que não pode ser despublicado é a página inicial, objeto _ROOT
-if ($page->objeto->Valor("cod_objeto") == $page->config["portal"]["objroot"]) $new_status = _STATUS_PUBLICADO;
+if ($page->objeto->valor("cod_objeto") == $page->config["portal"]["objroot"]) $new_status = _STATUS_PUBLICADO;
 else $new_status = _STATUS_PRIVADO;
 
 
@@ -105,11 +105,11 @@ else $new_status = _STATUS_PRIVADO;
 <script src="include/javascript_datepicker" type="text/javascript"></script>
 <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
 
-<form enctype="multipart/form-data" action="do/obj_post/<?=$page->objeto->Valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
+<form enctype="multipart/form-data" action="do/obj_post/<?=$page->objeto->valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
     <input type="hidden" name="op" value="<?php echo($edit===true?"edit":"create"); ?>">
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">
-    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$page->objeto->Valor("cod_objeto"):0); ?>">
+    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$page->objeto->valor("cod_objeto"):0); ?>">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3><strong><?php echo($titulo); ?> objeto</strong></h3>
@@ -118,7 +118,7 @@ else $new_status = _STATUS_PRIVADO;
     if ($edit)
     {
 ?>
-                <strong>Editando</strong>: <?php echo($objeto->Valor("titulo")) ?> (<?php echo($page->objeto->Valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+                <strong>Editando</strong>: <?php echo($objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
             
                 
 <?php
@@ -126,7 +126,7 @@ else $new_status = _STATUS_PRIVADO;
     else
     {
 ?>
-                <strong>Criando em</strong>: <?php echo($page->objeto->Valor("titulo")) ?> (<?php echo($page->objeto->Valor("cod_objeto")) ?>),  <?php echo($page->objeto->Valor("classe")) ?> (<?php echo($page->objeto->Valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
+                <strong>Criando em</strong>: <?php echo($page->objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>),  <?php echo($page->objeto->valor("classe")) ?> (<?php echo($page->objeto->valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
 <?php
     }
 ?>
@@ -140,10 +140,10 @@ else $new_status = _STATUS_PRIVADO;
 <?php
 if ($edit === true)
 {
-    $versoes = $page->administracao->pegarVersoes($page->objeto->Valor("cod_objeto"));
+    $versoes = $page->administracao->pegarVersoes($page->objeto->valor("cod_objeto"));
     usort($versoes, function($a, $b){ return $a["versao"]<$b["versao"]; });
 ?>
-                        <strong>Vers&atilde;o</strong>: <?php echo($objeto->Valor("versao")) ?> 
+                        <strong>Vers&atilde;o</strong>: <?php echo($objeto->valor("versao")) ?> 
                         | 
                         <select id="alteraVersao">
 <?php
@@ -157,7 +157,7 @@ if ($edit === true)
                         </select>
                         <input type="button" class="btn btn-default" value="Carregar" id="btnAlteraVersao">
 <?php
-    if ($page->objeto->Valor("versao") != $objeto->Valor("versao"))
+    if ($page->objeto->valor("versao") != $objeto->valor("versao"))
     {
 ?>
                         <br />
@@ -188,7 +188,7 @@ else
 if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($page->objeto->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
 <?php                
 }
 ?>
@@ -212,7 +212,7 @@ if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
                     <div class="row form-group">
                         <label class="col-md-3 col-form-label" for="titulo"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo t&iacute;tulo do objeto é obrigatório.' data-placement='top' title='O campo t&iacute;tulo do objeto é obrigatório.'></i> T&iacute;tulo do objeto <small><small>* <br />(#titulo)</small></small></label>
                         <div class="col-md-9">
-                            <input type="text" name="titulo" id="titulo" class="form-control required" value="<?php echo($edit?$objeto->Valor("titulo"):"") ?>" />
+                            <input type="text" name="titulo" id="titulo" class="form-control required" value="<?php echo($edit?$objeto->valor("titulo"):"") ?>" />
                         </div>
                     </div>
                     
@@ -225,7 +225,7 @@ foreach ($classe["prop"] as $prop)
     $obrigatorio = "";
     $visivel = "";
     $pos = "";
-    $valor = $edit?$objeto->Valor($prop["nome"]):$prop["valorpadrao"];
+    $valor = $edit?$objeto->valor($prop["nome"]):$prop["valorpadrao"];
     
     // Verifica se o campo e permitido para o PERFIL atual do usuario
     if ((int)$prop['seguranca'] < (int)$_SESSION['usuario']['perfil'])
@@ -360,19 +360,19 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                             <div class="row form-group">
                                 <label class="col-md-4 col-form-label" for="descricao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo Descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.' data-placement='top' title='O campo descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.'></i> Descri&ccedil;&atilde;o <small><small><br />(#descricao)</small></small></label>
                                 <div class="col-md-8">
-                                    <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$objeto->Valor("descricao"):""); ?></textarea>
+                                    <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$objeto->valor("descricao"):""); ?></textarea>
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <label class="col-md-4 col-form-label" for="url_amigavel"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".' data-placement='top' title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".'></i> URL Amigável <small><small><br />(#url_amigavel)</small></small></label>
                                 <div class="col-md-8">
-                                    <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$objeto->Valor("url_amigavel"):""); ?>" />
+                                    <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$objeto->valor("url_amigavel"):""); ?>" />
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <label class="col-md-4 col-form-label" for="tags"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.' data-placement='top' title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.'></i> TAGS <small><small><br />(#tags)</small></small></label>
                                 <div class="col-md-8">
-                                    <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$objeto->Valor("tags"):""); ?></textarea>
+                                    <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$objeto->valor("tags"):""); ?></textarea>
                                 </div>
                             </div> 
                             <div class="row form-group">
@@ -393,13 +393,13 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                             <div class="row form-group">
                                 <label class="col-md-4 col-form-label" for="data_publicacao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual o objeto ficar&aacute; vis&iacute;vel.' data-placement='top' title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual objeto ficar&aacute; vis&iacute;vel.'></i> Data publica&ccedil;&atilde;o <small><small>* <br />(#data_publicacao)</small></small></label>
                                 <div class="col-md-8">
-                                    <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $objeto->Valor("data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
+                                    <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $objeto->valor("data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <label class="col-md-4 col-form-label" for="data_validade"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data validade informa a data/hora a partir da qual objeto deixar&aacute; de ser vis&iacute;vel.' data-placement='top' title='O campo data validade informa a data/hora a partir da qual o objeto deixar&aacute; de ser vis&iacute;vel.'></i> Data validade <small><small>* <br />(#data_validade)</small></small></label>
                                 <div class="col-md-8">
-                                    <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $objeto->Valor("data_validade")):$dataValidade." ".$horaAtual) ?>" />
+                                    <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $objeto->valor("data_validade")):$dataValidade." ".$horaAtual) ?>" />
                                 </div>
                             </div>
                             <div class="row form-group">
@@ -491,7 +491,7 @@ else
 if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($page->objeto->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
 <?php                
 }
 ?>

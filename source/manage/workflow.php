@@ -30,7 +30,7 @@
 
 global $page;
 
-	$loglist = $page->log->PegaLogWorkflow($page->objeto->Valor("cod_objeto"));
+	$loglist = $page->log->PegaLogWorkflow($page->objeto->valor("cod_objeto"));
 	if (count ($loglist))
 	{
 		//BoxSimplesTop();

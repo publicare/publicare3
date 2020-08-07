@@ -187,7 +187,7 @@ $_SESSION['classesNomes'] = array();
 $_SESSION['classes'] = array();
 $_SESSION['classesIndexaveis'] = array();
 
-$header = "Location:" . $page->config["portal"]["url"] . "/do/classes/" . $page->objeto->Valor("cod_objeto") . ".html";
+$header = "Location:" . $page->config["portal"]["url"] . "/do/classes/" . $page->objeto->valor("cod_objeto") . ".html";
 header($header);
 
 exit();

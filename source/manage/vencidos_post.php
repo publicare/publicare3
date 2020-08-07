@@ -36,5 +36,5 @@ foreach($_POST['objlist'] as $obj)
     elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $page->administracao->apagarObjeto($obj); 
 }
 	
-header("Location:" . $page->config["portal"]["url"] . "/do/vencidos/".$page->objeto->Valor('cod_objeto').'.html');
+header("Location:" . $page->config["portal"]["url"] . "/do/vencidos/".$page->objeto->valor('cod_objeto').'.html');
 

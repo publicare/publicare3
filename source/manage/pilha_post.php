@@ -30,9 +30,9 @@
 
 global $page, $cod_objeto;
 
-if (isset($_POST['copy'])) $page->administracao->copiarObjeto($_POST['cod_objmanage'], $page->objeto->Valor("cod_objeto"));
-elseif (isset($_POST['pastelink'])) $page->administracao->colarComoLink($_POST['cod_objmanage'], $page->objeto->Valor("cod_objeto"));
-elseif (isset($_POST['move'])) $page->administracao->moverObjeto($_POST['cod_objmanage'], $page->objeto->Valor("cod_objeto"));
+if (isset($_POST['copy'])) $page->administracao->copiarObjeto($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
+elseif (isset($_POST['pastelink'])) $page->administracao->colarComoLink($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
+elseif (isset($_POST['move'])) $page->administracao->moverObjeto($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
 elseif (isset($_POST['clear'])) $page->administracao->limparPilha();
 		
 header ("Location:".$page->config["portal"]["url"].'/do/list_content/'.$cod_objeto.'.html');

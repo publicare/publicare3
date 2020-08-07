@@ -53,11 +53,11 @@ elseif (isset($_POST["gravarepublicar"]))
 }
 
 $obj = $page->administracao->gravarObjeto($_POST, $acaoobj, $publicar, $cod);
-$local .= $obj["obj"]->Valor("url");
+$local .= $obj["obj"]->valor("url");
 
 if (isset($_POST["gravaroutro"]))
 {
-    $local = $page->config["portal"]["url"]."/do/new_".$obj["obj"]->Valor('prefixoclasse')."/".$obj["obj"]->Valor('cod_pai').".html";
+    $local = $page->config["portal"]["url"]."/do/new_".$obj["obj"]->valor('prefixoclasse')."/".$obj["obj"]->valor('cod_pai').".html";
 }
 
 header("Location: ".$local);

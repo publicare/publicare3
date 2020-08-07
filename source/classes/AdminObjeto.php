@@ -555,7 +555,7 @@ class AdminObjeto
                         $result[] = "OR";
                         break;
                     default:
-                        $this->page->AdicionarAviso("Operador ".$exp." desconhecido.",true);
+                        $this->page->adicionarAviso("Operador ".$exp." desconhecido.",true);
                 }
             }
         }
@@ -778,7 +778,7 @@ class AdminObjeto
      */
     function carregarClasses()
     {
-        if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0 || ($this->page->usuario->EstaLogado()))
+        if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0 || ($this->page->usuario->estaLogado()))
         {
             $sql = "SELECT ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
                     . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo, "
@@ -1292,7 +1292,7 @@ class AdminObjeto
 //		}
 //		if (count ($cod_classe_array)!=count($classe))
 //		{
-//			$this->page->AdicionarAviso("Uma ou mais classes inexistentes em ".implode(",",$classe).".");
+//			$this->page->adicionarAviso("Uma ou mais classes inexistentes em ".implode(",",$classe).".");
 //		}
 //		if (count($cod_classe_array))
 //		{
@@ -1373,7 +1373,7 @@ class AdminObjeto
         else
         {
             $ClasseNome = $this->pegarNomeClasse($cod_classe);
-            $this->page->AdicionarAviso("Classe ".$ClasseNome['nome']." n&atilde;o tem propriedade $campo.",true);
+            $this->page->adicionarAviso("Classe ".$ClasseNome['nome']." n&atilde;o tem propriedade $campo.",true);
         }
         return $montagem;
     }
@@ -1527,14 +1527,14 @@ class AdminObjeto
 //		}
 //		//echo $obj['CaminhoObjeto']."<br>";
 //		//var_dump_pre($cod_objeto);
-//		return array('url'=>$obj->Valor('url'), 'titulo'=>$obj->Valor('titulo'), 'descricao'=>$obj->Valor('descricao'), 'codigo'=>$obj->Valor('cod_objeto'),'caminho'=>$arrCaminho);
+//		return array('url'=>$obj->valor('url'), 'titulo'=>$obj->valor('titulo'), 'descricao'=>$obj->valor('descricao'), 'codigo'=>$obj->valor('cod_objeto'),'caminho'=>$arrCaminho);
 //	}
 
     function enviarEmailSolicitacao($cod_chefia, $cod_objeto,$mensagemsubmetida)
     {
         global $PORTAL_NAME;
         include('email.class.php');
-        $arrInfoUsuario = $this->page->usuario->PegaInformacaoUsuario($cod_chefia);
+        $arrInfoUsuario = $this->page->usuario->pegarInformacoesUsuario($cod_chefia);
         $arrInfoDadosObjeto = $this->page->adminobjeto->pegarDadosObjetoId($cod_objeto);
 
         $texConteudo = "<font align=\"left\">Esta mensagem &eacute; para informar a solicita&ccedil;&atilde;o de publica&ccedil;&atilde;o de objetos por parte do usu&aacute;rio <b>".$_SESSION['usuario']['nome']."</b> dentro do ".$PORTAL_NAME.".
@@ -1631,7 +1631,7 @@ class AdminObjeto
      */
     function estaSobAreaProtegida($cod_objeto=-1)
     {
-        $this->page->IncluirAdmin();
+        $this->page->incluirAdmin();
         $protegido = false;
         $caminho2 = $this->page->objeto->CaminhoObjeto;
         $objBlob = clone $this->page->objeto;
@@ -1649,7 +1649,7 @@ class AdminObjeto
         }
         else
         {
-            $cod_objeto = $this->page->objeto->Valor("cod_objeto");
+            $cod_objeto = $this->page->objeto->valor("cod_objeto");
         }
 //        $caminho[] = $cod_objeto;
 
@@ -1663,13 +1663,13 @@ class AdminObjeto
         
 
         // verificando se o objeto está publicado
-        if ($objBlob->Valor("cod_status") != "2" && !$permissao)
+        if ($objBlob->valor("cod_status") != "2" && !$permissao)
         {
            return false;
         }
         
         // verifica se o objeto é protegido
-        if (preg_match("/_protegido.*/", $objBlob->Valor("script_exibir")))
+        if (preg_match("/_protegido.*/", $objBlob->valor("script_exibir")))
         {
             $protegido = true;
         }

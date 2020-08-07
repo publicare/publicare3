@@ -72,7 +72,7 @@ global $page;
         <!-- === Dados do usuário === -->
         <div class="panel panel-info">
             <div class="panel-heading">Dados do usuário (<?php echo( $_SESSION['usuario']['nome']); ?>)</div>
-            <form action="do/gerdadospessoais_post/<?php echo($page->objeto->Valor('cod_objeto')); ?>.html" method="POST">
+            <form action="do/gerdadospessoais_post/<?php echo($page->objeto->valor('cod_objeto')); ?>.html" method="POST">
                 <input type="hidden" name="cod_usuario" value="<?php echo $_SESSION['usuario']['cod_usuario']; ?>">
                 <input type="hidden" name="nomehidden" value="<?php echo $_SESSION['usuario']['nome']; ?>">
                 <input type="hidden" name="secao" value="<?php echo $_SESSION['usuario']['secao']; ?>">

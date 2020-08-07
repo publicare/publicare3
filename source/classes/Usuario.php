@@ -63,13 +63,13 @@ class Usuario
             if (!isset($_SESSION['perfil']) || !is_array($_SESSION['perfil']) 
                     || count($_SESSION['perfil'])<1) 
             {
-                $this->CarregarInfoPerfis();
+                $this->carregarInfoPerfis();
             }
             
             
             if (isset($_SESSION['usuario']['cod_usuario'])) 
             {
-                $this->PegaPerfil();
+                $this->pegarPerfil();
             }
             else
             {
@@ -79,7 +79,7 @@ class Usuario
             }
 	}
         
-        function pegaNomePerfil($cod)
+        function pegarNomePerfil($cod)
         {
             return $this->perfil[$cod];
         }
@@ -89,7 +89,7 @@ class Usuario
 	 * @param Int $oculta_root - Indica se eve ocultar usuario root da lista
 	 * @return array
 	 */
-	function listaUsuarios($busca="", $ordem="", $dir="", $start=-1, $limit=-1, $oculta_root=1)
+	function listarUsuarios($busca="", $ordem="", $dir="", $start=-1, $limit=-1, $oculta_root=1)
 	{
             $sql = "SELECT ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                     . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
@@ -122,7 +122,7 @@ class Usuario
             return $rs->getRows();
 	}
 		
-	function EstaLogado($nivelInferior=NULL)
+	function estaLogado($nivelInferior=NULL)
 	{
 		//echo ">>>".$_SESSION['usuario']['perfil'];
             if ($nivelInferior && isset($_SESSION['usuario']['perfil'])) {
@@ -135,9 +135,9 @@ class Usuario
                 return (isset($_SESSION['usuario']) && is_array($_SESSION['usuario']));
 	}
 
-	function EstaLogadoMilitarizado()
+	function estaLogadoMilitarizado()
 	{
-            if (($this->EstaLogado(_PERFIL_EDITOR)) || ($_SESSION['usuario']['perfil'] == _PERFIL_MILITARIZADO))
+            if (($this->estaLogado(_PERFIL_EDITOR)) || ($_SESSION['usuario']['perfil'] == _PERFIL_MILITARIZADO))
                 return is_array($_SESSION['usuario']);
             else 
                 return null;
@@ -151,7 +151,7 @@ class Usuario
          * @param string $senha - Senha do usuario
          * @return boolean
          */
-	function Login($usuario, $senha)
+	function login($usuario, $senha)
 	{
 //            $usuario = htmlspecialchars($usuario, ENT_QUOTES, "UTF-8");
 //            $senha = htmlspecialchars($senha, ENT_QUOTES, "UTF-8");
@@ -282,7 +282,7 @@ class Usuario
                     $rs2 = $this->page->db->ExecSQL($sql);
                     
                     // carrega permissões do usuario
-                    $this->Carregar();
+                    $this->carregar();
                     return true;
                 }
             }
@@ -291,7 +291,7 @@ class Usuario
             return false;
 	}
         
-        function LoginAutoPass($usuario)
+        function loginAutoPass($usuario)
 	{
 //            $usuario = htmlspecialchars($usuario, ENT_QUOTES, "UTF-8");
 //            $senha = htmlspecialchars($senha, ENT_QUOTES, "UTF-8");
@@ -350,7 +350,7 @@ class Usuario
                 $rs2 = $this->page->db->ExecSQL($sql);
 
                 // carrega permissões do usuario
-                $this->Carregar();
+                $this->carregar();
                 return true;
             }
 
@@ -358,7 +358,7 @@ class Usuario
             return false;
 	}
 		
-	function Logout()
+	function logout()
 	{
 //            xd();
             $cod_objeto = $this->page->config["portal"]["objroot"];
@@ -370,11 +370,11 @@ class Usuario
             $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
 	}
 		
-	function Carregar()
+	function carregar()
 	{
-            $_SESSION['usuario']['direitos'] = $this->PegaDireitosDoUsuario($_SESSION['usuario']['cod_usuario']);
-            $this->CarregarInfoPerfis();
-            $this->PegaPerfil();
+            $_SESSION['usuario']['direitos'] = $this->pegarDireitosUsuario($_SESSION['usuario']['cod_usuario']);
+            $this->carregarInfoPerfis();
+            $this->pegarPerfil();
 	}
 
 //	function CarregarDireitos(&$page)
@@ -405,7 +405,7 @@ class Usuario
 //                
 //	}
 
-	function CarregarInfoPerfis()
+	function carregarInfoPerfis()
 	{
 		$sql = "SELECT ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["cod_perfil"]." AS cod_perfil, "
                         . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["acao"]." AS acao, "
@@ -437,10 +437,10 @@ class Usuario
 		
 	}
 		
-	function PegaPerfil($cod_objeto=0)
+	function pegarPerfil($cod_objeto=0)
 	{
-            if ($cod_objeto==0 && !$this->page->objeto->Valor('cod_objeto')) return false;
-            if ($cod_objeto==0) $cod_objeto = $this->page->objeto->Valor('cod_objeto');
+            if ($cod_objeto==0 && !$this->page->objeto->valor('cod_objeto')) return false;
+            if ($cod_objeto==0) $cod_objeto = $this->page->objeto->valor('cod_objeto');
             $caminho[] = $cod_objeto;
             $objeto = new Objeto($this->page, $cod_objeto);
             $caminho = array_merge($caminho, array_reverse($objeto->CaminhoObjeto));
@@ -458,7 +458,7 @@ class Usuario
             return _PERFIL_DEFAULT;
 	}
 		
-	function PodeExecutar($script)
+	function podeExecutar($script)
 	{
 //            return true;
             if (!isset($this->cod_perfil)) $this->cod_perfil = _PERFIL_DEFAULT;
@@ -469,7 +469,7 @@ class Usuario
                 switch($script){
                     case '/do/delete':
                         // Ou melhor, quase tudo... nem admin apaga objeto do sistema
-                        if ($this->page->objeto->Valor("objetosistema"))
+                        if ($this->page->objeto->valor("objetosistema"))
                         {
                             return false;
                         }
@@ -491,14 +491,14 @@ class Usuario
                         {
 
                             //Testar se o usuario e dono do objeto ou se o objeto esta publicado
-                            if (!($this->page->objeto->metadados['cod_usuario']==$_SESSION['usuario']['cod_usuario']) && !($this->page->objeto->Publicado())){
+                            if (!($this->page->objeto->metadados['cod_usuario']==$_SESSION['usuario']['cod_usuario']) && !($this->page->objeto->publicado())){
                                     return false;
                             }
                         }
                         if ($perfil['sopublicado'])
                         {
                             //Testar se o objeto esta publicado
-                            if (!$this->page->objeto->Publicado())
+                            if (!$this->page->objeto->publicado())
                             {
                                     return false;
                             }
@@ -518,7 +518,7 @@ class Usuario
             return false;
 	}
 
-	function ContaPendencias()
+	function contarPendencias()
 	{
             //$sql = 'select count(*) as contador from pendencia where cod_usuario='.$_SESSION['usuario']["cod_usuario"];
             $sql = "SELECT COUNT(*) AS contador "
@@ -528,7 +528,7 @@ class Usuario
             return $row['contador'];
 	}
 
-	function ContaRejeitados()
+	function contarRejeitados()
 	{
             $sql = "SELECT COUNT(*) AS contador "
                     . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
@@ -540,7 +540,7 @@ class Usuario
             return $row['contador'];
 	}
 
-	function Menu()
+	function menu()
 	{
             $retorno = array();
             
@@ -552,12 +552,12 @@ class Usuario
                     if ($perfil['donooupublicado'] == 1)
                     {
                         if ($this->page->objeto->metadados['cod_usuario'] != $_SESSION['usuario']['cod_usuario'] 
-                                && !$this->page->objeto->Publicado()) 
+                                && !$this->page->objeto->publicado()) 
                             $adiciona = false;
                     }
                     if ($perfil['sopublicado'] == 1)
                     {
-                        if (!$this->page->objeto->Publicado()) $adiciona = false;
+                        if (!$this->page->objeto->publicado()) $adiciona = false;
                     }
                     if ($perfil['sodono'] == 1)
                     {
@@ -573,29 +573,19 @@ class Usuario
                 return $a["ordem"] > $b["ordem"];
             });
             
-            $retorno = $this->Filtrar($retorno);
+            $retorno = $this->filtrar($retorno);
             
             return $retorno;
 	}
-
-	function PodeApagar()
-	{
-		if (!is_array ($this->scripts))
-			$this->Menu();
-		if (in_array('/do/delete',$this->scripts))
-			return true;
-		else
-			return false;
-	}
 		
-	function Filtrar ($acao)
+	function filtrar ($acao)
 	{
 		foreach ($acao as $item)
 		{
 			switch ($item['script'])
 			{
 				case '/do/create':
-					if ($this->page->objeto->PodeTerFilhos())
+					if ($this->page->objeto->podeTerFilhos())
 					{
 						$out[]=$item;
 					}
@@ -603,34 +593,34 @@ class Usuario
 				case '/login/index':
 					break;
 				case '/do/recuperar_objeto':
-					if ($this->page->objeto->Valor("apagado"))
+					if ($this->page->objeto->valor("apagado"))
 						$out[]=$item;
 					break;	
 				case '/do/delete':
-					if (($this->page->objeto->Valor("cod_objeto")!=$this->page->config["portal"]["objroot"]) && (!$this->page->objeto->Valor("apagado")))
+					if (($this->page->objeto->valor("cod_objeto")!=$this->page->config["portal"]["objroot"]) && (!$this->page->objeto->valor("apagado")))
 						$out[]=$item;
 					break;
 				case '/do/new':
-					if ($this->page->objeto->Valor("temfilhos"))
+					if ($this->page->objeto->valor("temfilhos"))
 						$out[]=$item;
 					break;
 				case '/do/publicar':
-					if ($this->page->objeto->Valor("cod_status")!=_STATUS_PUBLICADO)
+					if ($this->page->objeto->valor("cod_status")!=_STATUS_PUBLICADO)
 						$out[]=$item;
 					break;
 				case '/do/rejeitar':
-					if ($this->page->objeto->Valor('cod_objeto')!=$this->page->config["portal"]["objroot"])
+					if ($this->page->objeto->valor('cod_objeto')!=$this->page->config["portal"]["objroot"])
 					{
-					 	if (($this->page->objeto->Valor("cod_status")==_STATUS_SUBMETIDO) || ($this->page->objeto->Valor("cod_status")==_STATUS_PUBLICADO))
+					 	if (($this->page->objeto->valor("cod_status")==_STATUS_SUBMETIDO) || ($this->page->objeto->valor("cod_status")==_STATUS_PUBLICADO))
 							$out[]=$item;
 					}
 					break;
 				case '/do/submeter':
-					if (($this->page->objeto->Valor("cod_status")==_STATUS_PRIVADO) || ($this->page->objeto->Valor("cod_status")==_STATUS_REJEITADO))
+					if (($this->page->objeto->valor("cod_status")==_STATUS_PRIVADO) || ($this->page->objeto->valor("cod_status")==_STATUS_REJEITADO))
 						$out[]=$item;
 					break;
 				case '/do/pendentes':
-					$conta=$this->ContaPendencias();
+					$conta=$this->contarPendencias();
 					if ($conta)
 					{
 						//$item['acao']=$conta .' objeto(s) para aprova��o';
@@ -639,7 +629,7 @@ class Usuario
 					}
 					break;
 				case '/do/rejeitados':
-					$conta=$this->ContaRejeitados();
+					$conta=$this->contarRejeitados();
 					if ($conta)
 					{
 						$item['acao']=$conta.' objeto(s) para revis&atilde;o';
@@ -658,7 +648,7 @@ class Usuario
      * @param int $tmpNum - codigo do perfil
      * @return string
      */
-    static function VerificaPerfil($tmpNum)
+    static function verificarPerfil($tmpNum)
     {
         switch ($tmpNum) {
         case _PERFIL_ADMINISTRADOR:
@@ -690,7 +680,7 @@ class Usuario
      * Atualiza dados do usuário no banco de dados
      * @param array $dados - dados do usuário
      */
-    function atualizaUsuario($dados)
+    function atualizarUsuario($dados)
     {
         $sql = "UPDATE ".$this->page->db->tabelas["usuario"]["nome"]." "
                 . " SET ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." = '" . $dados['nome'] . "', "
@@ -717,7 +707,7 @@ class Usuario
      * @param int $perfil - Perfil a ser adicionado
      * @param bool $inserir - Indica se deve inserir novo perfil
      */
-    function AlterarPerfilDoUsuarioNoObjeto($cod_usuario, $cod_objeto, $perfil, $inserir=true)
+    function alterarPerfilUsuarioObjeto($cod_usuario, $cod_objeto, $perfil, $inserir=true)
     {
         $sql = "DELETE FROM ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
                 . " WHERE ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
@@ -738,7 +728,7 @@ class Usuario
      * @param int $cod_usuario - Codigo do usuario, caso seja update
      * @return bool
      */
-    function ExisteOutroUsuario($login, $cod_usuario=false)
+    function existeOutroUsuario($login, $cod_usuario=false)
     {
         $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario "
 			."FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
@@ -748,33 +738,12 @@ class Usuario
         return !$rs->EOF;
     }
     
-    
-    function PegaListaDeUsuariosDoObjeto($cod_objeto, $cod_perfil=-1)
-    {
-        $sql = "SELECT ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                . " ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." AS cod_perfil "
-                . "FROM ".$this->page->db->tabelas["usuario"]["nome"]." ".$this->page->db->tabelas["usuario"]["nick"]." "
-                . "INNER JOIN ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nick"]." "
-                . "ON ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." "
-                . "WHERE ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                . "AND ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." = ".$cod_objeto." ";
-        if ($cod_perfil != -1)
-        {
-            $sql .= " AND ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nick"].".".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." = ".$cod_perfil." ";
-        }
-        $rs = $this->page->db->ExecSQL($sql);
-        return $rs->GetRows();
-    }
-    
-    
     /**
      * Busca lista de usuarios no banco de dados
      * @param string $secao - seção do usuario
      * @return array - Lista de usuários
      */
-    function PegaListaDeUsuarios($secao=NULL)
+    function pegarListaUsuarios($secao=NULL)
     {
         if (!$secao && $secao==null)
         {
@@ -805,7 +774,7 @@ class Usuario
      * Remove todas as entradas no banco de perfis de usuario
      * @param int $cod_usuario - Codigo do usuario
      */
-    function limpaPerfisUsuario($cod_usuario)
+    function limparPerfisUsuario($cod_usuario)
     {
         $sql = "DELETE FROM ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
                 . " WHERE ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = " . $cod_usuario;
@@ -817,7 +786,7 @@ class Usuario
      * @param int $cod_usuario - Codigo do usuario a buscar
      * @return array - Dados do usuario
      */
-    function PegaInformacaoUsuario($cod_usuario)
+    function pegarInformacoesUsuario($cod_usuario)
     {
         $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                 . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
@@ -840,7 +809,7 @@ class Usuario
      * @param int $interCod_Usuario - Codigo do usuario
      * @return array
      */
-    function PegaDireitosDoUsuario($interCod_Usuario)
+    function pegarDireitosUsuario($interCod_Usuario)
     {
         $out = array();
         $sql = "SELECT ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." AS cod_objeto, "

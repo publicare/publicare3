@@ -63,7 +63,7 @@ if ($acao=="")
         });
     
     $("#btn_addclasse").click(function(){
-        document.location.href = "do/classes/<?php echo($page->objeto->Valor("cod_objeto")); ?>.html?acao=new";
+        document.location.href = "do/classes/<?php echo($page->objeto->valor("cod_objeto")); ?>.html?acao=new";
     });
     
 <?php
@@ -77,7 +77,7 @@ elseif ($acao=="new" || $acao=="edit")
         var valor = $("#sctClasse").val();
         if (valor!="")
         {
-            document.location.href="do/classes/<?php echo $page->objeto->Valor("cod_objeto")?>.html?cod_classe=" + valor;
+            document.location.href="do/classes/<?php echo $page->objeto->valor("cod_objeto")?>.html?cod_classe=" + valor;
         }
     });
     $("input[name='temfilhos']").click(function(){
@@ -96,7 +96,7 @@ elseif ($acao=="new" || $acao=="edit")
         classeAdicionarObjeto();
     });
     $("#btn_cancel").click(function(){
-        document.location.href = "do/classes/<?php echo($page->objeto->Valor("cod_objeto")); ?>.html";
+        document.location.href = "do/classes/<?php echo($page->objeto->valor("cod_objeto")); ?>.html";
     });
 <?php
 }
@@ -105,10 +105,10 @@ elseif ($acao=="new" || $acao=="edit")
 </script>
  
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li><a href="do/gerusuario/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li class="active"><a href="do/classes/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li><a href="do/peles/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li><a href="do/indexportal/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+    <li><a href="do/gerusuario/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li class="active"><a href="do/classes/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li><a href="do/peles/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 
 <script src="include/javascript_datatable" type="text/javascript"></script>
@@ -157,12 +157,12 @@ foreach ($_SESSION["classes"] as $class)
                         <td><?php echo($class["sistema"]==0?"Não":"Sim"); ?></td>
                         <td><?php echo($class["descricao"]); ?></td>
                         <td>
-                            <a href="do/classes/<?php echo($page->objeto->Valor("cod_objeto")); ?>.html?acao=edit&cod_classe=<?php echo($class["cod_classe"]); ?>" title='Editar Classe' class='margin-left5' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Classe' data-placement='left' title='Editar Classe'><i class='fapbl fapbl-pencil-alt font-size16'></i></a>
+                            <a href="do/classes/<?php echo($page->objeto->valor("cod_objeto")); ?>.html?acao=edit&cod_classe=<?php echo($class["cod_classe"]); ?>" title='Editar Classe' class='margin-left5' rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Editar Classe' data-placement='left' title='Editar Classe'><i class='fapbl fapbl-pencil-alt font-size16'></i></a>
 
                             <?php
                             if ($class["sistema"]==0) {
                             ?>
-                            <a href="do/classes/<?php echo($page->objeto->Valor("cod_objeto")); ?>.html?acao=del&cod_classe=<?php echo($class["cod_classe"]); ?>" title="Apagar Classe" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Classe' data-placement='left' title='Apagar Classe' class='margin-left5'><i class='fapbl fapbl-times-circle font-size16'></i></a>
+                            <a href="do/classes/<?php echo($page->objeto->valor("cod_objeto")); ?>.html?acao=del&cod_classe=<?php echo($class["cod_classe"]); ?>" title="Apagar Classe" rel='tooltip' data-animate='animated fadeIn' data-toggle='tooltip' data-original-title='Apagar Classe' data-placement='left' title='Apagar Classe' class='margin-left5'><i class='fapbl fapbl-times-circle font-size16'></i></a>
                             <?php
                             }
                             ?>
@@ -191,7 +191,7 @@ foreach ($_SESSION["classes"] as $class)
 elseif ($acao == "edit" || $acao=="new")
 {
 ?>
-        <form action="do/classes_post/<?php echo $page->objeto->Valor("cod_objeto")?>.html" method="post" name="formClasse" id="formClasse" enctype="multipart/form-data">
+        <form action="do/classes_post/<?php echo $page->objeto->valor("cod_objeto")?>.html" method="post" name="formClasse" id="formClasse" enctype="multipart/form-data">
             <input type="hidden" name="cod_classe" value="<?php echo(isset($classinfo['classe']['cod_classe'])?$classinfo['classe']['cod_classe']:""); ?>">
             <input type="hidden" name="old_prefixo" value="<?php echo(isset($classinfo['classe']['prefixo'])?$classinfo['classe']['prefixo']:""); ?>">
             <input type="hidden" name="old_indexar" value="<?php echo(isset($classinfo['classe']['indexar'])?$classinfo['classe']['indexar']:""); ?>">
@@ -494,7 +494,7 @@ elseif ($acao=="del")
 //    xd($classinfo);
 ?>    
         <p>&nbsp;</p>
-        <form action="do/classes_post/<?php echo $page->objeto->Valor("cod_objeto")?>.html" method="post" name="formClasse" id="formClasse" enctype="multipart/form-data">
+        <form action="do/classes_post/<?php echo $page->objeto->valor("cod_objeto")?>.html" method="post" name="formClasse" id="formClasse" enctype="multipart/form-data">
         <input type="hidden" name="cod_classe" value="<?php echo($classinfo["classe"]["cod_classe"]); ?>">
         <input type="hidden" name="apagar_classe" id='apagar_classe' value="">
 <div class="alert alert-danger alert-dismissible fade in modeloapagarclasse" role="alert" id="alertapagarclasse">
@@ -513,7 +513,7 @@ elseif ($acao=="del")
     <?php
     }
     ?>
-                    <p><button type="button" class="btn btn-danger apagar" onclick="classeConfirmaApagarClasse()">Apagar</button> <button type="button" class="btn btn-default naoapagar" onclick="document.location.href='do/classes/<?php echo $page->objeto->Valor("cod_objeto")?>.html';">Não Apagar</button></p>
+                    <p><button type="button" class="btn btn-danger apagar" onclick="classeConfirmaApagarClasse()">Apagar</button> <button type="button" class="btn btn-default naoapagar" onclick="document.location.href='do/classes/<?php echo $page->objeto->valor("cod_objeto")?>.html';">Não Apagar</button></p>
                 </div>
         </form>
 <?php

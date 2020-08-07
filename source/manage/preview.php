@@ -32,9 +32,9 @@ global $page;
 ?>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li class="active"><a href="do/preview/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li><a href="do/log_workflow/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Workflow</a></li>
-  <li><a href="do/log_objeto/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Log Status</a></li>
+  <li class="active"><a href="do/preview/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li><a href="do/log_workflow/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Workflow</a></li>
+  <li><a href="do/log_objeto/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -47,9 +47,9 @@ global $page;
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->Valor("titulo")); echo " <i>[cod: ".$page->objeto->Valor("cod_objeto")."]</i>"; ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); echo " <i>[cod: ".$page->objeto->valor("cod_objeto")."]</i>"; ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a class="ABranco" href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a class="ABranco" href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>
@@ -69,7 +69,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Hierarquia:</strong></div>
 								<div class="col-md-9 col-sm-8">
 <?php
-	$tmpCaminhoObjeto=$page->objeto->PegaCaminhoComTitulo();
+	$tmpCaminhoObjeto=$page->objeto->pegarCaminhoComTitulo();
 	foreach ($tmpCaminhoObjeto as $item)
 	{
 		echo '<a href="do/preview/'.$item['cod_objeto'].'.html">'.$item['titulo'].'</a><i> [cod: '.$item['cod_objeto'].']</i><br>';
@@ -81,7 +81,7 @@ global $page;
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Classe:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->Valor("classe")." [".$page->objeto->Valor("prefixoclasse")."]"; ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->valor("classe")." [".$page->objeto->valor("prefixoclasse")."]"; ?></div>
 							</div>
 						</li>
 						<li>
@@ -121,7 +121,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Objeto pode ter filhos:</strong></div>
 								<div class="col-md-9 col-sm-8">
 									<?php
-									if ($page->objeto->Valor("temfilhos"))
+									if ($page->objeto->valor("temfilhos"))
 										echo "Sim";
 									else
 										echo "Nao";
@@ -134,7 +134,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Status do objeto:</strong></div>
 								<div class="col-md-9 col-sm-8">
 <?php
-	if ($page->objeto->Valor("cod_status")!=_STATUS_PUBLICADO)
+	if ($page->objeto->valor("cod_status")!=_STATUS_PUBLICADO)
 		echo "<b>N&atilde;o publicado</b>";
 	else
 		echo "Publicado";
@@ -145,13 +145,13 @@ global $page;
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Publica&ccedil;&atilde;o:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->Valor("data_publicacao"); ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->valor("data_publicacao"); ?></div>
 							</div>
 						</li>
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Validade:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->Valor("data_validade"); ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->valor("data_validade"); ?></div>
 							</div>
 						</li>
 					</ul>
@@ -187,7 +187,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Perfil no objeto:</strong></div>
 								<div class="col-md-9 col-sm-8">
 								<?php
-									$recebePerfil = Usuario::VerificaPerfil($_SESSION['usuario']['perfil']);
+									$recebePerfil = Usuario::verificarPerfil($_SESSION['usuario']['perfil']);
 									echo "<font color=red>".$recebePerfil."</font>";
 								?>
 								</div>

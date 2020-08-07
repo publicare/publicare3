@@ -28,8 +28,8 @@
  * THE SOFTWARE.
  */
 global $page;
-$page->usuario->Logout();
+$page->usuario->logout();
 ?>
 <script>
-    window.location.href="<?php echo($page->config["portal"]["url"].$page->objeto->Valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
+    window.location.href="<?php echo($page->config["portal"]["url"].$page->objeto->valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
 </script>

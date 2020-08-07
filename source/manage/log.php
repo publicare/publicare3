@@ -31,7 +31,7 @@
 	
 	header("Content-Type: text/html; charset=ISO-8859-1",true);
 	
-	$loglist=$page->log->PegaLogObjeto($page->objeto->Valor("cod_objeto"));
+	$loglist=$page->log->PegaLogObjeto($page->objeto->valor("cod_objeto"));
 //	var_dump($loglist);
 //	exit();
 	if (count ($loglist))

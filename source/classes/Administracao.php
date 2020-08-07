@@ -908,8 +908,8 @@ class Administracao
     function gravarVersao($cod_objeto)
     {
         $obj = new Objeto($this->page, $cod_objeto);
-        $obj->PegaListaDePropriedades();
-        $classe = $this->pegarInfoDaClasse($obj->Valor("cod_classe"));
+        $obj->pegarListaPropriedades();
+        $classe = $this->pegarInfoDaClasse($obj->valor("cod_classe"));
         unset($classe["todas"]);
         unset($classe["obj_conta"]);
         unset($classe["objetos"]);
@@ -941,7 +941,7 @@ class Administracao
                 . " :cod_usuario, "
                 . " :ip )";
             $bind = array("cod_objeto" => $cod_objeto,
-                "versao" => $obj->Valor("versao"),
+                "versao" => $obj->valor("versao"),
                 "conteudo" => $arr_obj, 
                 "data" => date("Y-m-d H:i:s"),
                 "cod_usuario" => $_SESSION["usuario"]["cod_usuario"],
@@ -964,7 +964,7 @@ class Administracao
                 . " ?, "
                 . " ? )";
             $bind = array(1 => $cod_objeto,
-                2 => $obj->Valor("versao"),
+                2 => $obj->valor("versao"),
                 3 => $arr_obj, 
                 4 => date("Y-m-d H:i:s"),
                 5 => $_SESSION["usuario"]["cod_usuario"],
@@ -974,7 +974,7 @@ class Administracao
         $sql = $this->page->db->getCon()->prepare($sql);
         $rs = $this->page->db->ExecSQL(array($sql, $bind));
 
-        $this->page->log->RegistraLogWorkFlow("Criada versão ".$obj->Valor("versao"), $cod_objeto, 1);
+        $this->page->log->RegistraLogWorkFlow("Criada versão ".$obj->valor("versao"), $cod_objeto, 1);
     }
     
     function cacheFlush()
@@ -1528,11 +1528,11 @@ class Administracao
         $this->duplicarPropriedades($cod_objeto, $orig_obj);
         $this->criarParentesco($cod_objeto, $cod_pai);
 
-        if ($orig_obj->PegaListaDeFilhos())
+        if ($orig_obj->pegarListaFilhos())
         {
-            while ($childobj = $orig_obj->PegaProximoFilho())
+            while ($childobj = $orig_obj->pegarProximoFilho())
             {
-                $this->duplicarObjeto($childobj->Valor("cod_objeto"), $cod_objeto);
+                $this->duplicarObjeto($childobj->valor("cod_objeto"), $cod_objeto);
             }
         }
 
@@ -1550,7 +1550,7 @@ class Administracao
      */
     function duplicarPropriedades($destino, $origem)
     {
-        $propriedades = $origem->PegaListaDePropriedades();
+        $propriedades = $origem->pegarListaPropriedades();
         $lista = array();
         foreach ($propriedades as $nome => $valor)
         {
@@ -1570,7 +1570,7 @@ class Administracao
                 $lista["property___".$nome] = $valor["valor"];
             }
         }
-        $this->gravarPropriedades($destino, $origem->Valor("cod_classe"), $lista);
+        $this->gravarPropriedades($destino, $origem->valor("cod_classe"), $lista);
     }
 
     /**
@@ -2196,7 +2196,7 @@ $str .= "*  <hr /> \r\n"
     function pegarPerfilUsuarioObjeto($cod_usuario, $cod_objeto)
     {
         if (empty($cod_usuario)) return false;
-        $perfil = $this->page->usuario->PegaDireitosDoUsuario($cod_usuario);
+        $perfil = $this->page->usuario->pegarDireitosUsuario($cod_usuario);
         $caminho = explode(",", $this->page->adminobjeto->pegarCaminhoObjeto($cod_objeto));
         foreach ($perfil as $objeto => $cod_perfil)
         {
@@ -2409,11 +2409,11 @@ $str .= "*  <hr /> \r\n"
             
             if ($publicar==1)
             {
-                $this->submeterObjeto('Solicitada publicação da versão '.$obj->Valor("versao"), $cod);
+                $this->submeterObjeto('Solicitada publicação da versão '.$obj->valor("versao"), $cod);
             }
             elseif ($publicar==2)
             {
-                $this->publicarObjeto('Publicada versão '.$obj->Valor("versao"), $cod);
+                $this->publicarObjeto('Publicada versão '.$obj->valor("versao"), $cod);
             }
         }
         

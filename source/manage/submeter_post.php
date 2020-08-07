@@ -31,6 +31,6 @@
 
 global $page;
 
-	$page->administracao->submeterObjeto($_POST['message'], $page->objeto->Valor('cod_objeto'));
-	header("Location:".$page->objeto->Valor('url')."?PortalMessage=Status+Alterado");
+	$page->administracao->submeterObjeto($_POST['message'], $page->objeto->valor('cod_objeto'));
+	header("Location:".$page->objeto->valor('url')."?PortalMessage=Status+Alterado");
 ?>

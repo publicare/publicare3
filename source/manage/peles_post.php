@@ -104,10 +104,10 @@ else
     }
     else
     {
-        header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->Valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
+        header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
         exit();
     }
 }
 
-header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->Valor("cod_objeto").".html?cod_pele=".$cod_pele);
+header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->valor("cod_objeto").".html?cod_pele=".$cod_pele);
 exit();

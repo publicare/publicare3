@@ -65,16 +65,16 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Recuperar objetos apagados</b></h3></div>
 
-	<form action="do/recuperar_post/<?php echo $page->objeto->Valor('cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
+	<form action="do/recuperar_post/<?php echo $page->objeto->valor('cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
 	<div class="panel-body">
 
 		<!-- === Listar Conteúdo === -->
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->Valor("titulo")); ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>

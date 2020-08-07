@@ -38,5 +38,5 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']) && count($_POST['obj
             $page->administracao->recuperarObjeto($obj);
     }
 }
-header ("Location: ".$page->config["portal"]["url"]."/do/recuperar/".$page->objeto->Valor('cod_objeto').".html");
+header ("Location: ".$page->config["portal"]["url"]."/do/recuperar/".$page->objeto->valor('cod_objeto').".html");
 

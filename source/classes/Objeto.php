@@ -65,7 +65,7 @@ class Objeto
             if (is_array($dados) && sizeof($dados)>2)
             {
                 $this->povoar($dados);
-                $this->CaminhoObjeto = explode(",", $this->PegaCaminho());
+                $this->CaminhoObjeto = explode(",", $this->pegarCaminho());
                 return true;
             }
 
@@ -103,7 +103,7 @@ class Objeto
      * Retorna caminho do objeto, em string separado por ","
      * @return string
      */
-    function PegaCaminho()
+    function pegarCaminho()
     {
 //        xd($_SESSION);
         return $this->page->adminobjeto->pegarCaminhoObjeto($this->metadados['cod_objeto']);
@@ -113,7 +113,7 @@ class Objeto
      * Retorna array com caminho do objeto
      * @return array
      */
-    function PegaCaminhoComTitulo()
+    function pegarCaminhoComTitulo()
     {
         $resultado=$this->page->adminobjeto->pegarCaminhoObjetoComTitulo($this->metadados['cod_objeto']);
         return $resultado;
@@ -123,7 +123,7 @@ class Objeto
      * Verifica se objeto est´qa com status publicado
      * @return bool
      */
-    function Publicado()
+    function publicado()
     {
         return ($this->metadados['cod_status']==_STATUS_PUBLICADO);
     }
@@ -133,7 +133,7 @@ class Objeto
      * @param string $campo
      * @return type
      */
-    function Valor($campo)
+    function valor($campo)
     {
         if (in_array($campo,$this->ArrayMetadados))
         {
@@ -145,18 +145,8 @@ class Objeto
         }
         else
         {
-            return trim ($this->Propriedade($campo));
+            return trim ($this->propriedade($campo));
         }
-    }
-		
-    /**
-     * Retorna URL para download do blob. Alias de DownloadBlob.
-     * @param string $campo - nome da propriedade que contem o blob
-     * @return string
-     */
-    function LinkDiretoBlob($campo)
-    {
-        return $this->DownloadBlob($campo);
     }
 
     /**
@@ -164,9 +154,9 @@ class Objeto
      * @param string $campo - nome da propriedade que contem o blob
      * @return string
      */
-    function LinkBlob($campo)
+    function linkBlob($campo)
     {
-        return $this->DownloadBlob($campo);
+        return $this->baixarBlob($campo);
     }
 
     /**
@@ -174,7 +164,7 @@ class Objeto
      * @param string $campo - nome da propriedade que contem o blob
      * @return string
      */
-    function DownloadBlob($campo)
+    function baixarBlob($campo)
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
@@ -191,7 +181,7 @@ class Objeto
      * @param integer $height - Altura da imagem
      * @return bytes - Retorna bytes da imagem para exibição
      */
-    function ExibirBlob($campo, $width=0, $height=0)
+    function exibirBlob($campo, $width=0, $height=0)
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
@@ -209,7 +199,7 @@ class Objeto
      * @param integer $height - Altura da imagem
      * @return bytes - Retorna bytes da imagem para exibição
      */
-    function ExibirThumb($campo, $width=0, $height=0)
+    function exibirThumb($campo, $width=0, $height=0)
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
@@ -221,7 +211,7 @@ class Objeto
         return $this->page->config["portal"]["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$largura."&h=".$height;
     }
 
-    function ValorParaEdicao($campo)
+    function valorParaEdicao($campo)
     {
         if (in_array($campo,$this->ArrayMetadados))
         {
@@ -229,20 +219,20 @@ class Objeto
         }
         else
         {
-            return (trim($this->Propriedade($campo)));
+            return (trim($this->propriedade($campo)));
         }
     }
 
-    function PegaListaDePropriedades()
+    function pegarListaPropriedades()
     {
-        if (!is_array($this->propriedades))
+        if (!is_array($this->propriedades) || count($this->propriedades)==0)
         {
                 $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
         return $this->propriedades;
     }
 
-    function Propriedade($campo)
+    function propriedade($campo)
     {
         $campo = strtolower($campo);
         if (!isset($this->propriedades) || !is_array($this->propriedades))
@@ -258,7 +248,7 @@ class Objeto
      * @param string $campo - Nome da propriedade que contem o blob
      * @return int
      */
-    function TamanhoBlob($campo)
+    function tamanhoBlob($campo)
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
@@ -267,7 +257,7 @@ class Objeto
         return ($this->propriedades[$campo]['tamanho_blob']);
     }
 
-    function TipoBlob($campo)
+    function tipoBlob($campo)
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
@@ -276,9 +266,9 @@ class Objeto
         return ($this->propriedades[$campo]['tipo_blob']);
     }
 		
-    function IconeBlob($campo)
+    function iconeBlob($campo)
     {
-        $arquivo ='/html/imagens/icnx_'.$this->TipoBlob($campo).'.gif';
+        $arquivo ='/html/imagens/icnx_'.$this->tipoBlob($campo).'.gif';
         if (file_exists($_SERVER['DOCUMENT_ROOT'].$arquivo))
         {
             return $arquivo;
@@ -289,7 +279,7 @@ class Objeto
         }
     }
 
-    function PegaListaDeFilhos($classe='*',$ordem='peso,titulo',$inicio=-1,$limite=-1)
+    function pegarListaFilhos($classe='*',$ordem='peso,titulo',$inicio=-1,$limite=-1)
     {
         if ($this->metadados['temfilhos'])
         {
@@ -302,12 +292,12 @@ class Objeto
             return false;
     }
 
-    function PodeTerFilhos()
+    function podeTerFilhos()
     {
         return $this->metadados['temfilhos'];
     }
 
-    function PegaProximoFilho()
+    function pegarProximoFilho()
     {
         if ($this->ponteiro < $this->quantidade)
             return $this->filhos[$this->ponteiro++];
@@ -315,7 +305,7 @@ class Objeto
             return false;
     }
 
-    function VaiParaFilho($posicao)
+    function vaiParaFilho($posicao)
     {
         if ($posicao>$this->quantidade)
             return false;
@@ -328,9 +318,9 @@ class Objeto
 
     function ehFilho ($cod_pai)
     {
-            //echo "cod_objeto:".$this->Valor("cod_objeto");
+            //echo "cod_objeto:".$this->valor("cod_objeto");
             //exit;
-            return $this->page->adminobjeto->ehFilho($this->Valor("cod_objeto"), $cod_pai);
+            return $this->page->adminobjeto->ehFilho($this->valor("cod_objeto"), $cod_pai);
     }
                 
 }

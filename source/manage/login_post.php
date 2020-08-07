@@ -76,7 +76,7 @@ if ($usuario != "" && $senha != "") {
 
     // se não tiver estourado o maximo de tentativas, envia dados para login
     else {
-        if (!$page->usuario->Login($usuario, $senha)) {
+        if (!$page->usuario->login($usuario, $senha)) {
             $_SESSION['_LOGIN_TENTATIVAS'] ++;
             $_SESSION['_LOGIN_DATA'] = date("Y-m-d H:i:s");
             header("Location:" . $page->config["portal"]["url"] . "/login/?cod_objeto=" . $cod_objeto . "&LoginMessage=" . urlencode("Usuário/Senha incorretos."));
@@ -91,7 +91,7 @@ if ($usuario != "" && $senha != "") {
                 exit();
             }
             $obj = new Objeto($page, $cod_objeto);
-            header("Location:" . $page->config["portal"]["url"] . $obj->Valor("url") . "?LoginMessage=" . urlencode("Login realizado com sucesso"));
+            header("Location:" . $page->config["portal"]["url"] . $obj->valor("url") . "?LoginMessage=" . urlencode("Login realizado com sucesso"));
         }
     }
 } else {
