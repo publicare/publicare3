@@ -27,11 +27,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-	global $_page;
+	global $page;
 	
 	header("Content-Type: text/html; charset=ISO-8859-1",true);
 	
-	$loglist=$_page->_log->PegaLogObjeto($_page->_objeto->Valor("cod_objeto"));
+	$loglist=$page->log->PegaLogObjeto($page->objeto->Valor("cod_objeto"));
 //	var_dump($loglist);
 //	exit();
 	if (count ($loglist))

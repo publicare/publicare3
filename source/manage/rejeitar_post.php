@@ -27,10 +27,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
+global $page;
 
 $mensagem = (string)filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-$_page->_administracao->RejeitarObjeto("Rejeitada publicação da versão ".$_page->_objeto->Valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $_page->_objeto->Valor('cod_objeto'));
-header("Location:".$_page->config["portal"]["url"].$_page->_objeto->Valor('url'));
+$page->administracao->rejeitarObjeto("Rejeitada publicação da versão ".$page->objeto->Valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $page->objeto->Valor('cod_objeto'));
+header("Location:".$page->config["portal"]["url"].$page->objeto->Valor('url'));
 

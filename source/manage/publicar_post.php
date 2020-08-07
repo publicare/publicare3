@@ -28,10 +28,10 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 
 $mensagem = (string)filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-$_page->_administracao->PublicarObjeto("Publicada versão ".$_page->_objeto->Valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $_page->_objeto->Valor('cod_objeto'));
-header("Location:".$_page->config["portal"]["url"]."/".$_page->_objeto->Valor('url_amigavel'));
+$page->administracao->publicarObjeto("Publicada versão ".$page->objeto->Valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $page->objeto->Valor('cod_objeto'));
+header("Location:".$page->config["portal"]["url"]."/".$page->objeto->Valor('url_amigavel'));
 ?>

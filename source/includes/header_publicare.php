@@ -17,7 +17,7 @@
  * Arquivo responsavel por montar o header do Publicare
  * 
  */
-global $PORTAL_NAME, $cod_objeto, $_page;
+global $PORTAL_NAME, $cod_objeto, $page;
 
 $msg = isset($_REQUEST["msg"]) ? htmlspecialchars(urldecode($_REQUEST["msg"]), ENT_QUOTES, "UTF-8") : "";
 $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"]), ENT_QUOTES, "UTF-8") : "";
@@ -28,7 +28,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title> <?php echo($_page->config["portal"]["nome"]); ?> -- <?php echo _VERSIONPROG; ?></title>
+		<title> <?php echo($page->config["portal"]["nome"]); ?> -- <?php echo _VERSIONPROG; ?></title>
                 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-G2Z7PMGF78"></script>
 <script>
@@ -41,7 +41,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 		<meta name="description" content="Sistema de Gestão de Conteúdo (PUBLICARE)" />
 		<meta name="keywords" content="Gestão de Conteúdo, CMS, PHP, Fácil de usar, PUBLICARE, Formulário, CMS Público Brasileiro" />
                 
-                <base href="<?php echo($_page->config["portal"]["url"]); ?>/" target="_self" />
+                <base href="<?php echo($page->config["portal"]["url"]); ?>/" target="_self" />
 
 		<script src="include/javascript" type="text/javascript"></script>
 		<link href="include/css" rel="stylesheet" type="text/css">    
@@ -58,7 +58,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 					<div class="gn-scrollerpbl">
 						<ul class="gn-menupbl">
 				<?php
-					$menu = $_page->_usuario->Menu();
+					$menu = $page->usuario->Menu();
 //                  xd($menu);
 					$cont = 0;
 					foreach ($menu as $item)
@@ -79,7 +79,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 						{
                                                     if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
 							echo "
-								<li><a href='".$_page->config["portal"]["url"]."/".$item["script"]."/".$_page->_objeto->Valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
+								<li><a href='".$page->config["portal"]["url"]."/".$item["script"]."/".$page->objeto->Valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
 						}
 					}
 				?>
@@ -94,7 +94,7 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
 			<!-- === Final === Usuário logado === -->
 			
 			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($_page->config["portal"]["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
+			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($page->config["portal"]["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
 			<!-- === Final === Logout === -->
 			
 		</ul> 

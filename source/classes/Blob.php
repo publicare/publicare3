@@ -41,16 +41,16 @@ class Blob
     public $tipos_classe;
     public $pasta_classes;
     
-    public $_page;
+    public $page;
 	
     /**
      * Método construtor, inicia as variaveis comuns para a classe
      */
-    function __construct(&$_page)
+    function __construct(&$page)
     {
-        $this->_page = $_page;
+        $this->page = $page;
         
-        $this->pasta_classes = $_page->config["portal"]["uploadpath"] . "classes/";
+        $this->pasta_classes = $page->config["portal"]["uploadpath"] . "classes/";
         
         $this->tipos_classe = array("gif" => "image/gif",
             "png" => "image/png",
@@ -202,20 +202,20 @@ class Blob
         
         foreach ($this->tipos_ver as $ext=>$type)
         {
-            if (file_exists($this->_page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $ext))
+            if (file_exists($this->page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
                 break;
             }
         }
 
-        if (is_null($filetype)) $this->_page->headerHtml(404, "Arquivo não encontrado");
+        if (is_null($filetype)) $this->page->headerHtml(404, "Arquivo não encontrado");
 
-        $arquivo = $this->_page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype;
+        $arquivo = $this->page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype;
         
-//        xd($this->_page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype);
+//        xd($this->page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype);
         
-        if (!file_exists($arquivo)) $this->_page->headerHtml(404, "Arquivo não encontrado");
+        if (!file_exists($arquivo)) $this->page->headerHtml(404, "Arquivo não encontrado");
 
 //        $conteudo = file_get_contents($arquivo);
         $tamanho = filesize($arquivo);
@@ -255,8 +255,8 @@ class Blob
         
         foreach ($this->tipos_ver as $ext=>$type)
         {
-//        xd($this->_page->config["portal"]["uploadpath"]);
-            if (file_exists($this->_page->config["portal"]["uploadpath"] . '/' . Blob::identificaPasta($this->_page, $cod_blob) . '/' . $cod_blob . '.' . $ext))
+//        xd($this->page->config["portal"]["uploadpath"]);
+            if (file_exists($this->page->config["portal"]["uploadpath"] . '/' . Blob::identificaPasta($this->page, $cod_blob) . '/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
                 break;
@@ -264,17 +264,17 @@ class Blob
         }
         
 
-        if (is_null($filetype)) $this->_page->headerHtml(404, "Arquivo não encontrado");
+        if (is_null($filetype)) $this->page->headerHtml(404, "Arquivo não encontrado");
         $cod_objeto = $this->CodigoObjeto($cod_blob);
         $cod_objeto = $cod_objeto["cod"];
         
         
-        if (!$this->_page->_adminobjeto->estaSobAreaProtegida($cod_objeto)) $this->_page->headerHtml(403, "Acesso não permitido");
+        if (!$this->page->adminobjeto->estaSobAreaProtegida($cod_objeto)) $this->page->headerHtml(403, "Acesso não permitido");
 
         $arquivo = $this->VerificaCache($cod_blob, $filetype, $largura, $altura);
 //        xd($arquivo);
         
-        if (!file_exists($arquivo)) $this->_page->headerHtml(404, "Arquivo não encontrado");
+        if (!file_exists($arquivo)) $this->page->headerHtml(404, "Arquivo não encontrado");
 
 //        $conteudo = file_get_contents($arquivo);
         $tamanho = filesize($arquivo);
@@ -307,7 +307,7 @@ class Blob
      */
     function BaixarBlob($cod_blob)
     {
-        $subpasta = Blob::identificaPasta($this->_page, $cod_blob);
+        $subpasta = Blob::identificaPasta($this->page, $cod_blob);
         
         $dados_objeto = $this->CodigoObjeto($cod_blob);
 	$filename = $dados_objeto["nome"];
@@ -315,9 +315,9 @@ class Blob
         
         $file_ext = Blob::PegaExtensaoArquivo($filename);
         
-        if ($this->_page->_adminobjeto->estaSobAreaProtegida($cod_objeto))
+        if ($this->page->adminobjeto->estaSobAreaProtegida($cod_objeto))
 	{
-            if (!isset($this->_page->config["portal"]["uploadpath"]) || $this->_page->config["portal"]["uploadpath"]=="")
+            if (!isset($this->page->config["portal"]["uploadpath"]) || $this->page->config["portal"]["uploadpath"]=="")
             {
                 $nao_compactar = array ('zip', 'jpg');
                 if (in_array ($file_ext, $nao_compactar)) $data = $rs->fields['valor'];
@@ -327,9 +327,9 @@ class Blob
             {
                 if (isset($this->tipos_baixar[$file_ext]))
                 {
-                    if (file_exists($this->_page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext))
+                    if (file_exists($this->page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext))
                     {
-                        $size = filesize($this->_page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
+                        $size = filesize($this->page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
                         $nome = limpaString($filename);
                         $nome = substr($nome, 0, strlen($nome)-strlen($file_ext)).".".$file_ext;
                         
@@ -337,24 +337,24 @@ class Blob
                         header("Content-Disposition: attachment; filename=".$nome."");
                         header("Content-type: ".$this->tipos_baixar[$file_ext]);
                         
-                        $this->readfile_chunked($this->_page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
+                        $this->readfile_chunked($this->page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
                         
                         exit(0);
                     }
                     else
                     {
-                        $this->_page->headerHtml(404, "Arquivo não encontrado"); //die("Arquivo não encontrado.");
+                        $this->page->headerHtml(404, "Arquivo não encontrado"); //die("Arquivo não encontrado.");
                     }
                 }
                 else
                 {
-                    $this->_page->headerHtml(403, "Tipo de arquivo com download não permitido"); //die("Tipo de arquivo com download não permitido.");
+                    $this->page->headerHtml(403, "Tipo de arquivo com download não permitido"); //die("Tipo de arquivo com download não permitido.");
                 }
             }
         }
         else
         {
-            $this->_page->headerHtml(403, "Acesso não permitido"); //die("Acesso ao arquivo não permitido para o perfil.");
+            $this->page->headerHtml(403, "Acesso não permitido"); //die("Acesso ao arquivo não permitido para o perfil.");
         }
     }
     
@@ -365,11 +365,11 @@ class Blob
      */
     private function CodigoObjeto($cod_blob)
     {
-        $sql = 'SELECT '.$this->_page->_db->tabelas["tbl_blob"]["colunas"]["cod_objeto"].' AS cod_objeto, '
-                . ' '.$this->_page->_db->tabelas["tbl_blob"]["colunas"]["arquivo"].' AS arquivo '
-                . ' FROM '.$this->_page->_db->tabelas["tbl_blob"]["nome"].' '
-                . ' WHERE '.$this->_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"].' = '.$cod_blob;
-	$rs = $this->_page->_db->ExecSQL($sql);
+        $sql = 'SELECT '.$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_objeto"].' AS cod_objeto, '
+                . ' '.$this->page->db->tabelas["tbl_blob"]["colunas"]["arquivo"].' AS arquivo '
+                . ' FROM '.$this->page->db->tabelas["tbl_blob"]["nome"].' '
+                . ' WHERE '.$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"].' = '.$cod_blob;
+	$rs = $this->page->db->ExecSQL($sql);
 	return array("cod"=>$rs->fields['cod_objeto'], "nome"=>$rs->fields['arquivo']);
     }
     
@@ -386,14 +386,14 @@ class Blob
      */
     function VerificaCache($cod_blob, $ext, $largura, $altura)
     {
-        $endereco = $this->_page->config["portal"]["uploadpath"] . "/" . Blob::identificaPasta($this->_page, $cod_blob) . "/" . $cod_blob . "." . $ext;
+        $endereco = $this->page->config["portal"]["uploadpath"] . "/" . Blob::identificaPasta($this->page, $cod_blob) . "/" . $cod_blob . "." . $ext;
         
         if ($largura != "0" || $altura != "0")
         {
             if ($this->tipos_ver[$ext][1])
             {
                 $endereco_original = $endereco;
-                $pasta = $this->_page->config["portal"]["uploadpath"] . '/cache/' . Blob::identificaPasta($this->_page, $cod_blob) . '/';
+                $pasta = $this->page->config["portal"]["uploadpath"] . '/cache/' . Blob::identificaPasta($this->page, $cod_blob) . '/';
                 $pasta = preg_replace("[\/\/]", "/", $pasta);
                 $endereco = $pasta . $cod_blob . "_" . $largura . "_" . $altura . "." . $ext;
                 if (!file_exists($pasta)) mkdir($pasta, 0770, true);
@@ -473,7 +473,7 @@ class Blob
      * @param integer $codigo_blob
      * @return string - Nome da pasta
      */
-    static function identificaPasta(&$_page, $codigo_blob)
+    static function identificaPasta(&$page, $codigo_blob)
     {
         $ret = false;
         $tamanho = strlen($codigo_blob);
@@ -490,10 +490,10 @@ class Blob
             for ($i=strlen($ret); $i<4; $i++) $ret="0".$ret;
         }
         // cria a pasta caso não exista
-//        xd($this->_page->config["portal"]["uploadpath"].$ret);
-        if (!is_dir($_page->config["portal"]["uploadpath"].$ret))
+//        xd($this->page->config["portal"]["uploadpath"].$ret);
+        if (!is_dir($page->config["portal"]["uploadpath"].$ret))
         {
-            mkdir($_page->config["portal"]["uploadpath"].$ret, 0755);
+            mkdir($page->config["portal"]["uploadpath"].$ret, 0755);
         }
         return $ret;
     }
@@ -506,7 +506,7 @@ class Blob
      */
     function gravarBlob($file, $cod_blob)
     {
-        $pasta = $this->_page->config["portal"]["uploadpath"].Blob::identificaPasta($this->_page, $cod_blob)."/";
+        $pasta = $this->page->config["portal"]["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/";
         $nome_original = $file["name"];
         $nome_temp = $file["tmp_name"];
         $extensao = Blob::PegaExtensaoArquivo($nome_original);
@@ -545,9 +545,9 @@ class Blob
     function apagaBlob($cod_blob, $arquivo)
     {
         $file_ext = Blob::PegaExtensaoArquivo($arquivo);
-        if (file_exists($this->_page->config["portal"]["uploadpath"].Blob::identificaPasta($this->_page, $cod_blob)."/".$cod_blob.'.'.$file_ext))
+        if (file_exists($this->page->config["portal"]["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext))
         {
-            $checkDelete = unlink($this->_page->config["portal"]["uploadpath"].Blob::identificaPasta($this->_page, $cod_blob)."/".$cod_blob.'.'.$file_ext);
+            $checkDelete = unlink($this->page->config["portal"]["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext);
         }
     }
     
@@ -625,7 +625,7 @@ class Blob
         // se o arquivo nao existir na pasta do site, procura na pasta de icones do publicare
         if (!isset($retorno["arquivo"]) || $retorno["arquivo"]=="")
         {
-            $pasta = $this->_page->config["portal"]["pblpath"] . "/blobs/classes/";
+            $pasta = $this->page->config["portal"]["pblpath"] . "/blobs/classes/";
             $retorno = $this->verificaExistenciaArquivoPasta($pasta, $nome, $this->tipos_classe, $pasta_destino);
         }
         
@@ -640,7 +640,7 @@ class Blob
         if (!isset($retorno["arquivo"]) || $retorno["arquivo"]=="")
         {
             $nome = "ic_default";
-            $pasta = $this->_page->config["portal"]["pblpath"] . "/blobs/classes/";
+            $pasta = $this->page->config["portal"]["pblpath"] . "/blobs/classes/";
             $retorno = $this->verificaExistenciaArquivoPasta($pasta, $nome, $this->tipos_classe, $pasta_destino, true);
         }
         
@@ -661,9 +661,9 @@ class Blob
         
 //        xd($_SERVER['DOCUMENT_ROOT']);
         
-        if (!is_dir($this->_page->config["portal"]["uploadpath"] . "blobs/"))
+        if (!is_dir($this->page->config["portal"]["uploadpath"] . "blobs/"))
         {
-            mkdir($this->_page->config["portal"]["uploadpath"] . "blobs/", 0755, true);
+            mkdir($this->page->config["portal"]["uploadpath"] . "blobs/", 0755, true);
         }
         
         // procura na pasta /html/imagens do portal
@@ -689,9 +689,9 @@ class Blob
             {
                 $nome = "icnx_" . $extensao . "." . $ext;
                 // caso encontre na pasta do portal
-                if (file_exists($this->_page->config["portal"]["uploadpath"] . "/blobs/" . $nome))
+                if (file_exists($this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome))
                 {
-                    $caminho = $this->_page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = false;
@@ -708,11 +708,11 @@ class Blob
             {
                 $nome = "icnx_" . $extensao . "." . $ext;
                 // caso encontre na pasta do publicare
-                if (file_exists($this->_page->config["portal"]["pblpath"] . "/imagens/blobs/" . $nome))
+                if (file_exists($this->page->config["portal"]["pblpath"] . "/imagens/blobs/" . $nome))
                 {
                     // copia da pasta do publicare para a pasta do portal
-                    copy($this->_page->config["portal"]["pblpath"]."/imagens/blobs/".$nome, $this->_page->config["portal"]["uploadpath"]."/blobs/".$nome);
-                    $caminho = $this->_page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    copy($this->page->config["portal"]["pblpath"]."/imagens/blobs/".$nome, $this->page->config["portal"]["uploadpath"]."/blobs/".$nome);
+                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = false;
@@ -746,9 +746,9 @@ class Blob
             {
                 $nome = "icnx_generic." . $ext;
                 // caso encontre na pasta do portal
-                if (file_exists($this->_page->config["portal"]["uploadpath"] . "/blobs/" . $nome))
+                if (file_exists($this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome))
                 {
-                    $caminho = $this->_page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = true;
@@ -765,10 +765,10 @@ class Blob
             {
                 $nome = "icnx_generic." . $ext;
                 // caso encontre na pasta do portal
-                if (file_exists($this->_page->config["portal"]["pblpath"] . "/imagens/blobs/" . $nome))
+                if (file_exists($this->page->config["portal"]["pblpath"] . "/imagens/blobs/" . $nome))
                 {
-                    copy($this->_page->config["portal"]["pblpath"]."/imagens/blobs/".$nome, $this->_page->config["portal"]["uploadpath"]."/blobs/".$nome);
-                    $caminho = $this->_page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    copy($this->page->config["portal"]["pblpath"]."/imagens/blobs/".$nome, $this->page->config["portal"]["uploadpath"]."/blobs/".$nome);
+                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = true;
@@ -860,17 +860,17 @@ class Blob
     
     /**
     * Gera imagem para capa de PDF, para utilização com page flipper
-    * @param type $_page
+    * @param type $page
     * @param type $cod_objeto
     * @param type $prop_pdf
     * @param type $prop_capa
     * @return boolean
     */
-   static function geraImagemCapaPDF(&$_page, $cod_objeto, $prop_pdf, $prop_capa)
+   static function geraImagemCapaPDF(&$page, $cod_objeto, $prop_pdf, $prop_capa)
    {
    //    error_log("Gerando imagem - Objeto: " . $cod_objeto . " - PDF: " . $prop_pdf . " - IMG: " . $prop_capa);
        // carregando objeto
-       $objeto = new Objeto($_page, $cod_objeto);
+       $objeto = new Objeto($page, $cod_objeto);
        
        // carregando propriedades
        $objeto->Valor($prop_pdf);
@@ -881,7 +881,7 @@ class Blob
        $nome_original_capa = "capa_".$vnome[0].".jpg";
        $arquivo_temp = "temp_" . $objeto->propriedades[$prop_pdf]["cod_blob"] . ".jpg";
    //    Blob::identificaPasta($codigo_blob)
-       $path_arquivo = $_page->config["portal"]["uploadpath"] . Blob::identificaPasta($_page, $objeto->propriedades[$prop_pdf]["cod_blob"]) . "/";
+       $path_arquivo = $page->config["portal"]["uploadpath"] . Blob::identificaPasta($page, $objeto->propriedades[$prop_pdf]["cod_blob"]) . "/";
        $cod_classe = $objeto->Valor("cod_classe");
        // usando gosthScript para gerar JPG da parimeira página do PDF
        $comando = "gs -sDEVICE=jpeg -dJPEGQ=75 -quiet -dSAFER -dBATCH -dNOPAUSE -dFirstPage=1 -dLastPage=1 -sOutputFile=".$path_arquivo.$arquivo_temp." ".$path_arquivo.$arquivo;
@@ -892,7 +892,7 @@ class Blob
            return false;
        }
        // pega infos da propriedade
-       $info = $_page->_adminobjeto->PegaInfoSobrePropriedade($cod_classe, $prop_capa);
+       $info = $page->adminobjeto->pegarInfoPropriedade($cod_classe, $prop_capa);
        
 
        if ($info && is_array($info))
@@ -900,45 +900,45 @@ class Blob
 
            if (!is_null($objeto->propriedades[$prop_capa]["cod_blob"]))
            {
-               @unlink($_page->config["portal"]["uploadpath"] . Blob::identificaPasta($_page, $objeto->propriedades[$prop_capa]["cod_blob"]) . "/" . $objeto->propriedades[$prop_capa]["cod_blob"] . "." . $objeto->propriedades[$prop_capa]["tipo_blob"]);
-               $sql = "DELETE FROM ".$_page->_db->tabelas["tbl_blob"]["nome"]." "
-                       . " WHERE ".$_page->_db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." = ".$objeto->propriedades[$prop_capa]["cod_blob"];
-               $_page->_db->ExecSQL($sql);
+               @unlink($page->config["portal"]["uploadpath"] . Blob::identificaPasta($page, $objeto->propriedades[$prop_capa]["cod_blob"]) . "/" . $objeto->propriedades[$prop_capa]["cod_blob"] . "." . $objeto->propriedades[$prop_capa]["tipo_blob"]);
+               $sql = "DELETE FROM ".$page->db->tabelas["tbl_blob"]["nome"]." "
+                       . " WHERE ".$page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." = ".$objeto->propriedades[$prop_capa]["cod_blob"];
+               $page->db->ExecSQL($sql);
    //            xd($objeto->propriedades[$prop_capa]["tipo_blob"]);
            }
 
            $campos = array();
-           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['cod_propriedade']] = (int)$info['cod_propriedade'];
-           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->Valor("cod_objeto");
-           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['arquivo']] = $nome_original_capa;
-           $campos[$_page->_db->tabelas["tbl_blob"]["colunas"]['tamanho']] = filesize($path_arquivo . $arquivo_temp);
-           $name = $_page->_db->Insert($_page->_db->tabelas[$info['tabela']]["nome"], $campos);
+           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_propriedade']] = (int)$info['cod_propriedade'];
+           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->Valor("cod_objeto");
+           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['arquivo']] = $nome_original_capa;
+           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['tamanho']] = filesize($path_arquivo . $arquivo_temp);
+           $name = $page->db->Insert($page->db->tabelas[$info['tabela']]["nome"], $campos);
            $filetype = Blob::PegaExtensaoArquivo($arquivo_temp);
            
 
-           $subpasta = Blob::identificaPasta($_page, $name);  //Pega o nome da subpasta
-           if (!$resultado = is_dir($_page->config["portal"]["uploadpath"] . "/" . $subpasta . "/"))
+           $subpasta = Blob::identificaPasta($page, $name);  //Pega o nome da subpasta
+           if (!$resultado = is_dir($page->config["portal"]["uploadpath"] . "/" . $subpasta . "/"))
            {
-               mkdir($_page->config["portal"]["uploadpath"] . "/" . $subpasta, 0755); //cria a pasta
+               mkdir($page->config["portal"]["uploadpath"] . "/" . $subpasta, 0755); //cria a pasta
            }
 
-           copy($path_arquivo . $arquivo_temp, $_page->config["portal"]["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
+           copy($path_arquivo . $arquivo_temp, $page->config["portal"]["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
 
-           $im = imagecreatefromjpeg($_page->config["portal"]["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
+           $im = imagecreatefromjpeg($page->config["portal"]["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
            $x = ImageSX($im);
            $y = ImageSY($im);
-           $width = $_page->config["portal"]["largurathumb"];
+           $width = $page->config["portal"]["largurathumb"];
            $height = ceil($width * $y / $x);
            $newim = ImageCreateTrueColor($width, $height);
            ImageCopyResized($newim, $im, 0, 0, 0, 0, $width, $height, $x, $y);
            $im = $newim;
-           ImageJpeg($im, $_page->config["portal"]["uploadpath"]."/cache/".$name.'.'.$filetype, 100);
+           ImageJpeg($im, $page->config["portal"]["uploadpath"]."/cache/".$name.'.'.$filetype, 100);
        }
 
        unlink($path_arquivo.$arquivo_temp);
 //           xd($campos);
 
-       $_page->_administracao->cacheFlush();
+       $page->administracao->cacheFlush();
    }
    
 }

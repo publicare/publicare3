@@ -27,9 +27,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
-$_page->_usuario->Logout();
+global $page;
+$page->usuario->Logout();
 ?>
 <script>
-    window.location.href="<?php echo($_page->config["portal"]["url"].$_page->_objeto->Valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
+    window.location.href="<?php echo($page->config["portal"]["url"].$page->objeto->Valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
 </script>

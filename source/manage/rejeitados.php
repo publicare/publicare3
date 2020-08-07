@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
+global $page;
 ?>
 
 <div class="pblAlinhamentoTabelas">
@@ -41,11 +41,11 @@ global $_page;
 	</TR>
 <tr><td>
 <?
-	$objetos = $_page->_adminobjeto->LocalizarRejeitados($_page);
+	$objetos = $page->adminobjeto->LocalizarRejeitados($page);
 
 	foreach ($objetos as $obj)
 	{
-		$loglist=$_page->_log->PegaLogWorkflow($_page, $obj["cod_objeto"]);
+		$loglist=$page->log->PegaLogWorkflow($page, $obj["cod_objeto"]);
 		if (count ($loglist))
 		{
 ?>

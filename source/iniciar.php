@@ -236,7 +236,7 @@ if ($action=="" || isset($_GET["action"]) || isset($_POST["action"]))
     else $action = "/content/view";
 }
 
-$_page = new Pagina($_db, $cod_objeto, $cod_blob);
+$page = new Pagina($_db, $cod_objeto, $cod_blob);
 
 // se for inclusao de arquivo, inclui o mesmo e termina execucao
 if ($incluir != "") {

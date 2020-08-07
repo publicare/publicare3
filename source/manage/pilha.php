@@ -28,11 +28,11 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 ?>
 <ul class="nav nav-tabs">
-  <li><a href="do/list_content/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
-  <li class="active"><a href="do/pilha/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Pilha</a></li>
+  <li><a href="do/list_content/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
+  <li class="active"><a href="do/pilha/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Pilha</a></li>
 </ul>
 <script>
 $(document).ready(function(){
@@ -46,19 +46,19 @@ $(document).ready(function(){
     <div class="panel-heading"><h3><b>Pilha</b></h3></div>
     
 <?php
-if (($_page->_objeto->PodeTerFilhos()))
+if (($page->objeto->PodeTerFilhos()))
 {
 ?>
-    <form action="do/pilha_post/<?php echo $_page->_objeto->Valor("cod_objeto");?>.html" method="POST" name="objmanage" id="objmanage">
+    <form action="do/pilha_post/<?php echo $page->objeto->Valor("cod_objeto");?>.html" method="POST" name="objmanage" id="objmanage">
         <div class="panel-body">
             <select class="pblSelectForm" name="cod_objmanage">
-            <?php echo $_page->_administracao->DropDownPilha() ?>
+            <?php echo $page->administracao->dropdownPilha() ?>
             </select>
         </div>
         
         <div class="panel-footer">
 <?php
-    if ($_page->_administracao->TemPilha())
+    if ($page->administracao->temPilha())
     {
 ?>
             <div id="divBotoesAcao"><center>

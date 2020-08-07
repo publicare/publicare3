@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
+global $page;
 
 if (isset($_POST['objlist']) && is_array($_POST['objlist']) && count($_POST['objlist'])>0)
 {
@@ -35,8 +35,8 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']) && count($_POST['obj
 
     foreach($_POST['objlist'] as $obj)
     {
-            $_page->_administracao->RecuperarObjeto($obj);
+            $page->administracao->recuperarObjeto($obj);
     }
 }
-header ("Location: ".$_page->config["portal"]["url"]."/do/recuperar/".$_page->_objeto->Valor('cod_objeto').".html");
+header ("Location: ".$page->config["portal"]["url"]."/do/recuperar/".$page->objeto->Valor('cod_objeto').".html");
 

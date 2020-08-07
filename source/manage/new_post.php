@@ -27,10 +27,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
+global $page;
 
 $prefixo = isset($_REQUEST['prefixo'])?htmlspecialchars($_REQUEST['prefixo'], ENT_QUOTES, "UTF-8"):"";
-$cod_objeto = isset($_REQUEST['cod_objeto'])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$_page->config["portal"]["objroot"];
-if ($cod_objeto==0) $cod_objeto = $_page->config["portal"]["objroot"];
+$cod_objeto = isset($_REQUEST['cod_objeto'])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$page->config["portal"]["objroot"];
+if ($cod_objeto==0) $cod_objeto = $page->config["portal"]["objroot"];
 
-header("Location:".$_page->config["portal"]["url"].'/do/new_'.$prefixo.'/'.$cod_objeto.'.html');
+header("Location:".$page->config["portal"]["url"].'/do/new_'.$prefixo.'/'.$cod_objeto.'.html');

@@ -28,9 +28,9 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 
-	$loglist = $_page->_log->PegaLogWorkflow($_page->_objeto->Valor("cod_objeto"));
+	$loglist = $page->log->PegaLogWorkflow($page->objeto->Valor("cod_objeto"));
 	if (count ($loglist))
 	{
 		//BoxSimplesTop();

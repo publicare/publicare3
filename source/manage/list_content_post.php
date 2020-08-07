@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 
 $netRedirect = "list_content";
 if (isset($_POST['objlist']) && is_array($_POST['objlist']))
@@ -37,34 +37,34 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']))
     {
         if (isset($_POST['delete'])) 
         {
-            $_page->_administracao->apagarObjeto($obj);
+            $page->administracao->apagarObjeto($obj);
         }
         if (isset($_POST['duplicate']))
         {
-            $_page->_administracao->DuplicarObjeto($obj);
+            $page->administracao->duplicarObjeto($obj);
         }
         if (isset($_POST['copy']))
         {
-            $_page->_administracao->CopiarObjetoParaPilha($obj);
+            $page->administracao->copiarObjetoParaPilha($obj);
         }
         if (isset($_POST['publicar']))
         {
-            $_page->_administracao->PublicarObjeto('Objeto publicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
+            $page->administracao->publicarObjeto('Objeto publicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
         }
         if (isset($_POST['publicar_pendentes']))
         {
             $netRedirect = "pendentes";
-            $_page->_administracao->PublicarObjeto('Objeto publicado atrav&eacute;s da lista de objetos pendentes.',$obj);
+            $page->administracao->publicarObjeto('Objeto publicado atrav&eacute;s da lista de objetos pendentes.',$obj);
         }		
         if (isset($_POST['despublicar']))
         {
-            $_page->_administracao->DesPublicarObjeto('Objeto despublicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
+            $page->administracao->despublicarObjeto('Objeto despublicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
         }
         if (isset($_POST['solicitar']))
         {
-            $_page->_administracao->SubmeterObjeto('Objeto solicitado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
+            $page->administracao->submeterObjeto('Objeto solicitado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
         }
     }
 }
-header ("Location:".$_page->config["portal"]["url"].'/do/'.$netRedirect.'/'.$_POST['return_obj'].'.html');
+header ("Location:".$page->config["portal"]["url"].'/do/'.$netRedirect.'/'.$_POST['return_obj'].'.html');
 ?>

@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 // AJUSTES
-global $_page, $cod;
+global $page, $cod;
 
 // força o código do status para despublicado
 $_POST['cod_status'] = 1;
@@ -39,7 +39,7 @@ $_POST['script_exibir'] = isset($_POST['script_exibir'])?preg_replace("[\/+]", "
 $palavra = "criação";
 
 $cod = 0;
-$local = $_page->config["portal"]["url"];
+$local = $page->config["portal"]["url"];
 $acaoobj = filter_input(INPUT_POST, 'op', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $publicar = 0;
 
@@ -52,12 +52,12 @@ elseif (isset($_POST["gravarepublicar"]))
     $publicar = 2;
 }
 
-$obj = $_page->_administracao->GravarObjeto($_POST, $acaoobj, $publicar, $cod);
+$obj = $page->administracao->gravarObjeto($_POST, $acaoobj, $publicar, $cod);
 $local .= $obj["obj"]->Valor("url");
 
 if (isset($_POST["gravaroutro"]))
 {
-    $local = $_page->config["portal"]["url"]."/do/new_".$obj["obj"]->Valor('prefixoclasse')."/".$obj["obj"]->Valor('cod_pai').".html";
+    $local = $page->config["portal"]["url"]."/do/new_".$obj["obj"]->Valor('prefixoclasse')."/".$obj["obj"]->Valor('cod_pai').".html";
 }
 
 header("Location: ".$local);

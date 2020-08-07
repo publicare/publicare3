@@ -27,8 +27,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page, $cod_objeto;
+global $page, $cod_objeto;
 
-	$_page->_administracao->apagarObjeto($cod_objeto);
-	header("Location:".$_page->config["portal"]["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");
+	$page->administracao->apagarObjeto($cod_objeto);
+	header("Location:".$page->config["portal"]["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");
 ?>

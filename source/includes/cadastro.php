@@ -14,7 +14,7 @@
 */
 
 // recebe codigo do objeto e trata para evitar sql injection
-$cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$_page->config["portal"]["objroot"];
+$cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$page->config["portal"]["objroot"];
 ?>
 <html>
     <head>
@@ -25,7 +25,7 @@ $cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['co
         <meta name="description" content="Login do Sistema de Gestão de Conteúdo (PUBLICARE)" />
         <meta name="keywords" content="Login, Formulário, Explicação, Gestão de Conteúdo, CMS, PHP, Fácil de usar, PUBLICARE, Formulário, CMS Público Brasileiro" />
         
-        <base href="<?php echo($_page->config["portal"]["url"]); ?>/" target="_self" />
+        <base href="<?php echo($page->config["portal"]["url"]); ?>/" target="_self" />
 
         <script src="include/javascript_login" type="text/javascript"></script>
         <link href="include/css_login" rel="stylesheet" type="text/css">
@@ -46,8 +46,8 @@ $cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['co
                 <!-- === Explição da tela (Lado Esquerdo) === -->
                 <div class="col-sm-12 col-md-6 col-lg-7 list">
                     <div class="text-center text-white">
-                        <h1 class="padding-bottom30"><div class="font-size30">Bem vindos ao</div><div class="bitter-regular font-size70"><?php echo(isset($_page->config["portal"]["nome"]) && $_page->config["portal"]["nome"]!=""?$_page->config["portal"]["nome"]:"PUBLICARE"); ?></div></h1>
-                        <p class="lead"><?php echo(isset($_page->config["portal"]["orgao"]) && $_page->config["portal"]["orgao"]!=""?$_page->config["portal"]["orgao"]:"Publicare, o CMS Público Brasileiro"); ?></p>
+                        <h1 class="padding-bottom30"><div class="font-size30">Bem vindos ao</div><div class="bitter-regular font-size70"><?php echo(isset($page->config["portal"]["nome"]) && $page->config["portal"]["nome"]!=""?$page->config["portal"]["nome"]:"PUBLICARE"); ?></div></h1>
+                        <p class="lead"><?php echo(isset($page->config["portal"]["orgao"]) && $page->config["portal"]["orgao"]!=""?$page->config["portal"]["orgao"]:"Publicare, o CMS Público Brasileiro"); ?></p>
                     </div>
                 </div>
                 <!-- === FInal === Explição da tela (Lado Esquerdo) === -->
@@ -77,7 +77,7 @@ if (isset($_GET["LoginMessage"]) && strlen($_GET["LoginMessage"])>0)
                                 </ul>
                             </fieldset>
                             <div class="row">
-                                <?php if (isset($_page->config["portal"]["permitecadastro"]) && $_page->config["portal"]["permitecadastro"] === true) { ?>
+                                <?php if (isset($page->config["portal"]["permitecadastro"]) && $page->config["portal"]["permitecadastro"] === true) { ?>
                                 <div class="col-md-6 text-left"><a href="cadastro">Cadastre-se</a></div>
                                 <?php } ?>
                                 <div class="col-md-6 text-right">Esqueci a senha</div>

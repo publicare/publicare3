@@ -28,10 +28,10 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 //
 //$sql = "select count(cod_objeto) as total from objeto where apagado=1";
-//$rs = $_page->_db->ExecSQL($sql);
+//$rs = $page->db->ExecSQL($sql);
 //$total = $rs->fields["total"];
 //
 //$ord1 = isset($_GET["ord1"])?$_GET["ord1"]:"titulo";
@@ -72,16 +72,16 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Apagar em definitivo</b></h3></div>
 
-	<form action="do/apagar_definitivo_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+	<form action="do/apagar_definitivo_post/<?=$page->objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
 	<div class="panel-body">
 
 		<!-- === Listar Conteúdo === -->
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor("titulo")); ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->Valor("titulo")); ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>
@@ -102,7 +102,7 @@ $(document).ready(function(){
 					<tbody>
 
 <?php
-	$deletedlist=$_page->_administracao->PegaListaDeApagados(1);
+	$deletedlist=$page->administracao->pegarListaApagados(1);
 	$count=0;
 	foreach ($deletedlist as $obj)
 	{

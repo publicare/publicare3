@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 
-global $_page, $action;
+global $page, $action;
 
 // Variaveis de definicao para estrutura de formulario
 // data atual
@@ -38,9 +38,9 @@ $horaAtual = date("H:i");
 // data de validade do objeto
 $dataValidade = date("d/m/Y", time() + (60*60*24*365*20));
 // lista de peles disponiveis
-$peles = $_page->_administracao->PegaListaDePeles();
+$peles = $page->administracao->pegarListaPeles();
 // lista de views disponiveis
-$views = $_page->_administracao->PegaListaDeViews($_page);
+$views = $page->administracao->pegarListaViews($page);
 $dadosPai = array();
 $edit = false;
 
@@ -50,26 +50,26 @@ if (strpos($action,"edit") === false)
 {
     $classname = substr($action,strpos($action,'_')+1);
 //    xd($action);
-    $classe = $_page->_administracao->PegaInfoDaClasse($_page->_administracao->CodigoDaClasse($classname));
+    $classe = $page->administracao->pegarInfoDaClasse($page->administracao->codigoClasse($classname));
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
-    $dadosPai = $_page->_adminobjeto->PegaDadosObjetoPeloID($_page->_objeto->Valor("cod_objeto"));
+    $dadosPai = $page->adminobjeto->pegarDadosObjetoId($page->objeto->Valor("cod_objeto"));
 }
 // Edição de objeto
 else
 {
-    $classname = $_page->_objeto->Valor("prefixoclasse");
-    $classe = $_page->_administracao->PegaInfoDaClasse($_page->_objeto->Valor("cod_classe"));
+    $classname = $page->objeto->Valor("prefixoclasse");
+    $classe = $page->administracao->pegarInfoDaClasse($page->objeto->Valor("cod_classe"));
     $edit = true;
     $titulo = "Editar";
 }
 
-$objeto = clone $_page->_objeto;
+$objeto = clone $page->objeto;
 
 $versao = isset($_GET['v'])?(int)htmlspecialchars($_GET["v"], ENT_QUOTES, "UTF-8"):0;
 if ($versao > 0)
 {
-    $objtmp = $_page->_administracao->pegaVersao($versao);
+    $objtmp = $page->administracao->pegarVersao($versao);
     if (is_array($objtmp) && count($objtmp)>0)
     {
         $conteudo = unserialize($objtmp[0]["conteudo"]);
@@ -83,13 +83,13 @@ if ($versao > 0)
 }
 
 // view atual
-$scriptAtual = ($edit)?$_page->_objeto->metadados['script_exibir']:"";
+$scriptAtual = ($edit)?$page->objeto->metadados['script_exibir']:"";
 // codigo do usuario dono do objeto
-$cod_usuario = ($edit)?$_page->_objeto->Valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
+$cod_usuario = ($edit)?$page->objeto->Valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
 // peso do objeto
 $peso = ($edit)?$objeto->Valor("peso"):0;
 // codigo do objeto pai
-$cod_pai = ($edit)?$_page->_objeto->Valor("cod_pai"):$_page->_objeto->Valor("cod_objeto");
+$cod_pai = ($edit)?$page->objeto->Valor("cod_pai"):$page->objeto->Valor("cod_objeto");
 // código da pele
 $cod_pele = ($edit)?$objeto->Valor("cod_pele"):(int)$dadosPai["cod_pele"];
 
@@ -97,7 +97,7 @@ $cod_pele = ($edit)?$objeto->Valor("cod_pele"):(int)$dadosPai["cod_pele"];
 // independentemente do nivel do usuario, sejam sempre DESPUBLICADOS
 $new_status = 0;
 // o unico objeto que não pode ser despublicado é a página inicial, objeto _ROOT
-if ($_page->_objeto->Valor("cod_objeto") == $_page->config["portal"]["objroot"]) $new_status = _STATUS_PUBLICADO;
+if ($page->objeto->Valor("cod_objeto") == $page->config["portal"]["objroot"]) $new_status = _STATUS_PUBLICADO;
 else $new_status = _STATUS_PRIVADO;
 
 
@@ -105,11 +105,11 @@ else $new_status = _STATUS_PRIVADO;
 <script src="include/javascript_datepicker" type="text/javascript"></script>
 <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
 
-<form enctype="multipart/form-data" action="do/obj_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
+<form enctype="multipart/form-data" action="do/obj_post/<?=$page->objeto->Valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
     <input type="hidden" name="op" value="<?php echo($edit===true?"edit":"create"); ?>">
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">
-    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$_page->_objeto->Valor("cod_objeto"):0); ?>">
+    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$page->objeto->Valor("cod_objeto"):0); ?>">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3><strong><?php echo($titulo); ?> objeto</strong></h3>
@@ -118,7 +118,7 @@ else $new_status = _STATUS_PRIVADO;
     if ($edit)
     {
 ?>
-                <strong>Editando</strong>: <?php echo($objeto->Valor("titulo")) ?> (<?php echo($_page->_objeto->Valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+                <strong>Editando</strong>: <?php echo($objeto->Valor("titulo")) ?> (<?php echo($page->objeto->Valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
             
                 
 <?php
@@ -126,7 +126,7 @@ else $new_status = _STATUS_PRIVADO;
     else
     {
 ?>
-                <strong>Criando em</strong>: <?php echo($_page->_objeto->Valor("titulo")) ?> (<?php echo($_page->_objeto->Valor("cod_objeto")) ?>),  <?php echo($_page->_objeto->Valor("classe")) ?> (<?php echo($_page->_objeto->Valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
+                <strong>Criando em</strong>: <?php echo($page->objeto->Valor("titulo")) ?> (<?php echo($page->objeto->Valor("cod_objeto")) ?>),  <?php echo($page->objeto->Valor("classe")) ?> (<?php echo($page->objeto->Valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
 <?php
     }
 ?>
@@ -140,7 +140,7 @@ else $new_status = _STATUS_PRIVADO;
 <?php
 if ($edit === true)
 {
-    $versoes = $_page->_administracao->pegaVersoes($_page->_objeto->Valor("cod_objeto"));
+    $versoes = $page->administracao->pegarVersoes($page->objeto->Valor("cod_objeto"));
     usort($versoes, function($a, $b){ return $a["versao"]<$b["versao"]; });
 ?>
                         <strong>Vers&atilde;o</strong>: <?php echo($objeto->Valor("versao")) ?> 
@@ -157,7 +157,7 @@ if ($edit === true)
                         </select>
                         <input type="button" class="btn btn-default" value="Carregar" id="btnAlteraVersao">
 <?php
-    if ($_page->_objeto->Valor("versao") != $objeto->Valor("versao"))
+    if ($page->objeto->Valor("versao") != $objeto->Valor("versao"))
     {
 ?>
                         <br />
@@ -185,10 +185,10 @@ else
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
 <?php
-if ($edit === true && $_page->_usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
+if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
 <?php                
 }
 ?>
@@ -261,7 +261,7 @@ foreach ($classe["prop"] as $prop)
         case 1:
             if ($valor != "") 
             {
-                echo "<strong>Arquivo:</strong> ".$valor." - <strong>cod_blob:</strong> ".$_page->_objeto->propriedades[$prop["nome"]]["cod_blob"];
+                echo "<strong>Arquivo:</strong> ".$valor." - <strong>cod_blob:</strong> ".$page->objeto->propriedades[$prop["nome"]]["cod_blob"];
                 echo " | <label><input type='checkbox' id='property___".$prop['nome']."' name='property___".$prop['nome']."^delete' value='1'> Apagar arquivo</label>";
                 $obrigatorio = "";
             }
@@ -297,7 +297,7 @@ foreach ($classe["prop"] as $prop)
             break;
         // ref objeto
         case 6:
-            $objs = $_page->_administracao->PegaListaDeObjetos($prop["cod_referencia_classe"], $prop["campo_ref"]);
+            $objs = $page->administracao->pegarListaObjetos($prop["cod_referencia_classe"], $prop["campo_ref"]);
 ?>
                             <select class="form-control <?php echo($obrigatorio); ?>" name="property___<?php echo($prop["nome"]); ?>" id="property___<?php echo($prop["nome"]); ?>">
                                 <option value="">. selecione .</option>
@@ -431,7 +431,7 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                                 <label class="col-md-4 col-form-label" for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto <small><small><br />(#cod_usuario)</small></small></label>
                                 <div class="col-md-8">
         <?php
-        $usuarios = $_page->_administracao->PegaListadeDependentes($cod_usuario);
+        $usuarios = $page->administracao->pegarListaDependentes($cod_usuario);
         if ($usuarios === false)
         {
         ?>
@@ -488,10 +488,10 @@ else
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
 <?php
-if ($edit === true && $_page->_usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
+if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
 <?php                
 }
 ?>

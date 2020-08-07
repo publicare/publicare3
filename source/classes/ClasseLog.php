@@ -33,15 +33,15 @@
  */
 class ClasseLog
 {
-    public $_page;
+    public $page;
     
     /**
      * Metodo construtor, coloca array de metadados em propriedade local
-     * @param object $_page - Referência de objeto da classe Pagina
+     * @param object $page - Referência de objeto da classe Pagina
      */
-    function __construct(&$_page)
+    function __construct(&$page)
     {
-        $this->_page = $_page;
+        $this->page = $page;
     }
 	
     /**
@@ -52,19 +52,19 @@ class ClasseLog
      */
     function RegistraLogWorkflow($mensagem, $cod_objeto, $cod_status)
     {
-        $sql = "INSERT INTO ".$this->_page->_db->tabelas["logworkflow"]["nome"]." ("
-                . "".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_objeto"].", "
-                . "".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_usuario"].", "
-                . "".$this->_page->_db->tabelas["logworkflow"]["colunas"]["mensagem"].", "
-                . "".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_status"].", "
-                . "".$this->_page->_db->tabelas["logworkflow"]["colunas"]["estampa"].""
+        $sql = "INSERT INTO ".$this->page->db->tabelas["logworkflow"]["nome"]." ("
+                . "".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_objeto"].", "
+                . "".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_usuario"].", "
+                . "".$this->page->db->tabelas["logworkflow"]["colunas"]["mensagem"].", "
+                . "".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_status"].", "
+                . "".$this->page->db->tabelas["logworkflow"]["colunas"]["estampa"].""
                 . ") VALUES ("
                 . "".$cod_objeto.","
                 . "".$_SESSION['usuario']['cod_usuario'].","
                 . "'".$mensagem."',"
                 . "".$cod_status.","
-                . "".$this->_page->_db->TimeStamp().')';
-        $this->_page->_db->ExecSQL($sql);
+                . "".$this->page->db->TimeStamp().')';
+        $this->page->db->ExecSQL($sql);
     }
 
     /**
@@ -75,23 +75,23 @@ class ClasseLog
     function PegaLogWorkflow($cod_objeto)
     {
         $result = array();
-        $sql = "SELECT ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS usuario, "
-                . " ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["mensagem"]." AS mensagem, "
-                . " ".$this->_page->_db->tabelas["status"]["nick"].".".$this->_page->_db->tabelas["status"]["colunas"]["nome"]." AS status, "
-                . " ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["estampa"]." AS estampa "
-                . " FROM ".$this->_page->_db->tabelas["logworkflow"]["nome"]." ".$this->_page->_db->tabelas["logworkflow"]["nick"]." "
-                . " LEFT JOIN ".$this->_page->_db->tabelas["usuario"]["nome"]." ".$this->_page->_db->tabelas["usuario"]["nick"]." "
-                    . " ON ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_usuario"].""
-                . " LEFT JOIN ".$this->_page->_db->tabelas["status"]["nome"]." ".$this->_page->_db->tabelas["status"]["nick"]." "
-                    . " ON ".$this->_page->_db->tabelas["status"]["nick"].".".$this->_page->_db->tabelas["status"]["colunas"]["cod_status"]." = ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_status"]." "
-                . " WHERE ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " ORDER BY ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["estampa"]." DESC";
+        $sql = "SELECT ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS usuario, "
+                . " ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["mensagem"]." AS mensagem, "
+                . " ".$this->page->db->tabelas["status"]["nick"].".".$this->page->db->tabelas["status"]["colunas"]["nome"]." AS status, "
+                . " ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["estampa"]." AS estampa "
+                . " FROM ".$this->page->db->tabelas["logworkflow"]["nome"]." ".$this->page->db->tabelas["logworkflow"]["nick"]." "
+                . " LEFT JOIN ".$this->page->db->tabelas["usuario"]["nome"]." ".$this->page->db->tabelas["usuario"]["nick"]." "
+                    . " ON ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_usuario"].""
+                . " LEFT JOIN ".$this->page->db->tabelas["status"]["nome"]." ".$this->page->db->tabelas["status"]["nick"]." "
+                    . " ON ".$this->page->db->tabelas["status"]["nick"].".".$this->page->db->tabelas["status"]["colunas"]["cod_status"]." = ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_status"]." "
+                . " WHERE ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " ORDER BY ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["estampa"]." DESC";
 //            mensagem, 
 //                        status.nome as status, estampa from logworkflow 
 //                        left join usuario on usuario.cod_usuario=logworkflow.cod_usuario
 //                        left join status on status.cod_status=logworkflow.cod_status
 //                        where cod_objeto=".$cod_objeto." order by estampa desc";
-        $res = $this->_page->_db->ExecSQL($sql);
+        $res = $this->page->db->ExecSQL($sql);
         $row = $res->GetRows();
 
         for ($i=0; $i<sizeof($row); $i++)
@@ -126,20 +126,20 @@ class ClasseLog
 //                        left join status on status.cod_status=logworkflow.cod_status
 //                        where cod_objeto=$cod_objeto order by estampa desc";
 //        
-//        $sql = "SELECT ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS usuario, "
-//                . " ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["mensagem"]." AS mensagem, "
-//                . " ".$this->_page->_db->tabelas["status"]["nick"].".".$this->_page->_db->tabelas["status"]["colunas"]["nome"]." AS status, "
-//                . " ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["estampa"]." AS estampa "
-//                . " FROM ".$this->_page->_db->tabelas["logworkflow"]["nome"]." AS ".$this->_page->_db->tabelas["logworkflow"]["nick"]." "
-//                . " LEFT JOIN ".$this->_page->_db->tabelas["usuario"]["nome"]." AS ".$this->_page->_db->tabelas["usuario"]["nick"]." "
-//                    . " ON ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_usuario"].""
-//                . " LEFT JOIN ".$this->_page->_db->tabelas["status"]["nome"]." AS ".$this->_page->_db->tabelas["status"]["nick"]." "
-//                    . " ON ".$this->_page->_db->tabelas["status"]["nick"].".".$this->_page->_db->tabelas["status"]["colunas"]["cod_status"]." = ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_status"]." "
-//                . " WHERE ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-//                . " ORDER BY ".$this->_page->_db->tabelas["logworkflow"]["nick"].".".$this->_page->_db->tabelas["logworkflow"]["colunas"]["estampa"]." DESC";
+//        $sql = "SELECT ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS usuario, "
+//                . " ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["mensagem"]." AS mensagem, "
+//                . " ".$this->page->db->tabelas["status"]["nick"].".".$this->page->db->tabelas["status"]["colunas"]["nome"]." AS status, "
+//                . " ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["estampa"]." AS estampa "
+//                . " FROM ".$this->page->db->tabelas["logworkflow"]["nome"]." AS ".$this->page->db->tabelas["logworkflow"]["nick"]." "
+//                . " LEFT JOIN ".$this->page->db->tabelas["usuario"]["nome"]." AS ".$this->page->db->tabelas["usuario"]["nick"]." "
+//                    . " ON ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_usuario"].""
+//                . " LEFT JOIN ".$this->page->db->tabelas["status"]["nome"]." AS ".$this->page->db->tabelas["status"]["nick"]." "
+//                    . " ON ".$this->page->db->tabelas["status"]["nick"].".".$this->page->db->tabelas["status"]["colunas"]["cod_status"]." = ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_status"]." "
+//                . " WHERE ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+//                . " ORDER BY ".$this->page->db->tabelas["logworkflow"]["nick"].".".$this->page->db->tabelas["logworkflow"]["colunas"]["estampa"]." DESC";
 //        
 //        
-//        $res = $this->_page->_db->ExecSQL($sql,0,1);
+//        $res = $this->page->db->ExecSQL($sql,0,1);
 //        $row = $res->GetRows();
 //        for ($i=0; $i<sizeof($row); $i++)
 //        {
@@ -156,32 +156,32 @@ class ClasseLog
      */
     function IncluirLogObjeto($cod_objeto, $operacao)
     {
-        $sql = "INSERT INTO ".$this->_page->_db->tabelas["logobjeto"]["nome"]." ("
-                . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_objeto"].", "
-                . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_usuario"].", "
-                . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_operacao"].", "
-                . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["estampa"]." "
+        $sql = "INSERT INTO ".$this->page->db->tabelas["logobjeto"]["nome"]." ("
+                . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_objeto"].", "
+                . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_usuario"].", "
+                . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_operacao"].", "
+                . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["estampa"]." "
                 . " ) VALUES ( "
                 . " ".$cod_objeto.", "
                 . " ".$_SESSION['usuario']['cod_usuario'].", "
                 . " ".$operacao.", "
-                . " ".$this->_page->_db->TimeStamp().')';
-        $this->_page->_db->ExecSQL($sql);
+                . " ".$this->page->db->TimeStamp().')';
+        $this->page->db->ExecSQL($sql);
         
         if ($operacao == _OPERACAO_OBJETO_REMOVER || $operacao == _OPERACAO_OBJETO_RECUPERAR)
         {
-            $sql = "INSERT INTO ".$this->_page->_db->tabelas["logobjeto"]["nome"]." ("
-                    . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_objeto"].", "
-                    . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_usuario"].", "
-                    . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_operacao"].", "
-                    . " ".$this->_page->_db->tabelas["logobjeto"]["colunas"]["estampa"].") "
-                    . " SELECT ".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_objeto"].", "
+            $sql = "INSERT INTO ".$this->page->db->tabelas["logobjeto"]["nome"]." ("
+                    . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_objeto"].", "
+                    . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_usuario"].", "
+                    . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_operacao"].", "
+                    . " ".$this->page->db->tabelas["logobjeto"]["colunas"]["estampa"].") "
+                    . " SELECT ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"].", "
                     . " ".$_SESSION['usuario']['cod_usuario'].", "
                     . " ".$operacao.", "
-                    . " ".$this->_page->_db->TimeStamp().''
-                    . " FROM ".$this->_page->_db->tabelas["parentesco"]["nome"]." "
-                    . " WHERE ".$this->_page->_db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto;
-            $this->_page->_db->ExecSQL($sql);
+                    . " ".$this->page->db->TimeStamp().''
+                    . " FROM ".$this->page->db->tabelas["parentesco"]["nome"]." "
+                    . " WHERE ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto;
+            $this->page->db->ExecSQL($sql);
         }
     }
 		
@@ -195,15 +195,15 @@ class ClasseLog
     {
         $result = array();
         $_OPERACAO_OBJETO = array('','Criar','Editar','Apagar','Recuperar');
-        $sql = "SELECT ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["nome"]." AS usuario, "
-                . " ".$this->_page->_db->tabelas["logobjeto"]["nick"].".".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_operacao"]." AS cod_operacao, "
-                . " ".$this->_page->_db->tabelas["logobjeto"]["nick"].".".$this->_page->_db->tabelas["logobjeto"]["colunas"]["estampa"]." AS estampa "
-                . " FROM ".$this->_page->_db->tabelas["logobjeto"]["nome"]." ".$this->_page->_db->tabelas["logobjeto"]["nick"]." "
-                . " LEFT JOIN ".$this->_page->_db->tabelas["usuario"]["nome"]." ".$this->_page->_db->tabelas["usuario"]["nick"]." "
-                    . " ON ".$this->_page->_db->tabelas["usuario"]["nick"].".".$this->_page->_db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->_page->_db->tabelas["logobjeto"]["nick"].".".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_usuario"]." "
-                . " WHERE ".$this->_page->_db->tabelas["logobjeto"]["nick"].".".$this->_page->_db->tabelas["logobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " ORDER BY ".$this->_page->_db->tabelas["logobjeto"]["nick"].".".$this->_page->_db->tabelas["logobjeto"]["colunas"]["estampa"]." DESC";
-        $res = $this->_page->_db->ExecSQL($sql);
+        $sql = "SELECT ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS usuario, "
+                . " ".$this->page->db->tabelas["logobjeto"]["nick"].".".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_operacao"]." AS cod_operacao, "
+                . " ".$this->page->db->tabelas["logobjeto"]["nick"].".".$this->page->db->tabelas["logobjeto"]["colunas"]["estampa"]." AS estampa "
+                . " FROM ".$this->page->db->tabelas["logobjeto"]["nome"]." ".$this->page->db->tabelas["logobjeto"]["nick"]." "
+                . " LEFT JOIN ".$this->page->db->tabelas["usuario"]["nome"]." ".$this->page->db->tabelas["usuario"]["nick"]." "
+                    . " ON ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$this->page->db->tabelas["logobjeto"]["nick"].".".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_usuario"]." "
+                . " WHERE ".$this->page->db->tabelas["logobjeto"]["nick"].".".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " ORDER BY ".$this->page->db->tabelas["logobjeto"]["nick"].".".$this->page->db->tabelas["logobjeto"]["colunas"]["estampa"]." DESC";
+        $res = $this->page->db->ExecSQL($sql);
         $row = $res->GetRows();
 
         for ($i=0; $i<sizeof($row); $i++)

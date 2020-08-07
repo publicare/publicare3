@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 
 $cod_classe = isset($_POST['cod_classe'])?(int)htmlspecialchars($_POST["cod_classe"], ENT_QUOTES, "UTF-8"):0;
 $old_prefixo = isset($_POST['old_prefixo'])?htmlspecialchars($_POST["old_prefixo"], ENT_QUOTES, "UTF-8"):"";
@@ -45,7 +45,7 @@ $ic_classe = isset($_POST['ic_classe'])?htmlspecialchars($_POST["ic_classe"], EN
 
 // Apaga a classe
 if (isset($_POST['apagar_classe']) && $_POST['apagar_classe'] == "1" && $cod_classe > 0) {
-    $_page->_administracao->apagarClasse($_POST['cod_classe']);
+    $page->administracao->apagarClasse($_POST['cod_classe']);
     $cod_classe = 0;
 }
 // criar / editar classe
@@ -99,17 +99,17 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
     // Editar classe
     if ($cod_classe > 0)
     {
-        $_page->_administracao->AtualizarClasse($cod_classe, $dados_classe);
+        $page->administracao->atualizarClasse($cod_classe, $dados_classe);
     }
     // Criar classe
     else 
     {
-        $cod_classe = $_page->_administracao->CriarClasse($dados_classe);
-        //$_page->_administracao->CriarTemplateClasse($cod_classe);
+        $cod_classe = $page->administracao->criarClasse($dados_classe);
+        //$page->administracao->criarTemplateClasse($cod_classe);
     }
         
     // Recupera dados da classe
-    $classinfo = $_page->_administracao->PegaInfoDaClasse($cod_classe);
+    $classinfo = $page->administracao->pegarInfoDaClasse($cod_classe);
     
 //    xd($props);
     
@@ -137,57 +137,57 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
             // apagar propriedade
             if ($propp["ativa"] == 0)
             {
-                $_page->_administracao->apagarPropriedadeDaClasse($cod_propriedade);
+                $page->administracao->apagarPropriedadeDaClasse($cod_propriedade);
             }
             // alterar propriedade
             else
             {
 //            xd($propp);
-                $_page->_administracao->AtualizarDadosDaPropriedade($cod_propriedade, $dados);
+                $page->administracao->atualizarDadosPropriedade($cod_propriedade, $dados);
             }
         }
         // nova propriedade
         else
         {
-            $_page->_administracao->acrescentarPropriedadeAClasse($cod_classe, $dados);
+            $page->administracao->acrescentarPropriedadeAClasse($cod_classe, $dados);
         }
     }
     
     // Cria view de modelo para classe
-//    $_page->_administracao->CriarTemplateClasse($_page, $cod_classe);
+//    $page->administracao->criarTemplateClasse($page, $cod_classe);
     
     // Atualiza informações sobre classes que pode conter
-    if (isset($_POST["podeconter"])) $_page->_administracao->MontaRelacionamentoClasses($cod_classe, $_POST["podeconter"], 1);
+    if (isset($_POST["podeconter"])) $page->administracao->montarRelacionamentoClasses($cod_classe, $_POST["podeconter"], 1);
     
     // Atualiza informação sobre onde pode ser criado
-    if (isset($_POST["criadoem"])) $_page->_administracao->MontaRelacionamentoClasses($cod_classe, $_POST["criadoem"], 2);
+    if (isset($_POST["criadoem"])) $page->administracao->montarRelacionamentoClasses($cod_classe, $_POST["criadoem"], 2);
     
     // Atualiza lista de objetos onde pode ser criada
     if (isset($_POST["objetos"])) 
     {
-        $_page->_administracao->MontaRelacionamentoClassesObjetos($cod_classe, $_POST["objetos"], $_POST["objetosurls"]);
+        $page->administracao->montarRelacionamentoClasseObjeto($cod_classe, $_POST["objetos"], $_POST["objetosurls"]);
     }
     
     if (isset($_POST["apagar_icone"]) && $_POST["apagar_icone"] == "apagar")
     {
-        $_page->_blob->apagaIconeClasse($prefixo_classe);
+        $page->blob->apagaIconeClasse($prefixo_classe);
     }
     
     if (isset($_FILES["ic_classe"]["name"]) && !empty($_FILES["ic_classe"]["name"])) 
     {
-        $_page->_blob->gravarIconeClasse($_FILES, $prefixo_classe);
+        $page->blob->gravarIconeClasse($_FILES, $prefixo_classe);
     }
 }
 
 // limpa cache
-$_page->_administracao->cacheFlush();
+$page->administracao->cacheFlush();
 
 $_SESSION['classesPrefixos'] = array();
 $_SESSION['classesNomes'] = array();
 $_SESSION['classes'] = array();
 $_SESSION['classesIndexaveis'] = array();
 
-$header = "Location:" . $_page->config["portal"]["url"] . "/do/classes/" . $_page->_objeto->Valor("cod_objeto") . ".html";
+$header = "Location:" . $page->config["portal"]["url"] . "/do/classes/" . $page->objeto->Valor("cod_objeto") . ".html";
 header($header);
 
 exit();

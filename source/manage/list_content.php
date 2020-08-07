@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
+global $page;
 
 if (isset($_GET["ajaxtbl"]))
 {
@@ -52,11 +52,11 @@ if (isset($_GET["ajaxtbl"]))
     }
     $inicio = isset($_POST["start"])&&$_POST["start"]?(int)htmlspecialchars($_POST["start"], ENT_QUOTES, "UTF-8"):-1;
     $limite = isset($_POST["length"])&&$_POST["length"]?(int)htmlspecialchars($_POST["length"], ENT_QUOTES, "UTF-8"):-1;
-    $pai = $_page->_objeto->Valor("cod_objeto");
+    $pai = $page->objeto->Valor("cod_objeto");
     $niveis = 0;
-    $objetos = $_page->_adminobjeto->LocalizarObjetos('*', $qry, $ordem, $inicio, $limite, $pai, $niveis);
-    $objetos2 = $_page->_adminobjeto->LocalizarObjetos('*', $qry, $ordem, -1, -1, $pai, $niveis);
-    $objetostotal = $_page->_adminobjeto->LocalizarObjetos('*', "", "", -1, -1, $pai, $niveis);
+    $objetos = $page->adminobjeto->localizarObjetos('*', $qry, $ordem, $inicio, $limite, $pai, $niveis);
+    $objetos2 = $page->adminobjeto->localizarObjetos('*', $qry, $ordem, -1, -1, $pai, $niveis);
+    $objetostotal = $page->adminobjeto->localizarObjetos('*', "", "", -1, -1, $pai, $niveis);
     $array = array(
         "draw" => $draw,
         "recordsTotal" => count($objetostotal),
@@ -87,7 +87,7 @@ if (isset($_GET["ajaxtbl"]))
         if ($_SESSION['usuario']['perfil'] < _PERFIL_AUTOR 
                 || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->Valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
         {
-            $obj->metadados["acoes"] .= '<a href="'.$_page->config["portal"]["url"].'/do/edit/'.$obj->Valor("cod_objeto").'.html" '
+            $obj->metadados["acoes"] .= '<a href="'.$page->config["portal"]["url"].'/do/edit/'.$obj->Valor("cod_objeto").'.html" '
                     . 'title="Editar Objeto" '
                     . 'class="margin-left5" '
                     . 'rel="tooltip" '
@@ -97,7 +97,7 @@ if (isset($_GET["ajaxtbl"]))
                     . 'data-placement="left" '
                     . 'title="Editar este objeto"><i class="fapbl fapbl-pencil-alt font-size16"></i></a>';
         }
-        $obj->metadados["acoes"] .= "<a href='".$_page->config["portal"]["url"].$obj->Valor("url")."' "
+        $obj->metadados["acoes"] .= "<a href='".$page->config["portal"]["url"].$obj->Valor("url")."' "
                 . "title='Exibir Objeto' "
                 . "rel='tooltip' "
                 . "data-animate='animated fadeIn' "
@@ -108,7 +108,7 @@ if (isset($_GET["ajaxtbl"]))
                 . "class='margin-left5'><i class='fapbl fapbl-eye font-size16'></i></a>";
         if ($obj->PodeTerFilhos())
         {
-            $obj->metadados["acoes"] .= "<a href='".$_page->config["portal"]["url"]."/do/list_content/".$obj->Valor("cod_objeto").".html' "
+            $obj->metadados["acoes"] .= "<a href='".$page->config["portal"]["url"]."/do/list_content/".$obj->Valor("cod_objeto").".html' "
                     . "title='Listar conteúdo' "
                     . "rel='tooltip' "
                     . "data-animate='animated fadeIn' "
@@ -125,18 +125,18 @@ if (isset($_GET["ajaxtbl"]))
     
     echo(json_encode($array));
     exit();
-//    $objetos = $_page->_adminobjeto->LocalizarObjetos('*', $qry, $ordem='', $inicio=-1, $limite=-1, $pai=-1, $niveis=-1, $apagados=false, $likeas='', $likenocase='', $tags='')
+//    $objetos = $page->adminobjeto->localizarObjetos('*', $qry, $ordem='', $inicio=-1, $limite=-1, $pai=-1, $niveis=-1, $apagados=false, $likeas='', $likenocase='', $tags='')
  //   xd($array);
 }
 
-$_page->_objeto->PegaListaDeFilhos('*');
+$page->objeto->PegaListaDeFilhos('*');
 
 $lstStatus = array("", "Privado", "Publicado", "Rejeitado", "Submetido");
 ?>
 <style>trMouseAction1:hover { background: #fff; }</style>
 <ul class="nav nav-tabs">
-  <li class="active"><a href="do/list_content/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
-  <li><a href="do/pilha/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html">Pilha</a></li>
+  <li class="active"><a href="do/list_content/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
+  <li><a href="do/pilha/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html">Pilha</a></li>
 </ul>
 <script>
 $(document).ready(function(){
@@ -150,7 +150,7 @@ $(document).ready(function(){
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "do/list_content/<?php echo($_page->_objeto->Valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
+                    "url": "do/list_content/<?php echo($page->objeto->Valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
                     "type": "POST"
                 },
                 "order": [[ 2, "asc" ]],
@@ -200,8 +200,8 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Listar Conteúdo</b></h3></div>
 	
-    <form action="do/list_content_post/<?php echo($_page->_objeto->Valor("cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
-        <input type="hidden" name="return_obj" value="<?php echo($_page->_objeto->Valor("cod_objeto")); ?>">
+    <form action="do/list_content_post/<?php echo($page->objeto->Valor("cod_objeto")); ?>.html" name="listcontent" id="listcontent" method="post">
+        <input type="hidden" name="return_obj" value="<?php echo($page->objeto->Valor("cod_objeto")); ?>">
 
         <div class="panel-footer">
             <!-- === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
@@ -245,14 +245,14 @@ elseif ($_SESSION['usuario']['perfil'] == _PERFIL_AUTOR)
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($_page->_objeto->Valor("titulo")); ?></h3></div>
+                        <div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->Valor("titulo")); ?></h3></div>
                         <div class="col-sm-3 text-right titulo-icones">
-                            <a class="ABranco" href="<?php echo($_page->config["portal"]["url"]); ?><?php echo($_page->_objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a class="ABranco" href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->Valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($_page->_objeto->Valor("cod_objeto") != $_page->config["portal"]["objroot"])
+if ($page->objeto->Valor("cod_objeto") != $page->config["portal"]["objroot"])
 { 
 ?>
-                            <a class="ABranco" href="do/list_content/<?php echo($_page->_objeto->Valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a class="ABranco" href="do/list_content/<?php echo($page->objeto->Valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>

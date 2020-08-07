@@ -28,12 +28,12 @@
  * THE SOFTWARE.
  */
 
-global $_page, $cod_objeto;
+global $page, $cod_objeto;
 
-if (isset($_POST['copy'])) $_page->_administracao->CopiarObjeto($_POST['cod_objmanage'], $_page->_objeto->Valor("cod_objeto"));
-elseif (isset($_POST['pastelink'])) $_page->_administracao->ColarComoLink($_POST['cod_objmanage'], $_page->_objeto->Valor("cod_objeto"));
-elseif (isset($_POST['move'])) $_page->_administracao->MoverObjeto($_POST['cod_objmanage'], $_page->_objeto->Valor("cod_objeto"));
-elseif (isset($_POST['clear'])) $_page->_administracao->LimparPilha();
+if (isset($_POST['copy'])) $page->administracao->copiarObjeto($_POST['cod_objmanage'], $page->objeto->Valor("cod_objeto"));
+elseif (isset($_POST['pastelink'])) $page->administracao->colarComoLink($_POST['cod_objmanage'], $page->objeto->Valor("cod_objeto"));
+elseif (isset($_POST['move'])) $page->administracao->moverObjeto($_POST['cod_objmanage'], $page->objeto->Valor("cod_objeto"));
+elseif (isset($_POST['clear'])) $page->administracao->limparPilha();
 		
-header ("Location:".$_page->config["portal"]["url"].'/do/list_content/'.$cod_objeto.'.html');
+header ("Location:".$page->config["portal"]["url"].'/do/list_content/'.$cod_objeto.'.html');
 ?>

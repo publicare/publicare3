@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 	include_once ("iniciar.php");
-	$_page->objManage->Undelete($objlist);
-	header("Location:".$_page->config["portal"]["url"].$return_path);
+	$page->objManage->Undelete($objlist);
+	header("Location:".$page->config["portal"]["url"].$return_path);
 
 ?>

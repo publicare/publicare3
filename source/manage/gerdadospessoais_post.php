@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-global $_page;
+global $page;
 
 	if ($_POST['submit'])
 	{ 	
@@ -39,7 +39,7 @@ global $_page;
 					if ($_POST['senha']!=$_POST['nomehidden'])
 						$sql .= ",senha='".md5($_POST['senha'])."'";
 					$sql .= " where cod_usuario=".$_POST['cod_usuario'];
-					$_page->_db->ExecSQL($sql);
+					$page->db->ExecSQL($sql);
 				}
 			}
 			else
@@ -49,7 +49,7 @@ global $_page;
 		
 	}
 
-	$url = "Location:".$_page->config["portal"]["url"]."/do/gerdadospessoais/".$_page->_objeto->Valor('cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
+	$url = "Location:".$page->config["portal"]["url"]."/do/gerdadospessoais/".$page->objeto->Valor('cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
 	if ($Msg)
 	{
 		$url .= "&Msg=".urlencode($Msg)."&nome=".urlencode($_POST['nome']).'&login='.urlencode($_POST['login']).'&email='.urlencode($_POST['senha']);
@@ -58,7 +58,7 @@ global $_page;
 	}
 	else
 	{
-		$url = "Location:".$_page->config["portal"]["url"]."/security/logout/1.html";
+		$url = "Location:".$page->config["portal"]["url"]."/security/logout/1.html";
 		header($url);
 		exit();
 	}

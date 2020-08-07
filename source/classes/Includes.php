@@ -38,7 +38,7 @@ class Includes
     private $_tipo;
     private $_ext;
     private $_nome;
-    public $_page;
+    public $page;
     
     function __construct($scripts = array(), $tipo="js", $ext="")
     {

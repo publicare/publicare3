@@ -149,35 +149,35 @@ function array_push_associative(&$arr)
  * @param type $arrArquivoAnexado
  * @return boolean
  */
-function EnviaEmail(&$_page, $destinatario_nome, $destinatario_email, $remetente_nome=-1, $remetente_email=-1, $assunto="", $texConteudo="", $altConteudo="", $arrArquivoAnexado=array())
+function EnviaEmail(&$page, $destinatario_nome, $destinatario_email, $remetente_nome=-1, $remetente_email=-1, $assunto="", $texConteudo="", $altConteudo="", $arrArquivoAnexado=array())
 {
 
-    $mail = new PHPMailer($_page->config["email"]["debug"]);
+    $mail = new PHPMailer($page->config["email"]["debug"]);
 //    $mail = new PHPMailer();
     $mail->CharSet = 'UTF-8';
-    if ($_page->config["email"]["debug"] === true)
+    if ($page->config["email"]["debug"] === true)
     {
         // Ativa verbose debug
-        $mail->SMTPDebug = $_page->config["email"]["debugnivel"];
+        $mail->SMTPDebug = $page->config["email"]["debugnivel"];
     }
     try {
         
         // Envio via smtp
-        if (isset($_page->config["email"]["smtp"]) && $_page->config["email"]["smtp"]===true)
+        if (isset($page->config["email"]["smtp"]) && $page->config["email"]["smtp"]===true)
         {
             $mail->isSMTP();
-            $mail->Host = $_page->config["email"]["host"];
-            $mail->Port = $_page->config["email"]["porta"];
+            $mail->Host = $page->config["email"]["host"];
+            $mail->Port = $page->config["email"]["porta"];
             
-            if (isset($_page->config["email"]["auth"]) && $_page->config["email"]["auth"] === true)
+            if (isset($page->config["email"]["auth"]) && $page->config["email"]["auth"] === true)
             {
                 $mail->SMTPAuth = true;
-                $mail->Username = $_page->config["email"]["usuario"];
-                $mail->Password = $_page->config["email"]["senha"];
+                $mail->Username = $page->config["email"]["usuario"];
+                $mail->Password = $page->config["email"]["senha"];
                 
                 
                 
-                if (isset($_page->config["email"]["enc"]) && ($_page->config["email"]["enc"] === 'tls' ||  $_page->config["email"]["enc"] === 'ssl'))
+                if (isset($page->config["email"]["enc"]) && ($page->config["email"]["enc"] === 'tls' ||  $page->config["email"]["enc"] === 'ssl'))
                 {
                     $mail->SMTPOptions = array(
                         'ssl' => array(
@@ -187,11 +187,11 @@ function EnviaEmail(&$_page, $destinatario_nome, $destinatario_email, $remetente
                         )
                     );
                     
-                    if ($_page->config["email"]["enc"] === 'tls')
+                    if ($page->config["email"]["enc"] === 'tls')
                     {
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     }
-                    if ($_page->config["email"]["enc"] === 'ssl')
+                    if ($page->config["email"]["enc"] === 'ssl')
                     {
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                     }
@@ -199,8 +199,8 @@ function EnviaEmail(&$_page, $destinatario_nome, $destinatario_email, $remetente
             }
         }
             
-        $mail->setFrom(($remetente_email!=-1?$remetente_email:$_page->config["email"]["from"]), ($remetente_nome!=-1?$remetente_nome:$_page->config["email"]["fromnome"]));
-        $mail->addReplyTo(($remetente_email!=-1?$remetente_email:$_page->config["email"]["from"]), ($remetente_nome!=-1?$remetente_nome:$_page->config["email"]["fromnome"]));
+        $mail->setFrom(($remetente_email!=-1?$remetente_email:$page->config["email"]["from"]), ($remetente_nome!=-1?$remetente_nome:$page->config["email"]["fromnome"]));
+        $mail->addReplyTo(($remetente_email!=-1?$remetente_email:$page->config["email"]["from"]), ($remetente_nome!=-1?$remetente_nome:$page->config["email"]["fromnome"]));
         $mail->addAddress($destinatario_email, $destinatario_nome);
 //        $mail->addAddress('ellen@example.com');
 //        $mail->addReplyTo('info@example.com', 'Information');

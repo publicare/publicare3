@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 
-global $_page, $cod_objeto;
+global $page, $cod_objeto;
 ?>
 <script type="text/javascript">
 $("document").ready(function(){
@@ -39,22 +39,22 @@ $("document").ready(function(){
     });
 });
 </script>
-<form action="do/new_post/<?=$_page->_objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="post">
+<form action="do/new_post/<?=$page->objeto->Valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="post">
     <input type="hidden" name="cod_objeto" value="<?php echo($cod_objeto) ?>">
     <input type="hidden" name="prefixo" id="prefixo" value="">
     <!-- === Selecione a classe === -->
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3><strong>Selecione a Classe</strong></h3>
-            <p class="padding-top10"><b>Objeto atual</b>: <?php echo($_page->_objeto->Valor("titulo")) ?> (<?php echo($_page->_objeto->Valor("cod_objeto")) ?>) - <b>Classe</b>: <?php echo($_page->_objeto->Valor("classe")) ?> (<?php echo($_page->_objeto->Valor("cod_classe")) ?>)</p>
+            <p class="padding-top10"><b>Objeto atual</b>: <?php echo($page->objeto->Valor("titulo")) ?> (<?php echo($page->objeto->Valor("cod_objeto")) ?>) - <b>Classe</b>: <?php echo($page->objeto->Valor("classe")) ?> (<?php echo($page->objeto->Valor("cod_classe")) ?>)</p>
         </div>
         <div class="panel-body">
             <!-- === Classes === -->
             <h4 class="padding-bottom20"><strong>Classes</strong></h4>
             <p>A lista abaixo apresenta as classes que podem ser utilizadas a partir do objeto atual.</p>
 <?php
-$lista = $_page->_administracao->ListaDeClassesPermitidas($_page->_objeto->Valor("cod_classe"));
-$lista2 = $_page->_administracao->ListaDeClassesPermitidasNoObjeto($_page->_objeto->Valor("cod_objeto"));
+$lista = $page->administracao->listarClassesPermitidas($page->objeto->Valor("cod_classe"));
+$lista2 = $page->administracao->listarClassesPermitidasObjeto($page->objeto->Valor("cod_objeto"));
 //x($lista);
 //x($lista2);
 foreach ($lista2 as $l)

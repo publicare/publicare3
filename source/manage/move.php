@@ -28,6 +28,6 @@
  * THE SOFTWARE.
  */
 	include_once ("iniciar.php");
-	$_page->objManage->ObjectQuickMove($_page->obj->cod_object);
+	$page->objManage->ObjectQuickMove($page->obj->cod_object);
 	
-	//header ("Location:".$_page->config["portal"]["url"]."/index.php?action=/content/view&cod_object=".$cod_object);
+	//header ("Location:".$page->config["portal"]["url"]."/index.php?action=/content/view&cod_object=".$cod_object);

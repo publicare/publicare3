@@ -38,28 +38,28 @@ class Objeto
     public $propriedades;
     public $ArrayMetadados;
     
-    public $_page;
+    public $page;
 
     /**
      * Método construtor da classe objeto
-     * @param Pagina $_page - Referencia do objeto page
+     * @param Pagina $page - Referencia do objeto page
      * @param mixed $cod_objeto - Pode ser string ou inteiro
      * @return boolean
      */
-    function __construct(&$_page, $cod_objeto=-1)
+    function __construct(&$page, $cod_objeto=-1)
     {
-        $this->_page = $_page;
+        $this->page = $page;
         
-        $this->ArrayMetadados = $_page->_db->metadados;
+        $this->ArrayMetadados = $page->db->metadados;
         if ($cod_objeto!=-1)
         {
             if (is_numeric($cod_objeto))
             {
-                $dados = $this->_page->_adminobjeto->PegaDadosObjetoPeloID($cod_objeto);
+                $dados = $this->page->adminobjeto->pegarDadosObjetoId($cod_objeto);
             }
             else
             {
-                $dados = $this->_page->_adminobjeto->PegaDadosObjetoPeloTitulo($cod_objeto);
+                $dados = $this->page->adminobjeto->pegarDadosObjetoTitulo($cod_objeto);
             }
 
             if (is_array($dados) && sizeof($dados)>2)
@@ -89,14 +89,14 @@ class Objeto
                 && $this->metadados['url_amigavel']!="") 
         {
             $this->metadados['url'] = "/".$this->metadados['url_amigavel'];
-//            $this->metadados['url'] = "/".$this->_page->config["portal"]["pasta"]."/".$this->metadados['url_amigavel'];
+//            $this->metadados['url'] = "/".$this->page->config["portal"]["pasta"]."/".$this->metadados['url_amigavel'];
 //            $this->metadados['url'] = str_replace("//", "/", $this->metadados['url']);
         }
         else 
         {
             $this->metadados['url']='/content/view/'.$this->metadados['cod_objeto']."/".limpaString($this->metadados['titulo']).".html";
         }
-        $this->metadados['tags'] = $this->_page->_adminobjeto->PegaTags($this->metadados['cod_objeto']);
+        $this->metadados['tags'] = $this->page->adminobjeto->pegarTags($this->metadados['cod_objeto']);
     }
 
     /**
@@ -106,7 +106,7 @@ class Objeto
     function PegaCaminho()
     {
 //        xd($_SESSION);
-        return $this->_page->_adminobjeto->PegaCaminhoObjeto($this->metadados['cod_objeto']);
+        return $this->page->adminobjeto->pegarCaminhoObjeto($this->metadados['cod_objeto']);
     }
 
     /**
@@ -115,7 +115,7 @@ class Objeto
      */
     function PegaCaminhoComTitulo()
     {
-        $resultado=$this->_page->_adminobjeto->PegaCaminhoObjetoComTitulo($this->metadados['cod_objeto']);
+        $resultado=$this->page->adminobjeto->pegarCaminhoObjetoComTitulo($this->metadados['cod_objeto']);
         return $resultado;
     }
 
@@ -178,9 +178,9 @@ class Objeto
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+            $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
-        return $this->_page->config["portal"]["url"]."/blob/baixar/".$this->propriedades[$campo]['cod_blob'];
+        return $this->page->config["portal"]["url"]."/blob/baixar/".$this->propriedades[$campo]['cod_blob'];
     }
     
     /**
@@ -195,10 +195,10 @@ class Objeto
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-                $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+                $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
 //        return _URL."/html/objects/_viewblob.php?cod_blob=".$this->propriedades[$campo]['cod_blob']."&width=$width&height=$height";
-        return $this->_page->config["portal"]["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$width."&h=".$height;
+        return $this->page->config["portal"]["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$width."&h=".$height;
     }
 
     /**
@@ -213,12 +213,12 @@ class Objeto
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+            $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
         
-        $largura = $width>0?$width:$this->_page->config["portal"]["largurathumb"];
+        $largura = $width>0?$width:$this->page->config["portal"]["largurathumb"];
 //        return _URL."/html/objects/_viewthumb.php?cod_blob=".$this->propriedades[$campo]['cod_blob']."&width=$width&height=$height";
-        return $this->_page->config["portal"]["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$largura."&h=".$height;
+        return $this->page->config["portal"]["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$largura."&h=".$height;
     }
 
     function ValorParaEdicao($campo)
@@ -237,7 +237,7 @@ class Objeto
     {
         if (!is_array($this->propriedades))
         {
-                $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+                $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
         return $this->propriedades;
     }
@@ -247,7 +247,7 @@ class Objeto
         $campo = strtolower($campo);
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+            $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
         if (isset($this->propriedades[$campo])) return $this->propriedades[$campo]['valor'];
         else return "";
@@ -262,7 +262,7 @@ class Objeto
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+            $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
         return ($this->propriedades[$campo]['tamanho_blob']);
     }
@@ -271,7 +271,7 @@ class Objeto
     {
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->_page->_adminobjeto->PegaPropriedades($this->metadados['cod_objeto']);
+            $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
         return ($this->propriedades[$campo]['tipo_blob']);
     }
@@ -293,7 +293,7 @@ class Objeto
     {
         if ($this->metadados['temfilhos'])
         {
-            $this->filhos = $this->_page->_adminobjeto->ListaFilhos($this->metadados['cod_objeto'], $classe, $ordem, $inicio, $limite);
+            $this->filhos = $this->page->adminobjeto->pegarListaFilhos($this->metadados['cod_objeto'], $classe, $ordem, $inicio, $limite);
             $this->ponteiro = 0;
             $this->quantidade = count($this->filhos);
             return $this->quantidade;
@@ -326,11 +326,11 @@ class Objeto
         }
     }
 
-    function EFilho ($cod_pai)
+    function ehFilho ($cod_pai)
     {
             //echo "cod_objeto:".$this->Valor("cod_objeto");
             //exit;
-            return $this->_page->_adminobjeto->EFilho($this->Valor("cod_objeto"), $cod_pai);
+            return $this->page->adminobjeto->ehFilho($this->Valor("cod_objeto"), $cod_pai);
     }
                 
 }

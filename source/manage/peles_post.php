@@ -28,9 +28,9 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 
-function ChecaValidade(&$_page, $nome, $prefixo, $cod_pele_atual)
+function ChecaValidade(&$page, $nome, $prefixo, $cod_pele_atual)
 {
     if ($nome == '')
     {
@@ -48,21 +48,21 @@ function ChecaValidade(&$_page, $nome, $prefixo, $cod_pele_atual)
         }
         else
         {
-            $sql = "SELECT ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
-                    . " FROM ".$_page->_db->tabelas["pele"]["nome"]." "
-                    . " WHERE ".$_page->_db->tabelas["pele"]["colunas"]["nome"]." = '".$nome."'";
-            if ($cod_pele_atual) $sql .= " AND ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
-            $rs = $_page->_db->ExecSQL($sql);
+            $sql = "SELECT ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$page->db->tabelas["pele"]["nome"]." "
+                    . " WHERE ".$page->db->tabelas["pele"]["colunas"]["nome"]." = '".$nome."'";
+            if ($cod_pele_atual) $sql .= " AND ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
+            $rs = $page->db->ExecSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Nome de pele j&aacute; existente. Escolha outro nome.';
             }
             
-            $sql = "SELECT ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
-                    . " FROM ".$_page->_db->tabelas["pele"]["nome"]." "
-                    . " WHERE ".$_page->_db->tabelas["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
-            if ($cod_pele_atual) $sql .= " AND ".$_page->_db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
-            $rs = $_page->_db->ExecSQL($sql);
+            $sql = "SELECT ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$page->db->tabelas["pele"]["nome"]." "
+                    . " WHERE ".$page->db->tabelas["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
+            if ($cod_pele_atual) $sql .= " AND ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
+            $rs = $page->db->ExecSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Prefixo j&aacute; existente. Escolha outro prefixo.';
@@ -79,12 +79,12 @@ $cod_pele = isset($_POST['cod_pele'])?(int)htmlspecialchars($_POST['cod_pele'], 
 $publica = isset($_POST['publica'])?(int)htmlspecialchars($_POST['publica'], ENT_QUOTES, "UTF-8"):0;
 
 //Checa se os dados enviados são válidos
-$msg = ChecaValidade($_page, $nome, $prefixo, $cod_pele);
+$msg = ChecaValidade($page, $nome, $prefixo, $cod_pele);
 
 // se tiver codigo da pele e for clicado o botao de excluir
 if ($cod_pele > 0 && isset($_POST['delete']))
 {
-    $cod_pele = $_page->_administracao->apagarPele($cod_pele);
+    $cod_pele = $page->administracao->apagarPele($cod_pele);
 }
 else
 {
@@ -94,20 +94,20 @@ else
         // Atualiza
         if ($cod_pele > 0 && isset($_POST['update']))
         {
-            $_page->_administracao->AtualizarPele($cod_pele, $nome, $prefixo, $publica);
+            $page->administracao->atualizarPele($cod_pele, $nome, $prefixo, $publica);
         }
         // cria
         elseif ($_POST['new'])
         {
-            $cod_pele = $_page->_administracao->CriaPele($nome, $prefixo, $publica);
+            $cod_pele = $page->administracao->CriaPele($nome, $prefixo, $publica);
         }
     }
     else
     {
-        header("Location:".$_page->config["portal"]["url"]."/do/peles/".$_page->_objeto->Valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
+        header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->Valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
         exit();
     }
 }
 
-header("Location:".$_page->config["portal"]["url"]."/do/peles/".$_page->_objeto->Valor("cod_objeto").".html?cod_pele=".$cod_pele);
+header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->Valor("cod_objeto").".html?cod_pele=".$cod_pele);
 exit();

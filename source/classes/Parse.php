@@ -55,18 +55,18 @@ class Parse
     {
 		
         $this->InitCmd = '<?php'."\n"
-                            .'global $_page;'."\n"
+                            .'global $page;'."\n"
                             .'$_PAGINATIONSTACK_=array();'."\n"
                             .'$_SEQ_PAGINATION_=array();'."\n"
                             .'$_STACK_=array();'."\n"
-                            .'$_OBJ_=&$_page->_objeto;'."\n"
+                            .'$_OBJ_=&$page->objeto;'."\n"
                             .'$_LOOPSTACK_ = array();'."\n"
                             .'$_IMAGESTACK_ = array();'."\n"
                             .'$_IMAGESOURCESTACK_ = array();'."\n"
                             .'list($usec, $sec) = explode(" ", microtime());'."\n"
                             .'$_seed=(float) $sec + ((float) $usec * 100000);'."\n"
                             .'mt_srand($_seed);'."\n"
-                            .'//x($_OBJ_->Valor($_page, "cod_status"));'."\n"
+                            .'//x($_OBJ_->Valor($page, "cod_status"));'."\n"
                             .'$_GETARRAY=$_GET;'."\n"
                             .'?>';
 		
@@ -109,7 +109,7 @@ class Parse
             'MES' => 'date("m")',
             'ANO' => 'date("Y")',
             'DATA'=> 'date("d/m/Y")',
-            'ROOT'=> '$_page->config["portal"]["objroot"]',
+            'ROOT'=> '$page->config["portal"]["objroot"]',
             'INDICE' => '$_LOOP_["count"]',
             'FIM' => '$_LOOP_["max"]',
             'COD_OBJETO' => '$_OBJ_->Valor("cod_objeto")',
@@ -401,7 +401,7 @@ class Parse
             "localizar" => array (
                 'opentag' => 'localizar',
                 'regex' => '|(.*)|',
-                'output' => '<?php <#P:nome#>_array = $_page->_adminobjeto->LocalizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,<#P:inicio#>,<#P:limite#>,<#P:pai#>,<#P:niveis#>,false,<#P:like#>,<#P:ilike#>,<#P:tags#>);'."\n"
+                'output' => '<?php <#P:nome#>_array = $page->adminobjeto->localizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,<#P:inicio#>,<#P:limite#>,<#P:pai#>,<#P:niveis#>,false,<#P:like#>,<#P:ilike#>,<#P:tags#>);'."\n"
                     .'if (<#P:nome#>_max = count(<#P:nome#>_array)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
@@ -468,7 +468,7 @@ class Parse
             "localizaraleatorio" => array (
                 'opentag' => 'localizaraleatorio',
                 'regex' => '|(.*)|',
-                'output' => '<?php <#P:nome#>_array = $_page->_adminobjeto->LocalizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,-1,-1,<#P:pai#>,<#P:niveis#>);'."\n"
+                'output' => '<?php <#P:nome#>_array = $page->adminobjeto->localizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,-1,-1,<#P:pai#>,<#P:niveis#>);'."\n"
                     .'if (<#P:nome#>_max = count(<#P:nome#>_array)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_STACK_,$_OBJ_);'."\n"
@@ -527,8 +527,8 @@ class Parse
             "usarobjeto" => array (
                 'opentag' => 'objeto',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:titulo#>!="") $_tmp_=$_page->_adminobjeto->CriarObjeto(<#P:titulo#>);'."\n"
-                    .'else { if (<#P:cod_objeto#>!=-1) $_tmp_=$_page->_adminobjeto->CriarObjeto(<#P:cod_objeto#>); }'."\n"
+                'output' => '<?php if (<#P:titulo#>!="") $_tmp_=$page->adminobjeto->criarObjeto(<#P:titulo#>);'."\n"
+                    .'else { if (<#P:cod_objeto#>!=-1) $_tmp_=$page->adminobjeto->criarObjeto(<#P:cod_objeto#>); }'."\n"
                     .'if ($_tmp_) {'."\n"
                         .'array_push($_STACK_,$_OBJ_);'."\n"
                         .'$_OBJ_=$_tmp_;'."\n"
@@ -552,7 +552,7 @@ class Parse
             
             "incluimenu" => array(
                 'regex' => '',
-                'output' => '<?php if ($_page->_usuario->EstaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
+                'output' => '<?php if ($page->usuario->EstaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
                 'parameters' => false,
                 'helptext' => 'O comando <strong>incluimenu</strong> deve ser escrito assim: <strong>&lt;@incluimenu@&gt;</strong>',
             ),
@@ -561,7 +561,7 @@ class Parse
                 'opentag' => 'menu',
                 'regex' => '',
                 'output' => '<?php if ($_SESSION["usuario"]["cod_usuario"]) {'."\n"
-                        .'$_MENU = $_page->_usuario->Menu();'."\n"
+                        .'$_MENU = $page->usuario->Menu();'."\n"
                         .'foreach ($_MENU as $_OPCAO) {?>'."\n",
                 'parameters' => false,
                 'paramitens' => false,
@@ -592,7 +592,7 @@ class Parse
             
             "incluir" => array (
                 'regex' => '|(.*)|',
-                'output' => '<?php $_page->_parser->Start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
+                'output' => '<?php $page->parser->Start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
                 'parameters' => 1,
                 'helptext' => 'O comando <strong>incluir</strong> deve ser escrito assim: <strong>&lt;@incluir arquivo=[{string}]@&gt;</strong>',
                 'paramitens' => array (
@@ -604,10 +604,10 @@ class Parse
                 'regex' => '|(.*)|',
                 //'output' => '<?php (<#P:pele#>) ? $tmpDir = "/html/skin/".<#P:pele#> : $tmpDir = "/html/template"; '."\n"
                 //.'$extensao=(file_exists($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".php"))?"php":"pbl";'."\n"
-                //.'($_page->_usuario->EstaLogadoMilitarizado()===true) ? $_page->_parser->Start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $_page->_parser->Start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.pbl");',
+                //.'($page->usuario->EstaLogadoMilitarizado()===true) ? $page->parser->Start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->Start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.pbl");',
                 'output' => '<?php (<#P:pele#>) ? $tmpDir = "/html/skin/".<#P:pele#> : $tmpDir = "/html/template"; '."\n"
                     .'$extensao=(file_exists($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".php"))?"php":"pbl";'."\n"
-                    .'($_page->_usuario->EstaLogadoMilitarizado()===true) ? $_page->_parser->Start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $_page->_parser->Start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.php"); ?>',
+                    .'($page->usuario->EstaLogadoMilitarizado()===true) ? $page->parser->Start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->Start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.php"); ?>',
                 'parameters'=> 1,
                 'helptext' => 'O comando <strong>protegido</strong> deve ser escrito assim: <strong>&lt;@protegido view=[{nome_de_arquivo}] pele=[{prefixo_pele}]@&gt;</strong>',
                 'paramitens' => array (
@@ -721,7 +721,7 @@ class Parse
             "temfilho" => array (
                 'opentag'=>'temfilho',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:cod_objeto#>!="") $_tmp_=$_page->_adminobjeto->PegaNumFilhos(<#P:cod_objeto#>);'."\n"
+                'output' => '<?php if (<#P:cod_objeto#>!="") $_tmp_=$page->adminobjeto->pegarNumFilhos(<#P:cod_objeto#>);'."\n"
                     .'if ($_tmp_ > 0) {'."\n"
                     .'?>'."\n",
                 'parameters'=> 1,

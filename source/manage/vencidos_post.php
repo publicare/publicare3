@@ -28,13 +28,13 @@
  * THE SOFTWARE.
  */
 
-global $_page;
+global $page;
 
 foreach($_POST['objlist'] as $obj)
 {
-    if ($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) $_page->_administracao->apagarEmDefinitivo($obj);
-    elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $_page->_administracao->apagarObjeto($obj); 
+    if ($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) $page->administracao->apagarEmDefinitivo($obj);
+    elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $page->administracao->apagarObjeto($obj); 
 }
 	
-header("Location:" . $_page->config["portal"]["url"] . "/do/vencidos/".$_page->_objeto->Valor('cod_objeto').'.html');
+header("Location:" . $page->config["portal"]["url"] . "/do/vencidos/".$page->objeto->Valor('cod_objeto').'.html');
 
