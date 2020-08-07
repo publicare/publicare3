@@ -14,14 +14,14 @@ Um gerenciador de conteúdo é uma ferramenta que permite integrar e automatizar
 
 Entende-se aqui por conteúdo não somente as informações que estão estruturadas nos bancos de dados da organização, como também aquelas não ou semi-estruturadas, não se limitando apenas a textos HTML, mas também áudio, vídeo, etc.
 
-## Conceitos
+# Conceitos
 
-### Classe
+## Classe
 
 É um modelo ou especificação que define o tipo de objeto a ser criado. Através da definição de uma classe, descreve-se que propriedades o objeto terá.
 As classes são usadas para criar objetos.
 
-### Metadados
+## Metadados
 
 São os dados que todos os objetos possuem, independente da classe que pertencem.
 
@@ -29,36 +29,36 @@ São informações que ficam guardadas na tabela de objetos.
 
 Os metadados são:
 
-#### titulo
+### titulo
 O título do objeto
 
-#### descricao
+### descricao
 Descrição do objeto. Normalmente usado para metatag description. Até 200 caracteres. 
 
-#### data_publicacao
+### data_publicacao
 Data a partir do qual o objeto ficará visível para os usuários.
 
-#### data_validade
+### data_validade
 Data a partir do qual o objeto ficará invisível para os usuários do site.
 
-#### peso
+### peso
 Utilizado normalmente para ordenar os objetos através do comando localizar.
 
-#### cod_pele
+### cod_pele
 O código da pele a qual o objeto pertence. Caso nenhuma pele seja definida utiliza a pele padrão.
 
-#### cod_classe
+### cod_classe
 O código da classe ao qual o objeto pertence
 
-#### prefixo_classe 
+### prefixo_classe 
 O prefixo da classe do objeto.
 
-### Objeto
+## Objeto
 
 Um objeto nada mais é do que uma página que possui atributos distintos, herdados através da classe escolhida na hora de sua criação.  
 Um objeto pode conter outros objetos, sendo estes chamados de objetos filhos.
 
-### Objeto Pai
+## Objeto Pai
 
 O objeto no qual outro objeto reside.  
 Um objeto pai implica relação.  
@@ -67,19 +67,19 @@ Por exemplo, uma pasta é um objeto pai no qual um arquivo, ou objeto filho, res
 Um objeto pode ser um objeto pai e também um objeto filho.  
 Por exemplo, uma subpasta que contém arquivos é a pasta filho da pasta pai e a pasta pai dos arquivos.
 
-### Objeto Filho
+## Objeto Filho
 
 Objeto que reside em outro objeto.  
 Um objeto filho implica relação.  
 Por exemplo, um arquivo é um objeto filho que reside em uma pasta, que é o objeto pai. 
 
-### Pele
+## Pele
 
 Pele é um conjunto de templates com header e footer próprios.
 
 Ao ser aplicado a um objeto, todos os filhos recebem a mesma pele, recursivamente.
 
-### Template
+## Template
 
 Template, ou script de exibição, é o modelo de exibição de um objeto. Define onde e como as propriedades e metadados serão exibidos.
 
@@ -90,7 +90,7 @@ Todo portal criado com o Publicare tem um template padrão, o ```<portal_root>/h
 
 Os Templates ficam na pasta do portal /html/template. São arquivos PHP, que possibilitam mesclar a execução da linguagem PBL e PHP. 
 
-## A linguagem PBL
+# A linguagem PBL
 
 Foi desenvolvida a linguagem PBL para facilitar o consumo das informações no banco de dados, é uma linguagem interpretada, passando por uma transformação para PHP. Feita para renderizar as respostas parao navegador.
 
@@ -98,37 +98,41 @@ Possibilita o desenvolvimento de um portal sem ter conhecimentos de PHP ou SQL.
 
 Funciona com as tags especiais ```<@``` e ```@>```
 
-### Variaveis PBL
+## Variaveis PBL
 
-### Comandos PBL
+## Comandos PBL
 
-#### eco
+### ECO
 Imprime um valor na posição.
 
  **Utilização**:  
 ```<@eco {variavel|string|dado|numero|macro} @>```
 
-#### ecoe
+### ECOE
 Imprime um valor na posição, aplicando a função htmlentities() do PHP.
 
 **Utilização**:  
 ```<@ecoe {variavel|string|dado|numero|macro} @>```
 
-#### eco_limite
+### ECO_LIMITE
 Imprime um valor na posição, garantindo que o tamanho do texto não seja maior do que o informado.  
-Não corta palavras ao meio.
+Não corta palavras ao meio, portanto o texto pode ficar menor do que o tamanho informado, mas nunca maior.
 
 **Utilização**:  
 ```<@eco_limite texto={variavel|string|dado|numero|macro} limite={variavel|numero}  @>```
 
-#### var
+**Parâmetros**:  
+- texto: Valor a ser impresso.  
+- limite: Número de caracteres a ser impresso.
+
+### VAR
 Define valor de variáveis.  
 Funciona para variáveis PBL e variáveis PHP.
 
 **Utilização**:  
 ```<@var variavel={variavel|string|dado|numero|macro} @>```
 
-#### se
+### SE
 Estrutura de condição do PBL. Equivalente ao ```if``` do PHP.  
 Deve ser fechado com o comando **/se**.
 
@@ -137,14 +141,14 @@ Deve ser fechado com o comando **/se**.
 **Fechamento**:  
 ```<@/se@>```   
 
-#### senao
+### SENAO
 Estrutura de condição do PBL. Equivalente ao ```else``` do PHP.  
 Deve ficar entre a abertura **se** e o fechamento **/se**.
 
 **Utilização**:  
 ```<@senao@>```                    
 
-#### repetir
+### REPETIR
 Executa instruções de forma repetida.  
 Equivalente à função ```for``` do PHP.
 
@@ -153,7 +157,7 @@ Equivalente à função ```for``` do PHP.
 **Fechamento**:  
 ```<@/repetir@>``` 
 
-#### filhos
+### FILHOS
 Recupera lista de objetos filhos do objeto renderizado, gera um laço com o resultado.  
 O bloco de código que ficar entre a abertura e fechamento deste comando será executado para cada objeto do conjunto retornado.
 
@@ -162,11 +166,54 @@ O bloco de código que ficar entre a abertura e fechamento deste comando será e
 **Fechamento**:  
 ```<@/filhos@>```
 
-#### semfilhos
-Indica bloco que será executado caso o comando **filhos** retorne cnjunto vazio de objetos.  
+**Parâmetros**:  
+- nome: Nome do conjunto de objetos retorno.
+- classes: Prefixo das classes que devem ser filtradas. Separado por vírgula.
+- ordem: Ordem dos objetos no conjunto retorno.
+
+### SEMFILHOS
+Indica bloco que será executado caso o comando **filhos** retorne conjunto vazio de objetos.  
 Deve ser utilizado logo após o fechamento do comando **filhos**.
 
 **Utilização**:  
 ```<@semfilhos@>```  
 **Fechamento**:  
 ```<@/semfilhos@>``` 
+
+### ALEATORIO
+Recupera lista de objetos filhos do objeto renderizado, reordena de forma aleatória o conjunto resultado e gera um laço com o resultado.  
+
+**Utilização**:  
+```<@aleatorio nome=[{variavel}] classes=[{string}] @>```  
+**Fechamento**:  
+```<@/aleatorio@>``` 
+
+**Parâmetros**:  
+- nome: Nome do conjunto de objetos retorno.
+- classes: Prefixo das classes que devem ser filtradas. Separado por vírgula.
+
+### LOCALIZAR
+Localiza objetos conforme parâmetros passados. Gera um laço com o conjunto resultado.  
+
+**Utilização**:  
+```<@localizar nome=[{variavel}] classes=[{string}] condicao=[{string}] ordem=[{string}] pai=[{numero}] niveis=[{numero}] like=[{string},{string}] ilike=[{string_minuscula},{string_minuscula}] tags=[{string},{string}] @>```  
+**Fechamento**:  
+```<@/localizar@>``` 
+
+**Parâmetros**:  
+- nome: Nome do conjunto de objetos retorno.
+- classes: Prefixo das classes que devem ser filtradas. Separado por vírgula.
+- condicao: String com condição de busca. Ex: "cod_objeto>10 && propriedade=valor".
+- ordem: Ordem dos objetos no conjunto retorno.
+- pai: Código do objeto que será usado como pai na busca. Buscará objetos abaixo do identificado aqui.
+- niveis: Profundidade de busca a partir do objeto pai identificado.
+
+### NAOLOCALIZADO
+Executa instruções caso o **localizar** retorne conjunto vazio.  
+Deve ser utilizado após o fechamento do comando **localizar**.
+
+**Utilização**:  
+```<@naolocalizado@>```  
+**Fechamento**:  
+```<@/naolocalizado@>``` 
+
