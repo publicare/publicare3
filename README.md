@@ -100,21 +100,51 @@ Funciona com as tags especiais ```<@``` e ```@>```
 
 #### Variaveis PBL
 
-#### Funções PBL
+#### Comandos PBL
 
 ##### eco
-Imprime um valor na posição
-###### Utilização:
+Imprime um valor na posição.
+
+ **Utilização**:
 ```<@eco {variavel|string|dado|numero|macro} @>```
 
 ##### ecoe
-Imprime um valor na posição, aplicando a função htmlentities() do PHP
-###### Utilização:
+Imprime um valor na posição, aplicando a função htmlentities() do PHP.
+
+**Utilização**:
 ```<@ecoe {variavel|string|dado|numero|macro} @>```
 
 ##### eco_limite
 Imprime um valor na posição, garantindo que o tamanho do texto não seja maior do que o informado.
 Não corta palavras ao meio.
-###### Utilização:
+
+**Utilização**:
 ```<@eco_limite texto={variavel|string|dado|numero|macro} limite={variavel|numero}  @>```
 
+##### var
+Define valor de variáveis. 
+Funciona para variáveis PBL e variáveis PHP.
+
+**Utilização**:
+```<@var variavel={variavel|string|dado|numero|macro} @>```
+
+##### se
+Estrutura de condição do PBL. Equivalente ao ```if``` do PHP. 
+Deve ser fechado com o comando **/se**.
+
+**Utilização**:
+```<@se [{variavel|string|dado|numero}{>|<|<=|>=|==|!=}{variavel|string|dado|numero|macro}] @>```
+
+##### senao
+Estrutura de condição do PBL. Equivalente ao ```else``` do PHP. 
+Deve ficar entre a abertura **se** e o fechamento **/se**.
+
+**Utilização**:
+```<@senao@>```
+
+
+##### /se
+Estrutura de condição do PBL. Encerra a estrutura **se**. 
+
+**Utilização**:                                            
+```<@/se@>```                                              
