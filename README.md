@@ -133,8 +133,7 @@ Estrutura de condição do PBL. Equivalente ao ```if``` do PHP.
 Deve ser fechado com o comando **/se**.
 
 **Utilização**:  
-```<@se [{variavel|string|dado|numero}{>|<|<=|>=|==|!=}{variavel|string|dado|numero|macro}] @>```
-
+```<@se [{variavel|string|dado|numero}{>|<|<=|>=|==|!=}{variavel|string|dado|numero|macro}] @>```  
 **Fechamento**:  
 ```<@/se@>```   
 
@@ -150,8 +149,7 @@ Executa instruções de forma repetida.
 Equivalente à função ```for``` do PHP.
 
 **Utilização**:  
-```<@repetir {variavel}={numero inicial},{numero final}@>``` 
-
+```<@repetir {variavel}={numero inicial},{numero final}@>```  
 **Fechamento**:  
 ```<@/repetir@>``` 
 
@@ -160,17 +158,15 @@ Recupera lista de objetos filhos do objeto renderizado, gera um laço com o resu
 O bloco de código que ficar entre a abertura e fechamento deste comando será executado para cada objeto do conjunto retornado.
 
 **Utilização**:  
-```<@filhos nome=[{variavel}] classes=[{string}] ordem=[{string}]@>``` 
-
+```<@filhos nome=[{variavel}] classes=[{string}] ordem=[{string}]@>```  
 **Fechamento**:  
-```<@/filhos@>``` 
+```<@/filhos@>```
 
 #### semfilhos
 Indica bloco que será executado caso o comando **filhos** retorne cnjunto vazio de objetos.  
 Deve ser utilizado logo após o fechamento do comando **filhos**.
 
 **Utilização**:  
-```<@semfilhos@>``` 
-
+```<@semfilhos@>```  
 **Fechamento**:  
 ```<@/semfilhos@>``` 
