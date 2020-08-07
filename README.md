@@ -88,3 +88,33 @@ Ao renderizar um objeto, o publicare verifica a qual classe pertence o objeto e 
 
 Todo portal criado com o Publicare tem um template padrão, o ```<portal_root>/html/template/view_basic.php```, utilizado para exibir todas as propriedades do objeto.
 
+Os Templates ficam na pasta do portal /html/template. São arquivos PHP, que possibilitam mesclar a execução da linguagem PBL e PHP. 
+
+### A linguagem PBL
+
+Foi desenvolvida a linguagem PBL para facilitar o consumo das informações no banco de dados, é uma linguagem interpretada, passando por uma transformação para PHP. Feita para renderizar as respostas parao navegador.
+
+Possibilita o desenvolvimento de um portal sem ter conhecimentos de PHP ou SQL.
+
+Funciona com as tags especiais ```<@``` e ```@>```
+
+#### Variaveis PBL
+
+#### Funções PBL
+
+##### eco
+Imprime um valor na posição
+###### Utilização:
+```<@eco {variavel|string|dado|numero|macro} @>```
+
+##### ecoe
+Imprime um valor na posição, aplicando a função htmlentities() do PHP
+###### Utilização:
+```<@ecoe {variavel|string|dado|numero|macro} @>```
+
+##### eco_limite
+Imprime um valor na posição, garantindo que o tamanho do texto não seja maior do que o informado.
+Não corta palavras ao meio.
+###### Utilização:
+```<@eco_limite texto={variavel|string|dado|numero|macro} limite={variavel|numero}  @>```
+

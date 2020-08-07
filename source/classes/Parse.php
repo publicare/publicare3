@@ -162,7 +162,7 @@ class Parse
                     'formato' => 's|v|m|d',
                 )
             ),
-            
+            /*
             "eco_limite" => array(
                 'regex' => '|(.*)|is',
                 'output' => '<?php if (<#P:caracter#>!=""){'."\n"
@@ -190,6 +190,21 @@ class Parse
                     'inicio' => 0,
                     'limite' => -1,
                     'minimo' => 0,
+                ),
+            ),
+*/
+            "eco_limite" => array(
+                'regex' => '|(.*)|is',
+                'output' => '<?php echo(cortaTexto(<#P:texto#>, <#P:limite#>); ?>',
+                'parameters' => 1,
+                'helptext' => 'O comando <strong>eco_limite</strong> deve ser escrito assim: <strong>&lt;@eco_limite texto={variavel|string|dado|numero|macro} limite={variavel|numero}  @&gt;</strong>',
+                'paramitens' => array (
+                    'texto' => 's|v|n|m|d',
+                    'limite' => 'v|n'
+                ),
+                'paramforce' => false,
+                'paramdefault' => array (
+                    'limite' => -1,
                 ),
             ),
             
