@@ -417,7 +417,7 @@ class Parse
                             .'$_LOOP_["array"][] = $_OBJ_;'."\n"
                     .'?>'."\n",
                 'parameters' => 1,
-                'helptext' => 'O comando <strong>Localizar</strong> deve ser escrito assim: <strong>&lt;@localizar nome=[{variavel}] classes=[{string}] ordem=[{string}] niveis=[{numero}] like=[{string},{string}] ilike=[{string_minuscula},{string_minuscula}] tags=[{string},{string}] @&gt;</strong>',
+                'helptext' => 'O comando <strong>Localizar</strong> deve ser escrito assim: <strong>&lt;@localizar nome=[{variavel}] classes=[{string}] condicao=[{string}] ordem=[{string}] niveis=[{numero}] pai=[{numero}] like=[{string},{string}] ilike=[{string_minuscula},{string_minuscula}] tags=[{string},{string}] @&gt;</strong>',
                 'paramitens' => array (
                     'nome' => 'v',
                     'condicao' => 's',
