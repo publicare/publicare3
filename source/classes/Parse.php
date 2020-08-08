@@ -66,7 +66,7 @@ class Parse
                             .'list($usec, $sec) = explode(" ", microtime());'."\n"
                             .'$_seed=(float) $sec + ((float) $usec * 100000);'."\n"
                             .'mt_srand($_seed);'."\n"
-                            .'//x($_OBJ_->valor($page, "cod_status"));'."\n"
+                            .'//x($_OBJ_->valor("cod_status"));'."\n"
                             .'$_GETARRAY=$_GET;'."\n"
                             .'?>';
 		
