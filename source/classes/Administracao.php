@@ -918,7 +918,7 @@ class Administracao
         unset($obj->quantidade);
 //        unset($obj->ArrayMetadados);
         $obj->classe = $classe;
-        $arr_obj = serialize($obj);
+        $arr_obj = json_encode($obj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT);
         $ip = $this->pegarIp();
         
         $sql = "";

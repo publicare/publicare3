@@ -72,11 +72,11 @@ if ($versao > 0)
     $objtmp = $page->administracao->pegarVersao($versao);
     if (is_array($objtmp) && count($objtmp)>0)
     {
-        $conteudo = unserialize($objtmp[0]["conteudo"]);
-        if ($conteudo->valor("cod_objeto") == $objeto->valor("cod_objeto"))
+        $conteudo = json_decode($objtmp[0]["conteudo"], true);
+        if ($conteudo["cod_objeto"] == $objeto->valor("cod_objeto"))
         {
-            $objeto->metadados = $conteudo->metadados;
-            $objeto->propriedades = $conteudo->propriedades;
+            $objeto->metadados = $conteudo["metadados"];
+            $objeto->propriedades = $conteudo["propriedades"];
             $objeto->data_versao = $objtmp[0]["data_criacao"];
         }
     }
