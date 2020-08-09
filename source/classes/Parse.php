@@ -110,6 +110,9 @@ class Parse
             'ANO' => 'date("Y")',
             'DATA'=> 'date("d/m/Y")',
             'ROOT'=> '$page->config["portal"]["objroot"]',
+            'PERFIL' => '$page->usuario->cod_perfil',
+            'CONFIG' => '$page->config',
+            'USUARIO' => '$_SESSION["usuario"]',
             'INDICE' => '$_LOOP_["count"]',
             'FIM' => '$_LOOP_["max"]',
             'COD_OBJETO' => '$_OBJ_->valor("cod_objeto")',
@@ -128,6 +131,16 @@ class Parse
         );
 
         $this->cmdArray = array(
+
+            "=" => array(
+                'regex' => '|(.*)|is',
+                'output' => '<?php echo (<#1#>); ?>',
+                'parameters' => false,
+                'helptext' => 'O comando <strong>eco</strong> deve ser escrito assim: <strong>&lt;@eco {variavel|string|dado|numero|macro} @&gt;</strong>',
+                'itens' => array (
+                    1 => 's|v|n|m|d',
+                ),
+            ),
             
             "eco" => array(
                 'regex' => '|(.*)|is',
@@ -147,6 +160,65 @@ class Parse
                 'itens' => array (
                     1 => 's|v|n|m|d',
                 ),
+            ),
+
+            "eco_limite" => array(
+                'regex' => '|(.*)|is',
+                'output' => '<?php echo(cortaTexto(<#P:texto#>, <#P:limite#>); ?>',
+                'parameters' => 1,
+                'helptext' => 'O comando <strong>eco_limite</strong> deve ser escrito assim: <strong>&lt;@eco_limite texto={variavel|string|dado|numero|macro} limite={variavel|numero}  @&gt;</strong>',
+                'paramitens' => array (
+                    'texto' => 's|v|n|m|d',
+                    'limite' => 'v|n'
+                ),
+                'paramforce' => false,
+                'paramdefault' => array (
+                    'limite' => -1,
+                ),
+            ),
+
+            "filhos" => array (
+                'opentag' => 'filhos',
+                'regex' => '|(.*)|',
+                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->pegarListaFilhos(<#P:classes#>, <#P:ordem#>, <#P:inicio#>, <#P:limite#>)) {'."\n"
+                    .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
+                    .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
+                    .'$_LOOP_=array();'."\n"
+                    .'$_LOOP_["array"]=array();'."\n"
+                    .'$_LOOP_["array"]=array();'."\n"
+                    .'$_LOOP_["count"]=0;'."\n"
+                    .'$_LOOP_["max"]=<#P:nome#>_max;'."\n"
+                    .'$_LOOP_["obj"]=$_OBJ_;'."\n"
+                    .'array_push($_STACK_,$_OBJ_);'."\n"
+                    .'while (<#P:nome#> = $_LOOP_["obj"]->pegarProximoFilho()) {'."\n"
+                        .'$_OBJ_ = <#P:nome#>;'."\n"
+                        .'$_LOOP_["count"]++;'."\n"
+                        .'$_LOOP_["array"][] = $_OBJ_;'."\n"
+                    .'?>'."\n",
+                'parameters' => 1,
+                'helptext' => 'O comando <strong>filhos</strong> deve ser escrito assim: <strong>&lt;@filhos nome=[{variavel}] classes=[{string}] ordem=[{string}]@&gt;</strong>',
+                'paramitens' => array (
+                    'nome' => 'v',
+                    'classes' => 's',
+                    'ordem' => 's',
+                    'limite' => 'n',
+                    'inicio' => 'n',
+                ),
+                'paramforce' => false,
+                'paramdefault' => array (
+                    'nome' => '$var_'.uniqid(""),
+                ),
+            ),
+
+            "/filhos" => array (
+                'closetag' => 'filhos',
+                'regex' => '',
+                'output' => '<?php  } $_OBJ_=array_pop($_STACK_);'."\n"
+                    .'$_LOOP_=array_pop($_LOOPSTACK_);'."\n"
+                    .'$_SEMFILHOS=false;'."\n"
+                    .'} else {$_SEMFILHOS=true;}?>'."\n",
+                'parameters' => false,
+                'helptext' => 'O comando <strong>\filhos </strong> deve ser escrito assim: <strong>&lt;@\filhos@&gt;</strong>',
             ),
 
             "formatadata" => array(
@@ -193,73 +265,6 @@ class Parse
                 ),
             ),
 */
-            "eco_limite" => array(
-                'regex' => '|(.*)|is',
-                'output' => '<?php echo(cortaTexto(<#P:texto#>, <#P:limite#>); ?>',
-                'parameters' => 1,
-                'helptext' => 'O comando <strong>eco_limite</strong> deve ser escrito assim: <strong>&lt;@eco_limite texto={variavel|string|dado|numero|macro} limite={variavel|numero}  @&gt;</strong>',
-                'paramitens' => array (
-                    'texto' => 's|v|n|m|d',
-                    'limite' => 'v|n'
-                ),
-                'paramforce' => false,
-                'paramdefault' => array (
-                    'limite' => -1,
-                ),
-            ),
-            
-            "=" => array(
-                'regex' => '|(.*)|is',
-                'output' => '<?php echo (<#1#>); ?>',
-                'parameters' => false,
-                'helptext' => 'O comando <strong>eco</strong> deve ser escrito assim: <strong>&lt;@eco {variavel|string|dado|numero|macro} @&gt;</strong>',
-                'itens' => array (
-                    1 => 's|v|n|m|d',
-                ),
-            ),
-            
-            "var" => array(
-                'regex' => '|(\$.*?)\s*=\s*(.*)|is',
-                'output' => '<?php <#1#> = <#2#>; ?>',
-                'parameters' => false,
-                'helptext' => 'O comando <strong>var</strong> deve ser escrito assim: <strong>&lt;@var variavel={variavel|string|dado|numero|macro} @&gt;</strong>',
-                'itens' => array (
-                    1 => 'v',
-                    2 => 's|v|d|n|m',
-                ),
-            ),
-
-            "se" => array (
-                'opentag' => 'se',
-                'regex' => '$\[(.*?)(==|>=|<=|!=|>|<)(.*)\]$is',
-                'output' => '<?php if (<#1#><#2#><#3#>) { ?>',
-                'parameters' => false,
-                'helptext' => 'O comando <strong>se </strong> deve ser escrito assim: <strong>&lt;@se [{variavel|string|dado|numero}{>|<|<=|>=|==|!=}{variavel|string|dado|numero|macro}] @&gt;</strong>.',
-                'itens' => array (
-                    1 => 's|v|d|n|m',
-                    2 => 'o',
-                    3 => 's|v|d|n|m',
-                ),
-            ),
-            
-            "/se" => array (
-                'closetag' => 'se',
-                'regex' => '',
-                'output' => '<?php } ?>',
-                'parameters' => false,
-                'helptext' => 'O comando <strong>/se </strong> deve ser escrito assim: <strong>&lt;@\se@&gt;</strong>',
-                'itens' => false,
-            ),
-
-            "senao" => array (
-                'closetag' => 'se',
-                'opentag' => 'se',
-                'regex' => '',
-                'output' => '<?php } else { ?>',
-                'parameters' => false,
-                'helptext' => 'O comando <strong>senao</strong> deve ser escrito assim: <strong>&lt;@senao@&gt;</strong>',
-                'itens' => false,
-            ),
 
             "repetir" => array (
                 'opentag' => 'repetir',
@@ -283,49 +288,56 @@ class Parse
                 'itens' => false,
             ),
 
-            "filhos" => array (
-                'opentag' => 'filhos',
-                'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:nome#>_max = $_OBJ_->pegarListaFilhos(<#P:classes#>, <#P:ordem#>, <#P:inicio#>, <#P:limite#>)) {'."\n"
-                    .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
-                    .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
-                    .'$_LOOP_=array();'."\n"
-                    .'$_LOOP_["array"]=array();'."\n"
-                    .'$_LOOP_["array"]=array();'."\n"
-                    .'$_LOOP_["count"]=0;'."\n"
-                    .'$_LOOP_["max"]=<#P:nome#>_max;'."\n"
-                    .'$_LOOP_["obj"]=$_OBJ_;'."\n"
-                    .'array_push($_STACK_,$_OBJ_);'."\n"
-                    .'while (<#P:nome#> = $_LOOP_["obj"]->pegarProximoFilho()) {'."\n"
-                        .'$_OBJ_ = <#P:nome#>;'."\n"
-                        .'$_LOOP_["count"]++;'."\n"
-                        .'$_LOOP_["array"][] = $_OBJ_;'."\n"
-                    .'?>'."\n",
-                'parameters' => 1,
-                'helptext' => 'O comando <strong>filhos</strong> deve ser escrito assim: <strong>&lt;@filhos nome=[{variavel}] classes=[{string}] ordem=[{string}]@&gt;</strong>',
-                'paramitens' => array (
-                    'nome' => 'v',
-                    'classes' => 's',
-                    'ordem' => 's',
-                    'limite' => 'n',
-                    'inicio' => 'n',
-                ),
-                'paramforce' => false,
-                'paramdefault' => array (
-                    'nome' => '$var_'.uniqid(""),
+            "se" => array (
+                'opentag' => 'se',
+                'regex' => '$\[(.*?)(==|>=|<=|!=|>|<)(.*)\]$is',
+                'output' => '<?php if (<#1#><#2#><#3#>) { ?>',
+                'parameters' => false,
+                'helptext' => 'O comando <strong>se </strong> deve ser escrito assim: <strong>&lt;@se [{variavel|string|dado|numero}{>|<|<=|>=|==|!=}{variavel|string|dado|numero|macro}] @&gt;</strong>.',
+                'itens' => array (
+                    1 => 's|v|d|n|m',
+                    2 => 'o',
+                    3 => 's|v|d|n|m',
                 ),
             ),
 
-            "/filhos" => array (
-                'closetag' => 'filhos',
+            "/se" => array (
+                'closetag' => 'se',
                 'regex' => '',
-                'output' => '<?php  } $_OBJ_=array_pop($_STACK_);'."\n"
-                    .'$_LOOP_=array_pop($_LOOPSTACK_);'."\n"
-                    .'$_SEMFILHOS=false;'."\n"
-                    .'} else {$_SEMFILHOS=true;}?>'."\n",
+                'output' => '<?php } ?>',
                 'parameters' => false,
-                'helptext' => 'O comando <strong>\filhos </strong> deve ser escrito assim: <strong>&lt;@\filhos@&gt;</strong>',
+                'helptext' => 'O comando <strong>/se </strong> deve ser escrito assim: <strong>&lt;@\se@&gt;</strong>',
+                'itens' => false,
             ),
+
+            "senao" => array (
+                'closetag' => 'se',
+                'opentag' => 'se',
+                'regex' => '',
+                'output' => '<?php } else { ?>',
+                'parameters' => false,
+                'helptext' => 'O comando <strong>senao</strong> deve ser escrito assim: <strong>&lt;@senao@&gt;</strong>',
+                'itens' => false,
+            ),
+
+            "var" => array(
+                'regex' => '|\s*(.*)=\s*(.*)|is',
+                'output' => '<?php <#1#> = <#2#>; ?>',
+                'parameters' => false,
+                'helptext' => 'O comando <strong>var</strong> deve ser escrito assim: <strong>&lt;@var variavel={variavel|string|dado|numero|macro} @&gt;</strong>',
+                'itens' => array (
+                    1 => 'v',
+                    2 => 's|v|d|n|m',
+                ),
+            ),
+
+            
+
+
+
+            
+
+            
             
             "semfilhos" => array (
                 'regex' => '',
@@ -557,39 +569,6 @@ class Parse
                 'helptext' => 'O comando <strong>incluimenu</strong> deve ser escrito assim: <strong>&lt;@incluimenu@&gt;</strong>',
             ),
             
-            "menu" => array (
-                'opentag' => 'menu',
-                'regex' => '',
-                'output' => '<?php if ($_SESSION["usuario"]["cod_usuario"]) {'."\n"
-                        .'$_MENU = $page->usuario->menu();'."\n"
-                        .'foreach ($_MENU as $_OPCAO) {?>'."\n",
-                'parameters' => false,
-                'paramitens' => false,
-                'itens' => false,
-            ),
-            
-            "/menu" => array (
-                'closetag' => 'menu',
-                'regex' => '',
-                'output' => '<?php }} ?>'."\n",
-                'parameters' => 0,
-                'paramitens' => false
-            ),
-            
-            "acao" => array (
-                'regex' => '',
-                'output' => '<?php echo $_OPCAO["acao"];?>'."\n",
-                'parameters' => 0,
-                'paramitens' => false
-            ),
-            
-            "script" => array (
-                'regex' => '',
-                'output' => '<?php echo "/index.php".$_OPCAO["script"]."/".$GLOBALS["cod_objeto"].".html";?>'."\n",
-                'parameters' => 0,
-                'paramitens' => false
-            ),
-            
             "incluir" => array (
                 'regex' => '|(.*)|',
                 'output' => '<?php $page->parser->start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
@@ -599,7 +578,18 @@ class Parse
                     'arquivo'  => 's',
                 ),
             ),
-            
+/*
+            "config" => array (
+                'regex' => '|(.*)|',
+                'output' => '<?php $page->parser->start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
+                'output' => '<?php $page->parser->start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
+                'parameters' => 1,
+                'helptext' => 'O comando <strong>config</strong> deve ser escrito assim: <strong>&lt;@config nome=[{string}]@&gt;</strong>',
+                'paramitens' => array (
+                    'nome'  => 's',
+                ),
+            ),
+ */           
             "protegido" => array (
                 'regex' => '|(.*)|',
                 //'output' => '<?php (<#P:pele#>) ? $tmpDir = "/html/skin/".<#P:pele#> : $tmpDir = "/html/template"; '."\n"
