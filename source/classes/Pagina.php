@@ -233,9 +233,11 @@ class Pagina
             $prefixo = $_GET["nome"];
             $this->blob->iconeBlob($prefixo);
         }
-        elseif (strpos($acao,"/do/")!==false)
+        elseif (strpos($acao,"/do/")!==false 
+            || strpos($acao,"/manage/")!==false)
         {
-            if ($acao == "/do/login_post" || $acao == "/do/esquecisenha_post")
+            if ($acao == "/do/login_post" 
+                || $acao == "/do/esquecisenha_post")
             {
                 $incluirheader = false;
                 $acaoSistema = $vacao[count($vacao)-1];

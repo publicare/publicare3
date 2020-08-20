@@ -73,7 +73,8 @@ if ($versao > 0)
     if (is_array($objtmp) && count($objtmp)>0)
     {
         $conteudo = json_decode($objtmp[0]["conteudo"], true);
-        if ($conteudo["cod_objeto"] == $objeto->valor("cod_objeto"))
+        // xd($conteudo);
+        if (isset($conteudo["metadados"]["cod_objeto"]) && $conteudo["metadados"]["cod_objeto"] == $objeto->valor("cod_objeto"))
         {
             $objeto->metadados = $conteudo["metadados"];
             $objeto->propriedades = $conteudo["propriedades"];
@@ -185,7 +186,7 @@ else
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
 <?php
-if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
+if ($edit === true && $page->usuario->cod_perfil <= _PERFIL_EDITOR)
 {
 ?>
                 <a href="do/qrcode/<?php echo($page->objeto->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
