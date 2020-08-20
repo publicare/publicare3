@@ -170,7 +170,7 @@ class Objeto
         {
             $this->propriedades = $this->page->adminobjeto->pegarPropriedades($this->metadados['cod_objeto']);
         }
-        return $this->page->config["portal"]["url"]."/blob/baixar/".$this->propriedades[$campo]['cod_blob'];
+        return isset($this->propriedades[$campo]['cod_blob'])?$this->page->config["portal"]["url"]."/blob/baixar/".$this->propriedades[$campo]['cod_blob']:"";
     }
     
     /**

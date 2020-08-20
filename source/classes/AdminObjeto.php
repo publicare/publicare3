@@ -818,19 +818,21 @@ class AdminObjeto
     {
         
         // Variavel para controlar a criacao dos campos na tabela temporaria //
-        $campo_incluido=array();
-        $campo_incluido_natabela=array();
-        $ordem_temporaria=array();
+        $campo_incluido = array();
+        $campo_incluido_natabela = array();
+        $ordem_temporaria = array();
 		
         $sqls_insert = array();
 		
         foreach ($classes as $cod_classe)
         {
             
-            $temp_campos=array();
-            $temp_from=array();
-            $temp_where=array();
-            $campo_incluido=array();
+            $temp_campos = array();
+            $temp_from = array();
+            $temp_where = array();
+            $campo_incluido = array();
+
+            // xd($array_ordem);
 			
             //Constroi SQL para casos em que existem propriedades na ordem
             foreach ($array_ordem as $item)
@@ -841,16 +843,16 @@ class AdminObjeto
                 {
                     $info = $this->criarSQLPropriedade($item['campo'], $item['orientacao'], $cod_classe);
                     
-                    if ($info["tabela"]=="tbl_objref") $item['campo'] .= "_ref";
+                    $temp_campos[] = $info['field'];
+                    $temp_from[] = $info['from'];
+                    $temp_where[] = $info['where'];
+                    $campo_incluido[] = $info['field'];
                     
-                    $temp_campos[]=$info['field'];
-                    $temp_from[]=$info['from'];
-                    $temp_where[]=$info['where'];
-                    $campo_incluido[]=$info['field'];
+                    if ($info["tabela"] == "tbl_objref") $item['campo'] .= "_ref2";
                 }
                 
                 $string_temp = $item['campo'].' '.$item['orientacao'];
-                if (!in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[]=$item['campo'].' '.$item['orientacao'];
+                if (!in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[] = $item['campo'] . ' ' . $item['orientacao'];
             }
 
             //Constroi SQL para casos em que existem propriedades na condicao
@@ -1350,7 +1352,7 @@ class AdminObjeto
                     $propriedade = $this->pegarInfoPropriedade($info['cod_referencia_classe'], $info['campo_ref']);
                     //$montagem['from'] .= '(('.$on.') and ('.$campo."_property.cod_propriedade=".$propriedade['cod_propriedade'].'))';
                     $montagem['from'] .= " LEFT JOIN ".$propriedade['tabela']." as ".$campo."_campo_ref on ".$campo.'_ref.cod_objeto='.$campo.'_property.cod_objeto';
-                    $montagem['field'] .= $campo."_property.valor";
+                    $montagem['field'] .= $campo."_property.valor AS ".$campo."_property";
                     $montagem['delimitador']=$propriedade['delimitador'];
                     //$montagem['where'] .= $campo."_property.cod_propriedade=".$propriedade['cod_propriedade'];
                 }
@@ -1358,9 +1360,10 @@ class AdminObjeto
                 {
 //                    xd($info['tabela']);
                     //$montagem['from'] .= '(('.$on.') and ('.$campo.'.cod_propriedade='.$info['cod_propriedade'].'))';
-                    $montagem['field'] .=  $campo."_ref.".$this->page->db->tabelas["objeto"]["colunas"][$info['campo_ref']];
+                    $montagem['field'] .=  $campo."_ref.".$this->page->db->tabelas["objeto"]["colunas"][$info['campo_ref']]." AS ".$campo."_ref2";
                     $montagem['delimitador']="'";
                 }
+                // x($montagem);
             }
             else
             {
