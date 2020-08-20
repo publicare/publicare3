@@ -460,7 +460,7 @@ class AdminObjeto
                             $result[$array_nomes[$key]]['valor'] = ConverteData($dados[$array_nomes[$key]],5);
                             break;
                         default:
-                            $result[$array_nomes[$key]]['valor'] = $dados[$array_nomes[$key]];
+                            $result[$array_nomes[$key]]['valor'] = isset($dados[$array_nomes[$key]])?$dados[$array_nomes[$key]]:"";
                     }
                 }
             }
@@ -838,21 +838,57 @@ class AdminObjeto
             foreach ($array_ordem as $item)
             {
                 if (!isset($item['orientacao'])) $item['orientacao'] = "ASC";
+                $string_temp = "";
                 
                 if (!$this->ehMetadado($item['campo']))
                 {
                     $info = $this->criarSQLPropriedade($item['campo'], $item['orientacao'], $cod_classe);
                     
                     $temp_campos[] = $info['field'];
+                    $temp_campos[] = $info['fieldordem'];
                     $temp_from[] = $info['from'];
                     $temp_where[] = $info['where'];
                     $campo_incluido[] = $info['field'];
                     
-                    if ($info["tabela"] == "tbl_objref") $item['campo'] .= "_ref2";
+                    if ($info["tabela"] == "tbl_objref") $item['campo'] .= "_ref___2";
+                    else $item['campo'] .= "___2";
+
+                    $string_temp = $item['campo'].' '.$item['orientacao'];
                 }
+                else
+                {
+                    if ($item['campo']=="classe")
+                    {
+                        $string_temp = $this->page->db->tabelas["classe"]["nick"].'.'.$this->page->db->tabelas["classe"]["colunas"]["nome"];
+                    }
+                    elseif ($item['campo']=="pele")
+                    {
+                        $string_temp = $this->page->db->tabelas["pele"]["nick"].'.'.$this->page->db->tabelas["pele"]["colunas"]["nome"];
+                    }
+                    elseif ($item['campo']=="prefixopele")
+                    {
+                        $string_temp = $this->page->db->tabelas["pele"]["nick"].'.'.$this->page->db->tabelas["pele"]["colunas"]["prefixo"];
+                    }
+                    elseif ($item['campo']=="status")
+                    {
+                        $string_temp = $this->page->db->tabelas["status"]["nick"].'.'.$this->page->db->tabelas["status"]["colunas"]["nome"];
+                    }
+                    else
+                    {
+                        $string_temp = $item['campo'];
+                    }
+                    if (isset($item['orientacao'])) $string_temp .= " ".$item['orientacao'];
+                    
+                }
+                if ($string_temp != "" && !in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[] = $string_temp;
+
+                //xd($this->page->db->tabelas);
+                /*
                 
-                $string_temp = $item['campo'].' '.$item['orientacao'];
-                if (!in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[] = $item['campo'] . ' ' . $item['orientacao'];
+            $result['ordem'][]= $temp_array;
+                */
+                
+                
             }
 
             //Constroi SQL para casos em que existem propriedades na condicao
@@ -874,7 +910,7 @@ class AdminObjeto
                     else
                     {
                         $info = $this->criarSQLPropriedade($condicao[0],"", $cod_classe);
-                        $temp_campos[]=$info['field'];
+                        $temp_campos[]=$info['fieldordem'];
                         $temp_from[]=$info['from'];
                         $temp_where[]=$info['where'];
                         $campo_incluido[]=$info['field'];
@@ -1342,6 +1378,7 @@ class AdminObjeto
             $on = " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$campo.".".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"]." ";
             $montagem['type'] = $info['nome'];
             $montagem['field'] = "";
+            $montagem['fieldordem'] = "";
             if ($info['tabela']=='tbl_objref')
             {
                 $montagem['from'] .= ' (('.$on.') AND ('.$campo.'.'.$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"].' = '.$info['cod_propriedade'].')) ';
@@ -1352,7 +1389,8 @@ class AdminObjeto
                     $propriedade = $this->pegarInfoPropriedade($info['cod_referencia_classe'], $info['campo_ref']);
                     //$montagem['from'] .= '(('.$on.') and ('.$campo."_property.cod_propriedade=".$propriedade['cod_propriedade'].'))';
                     $montagem['from'] .= " LEFT JOIN ".$propriedade['tabela']." as ".$campo."_campo_ref on ".$campo.'_ref.cod_objeto='.$campo.'_property.cod_objeto';
-                    $montagem['field'] .= $campo."_property.valor AS ".$campo."_property";
+                    $montagem['field'] .= $campo."_property.valor";
+                    $montagem['fieldordem'] .= $campo."_property.valor AS ".$campo."_property___2";
                     $montagem['delimitador']=$propriedade['delimitador'];
                     //$montagem['where'] .= $campo."_property.cod_propriedade=".$propriedade['cod_propriedade'];
                 }
@@ -1360,7 +1398,8 @@ class AdminObjeto
                 {
 //                    xd($info['tabela']);
                     //$montagem['from'] .= '(('.$on.') and ('.$campo.'.cod_propriedade='.$info['cod_propriedade'].'))';
-                    $montagem['field'] .=  $campo."_ref.".$this->page->db->tabelas["objeto"]["colunas"][$info['campo_ref']]." AS ".$campo."_ref2";
+                    $montagem['field'] .=  $campo."_ref.".$this->page->db->tabelas["objeto"]["colunas"][$info['campo_ref']];
+                    $montagem['fieldordem'] .=  $campo."_ref.".$this->page->db->tabelas["objeto"]["colunas"][$info['campo_ref']]." AS ".$campo."_ref___2";
                     $montagem['delimitador']="'";
                 }
                 // x($montagem);
@@ -1370,6 +1409,7 @@ class AdminObjeto
                 $montagem['from'] .= $on;
                 $montagem['where'] = $campo.".".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"]." = ".$info['cod_propriedade'];
                 $montagem['field'] .= $campo.".".$this->page->db->tabelas[$info['tabela']]["colunas"]["valor"];
+                $montagem['fieldordem'] .= $campo.".".$this->page->db->tabelas[$info['tabela']]["colunas"]["valor"]." AS ".$campo."___2";
                 $montagem['delimitador']="'";
             }
         }
