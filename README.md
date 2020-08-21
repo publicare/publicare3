@@ -98,6 +98,9 @@ Macros disponíveis são:
 ### ROOT
 %ROOT - Retorna o código do objeto root do portal
 
+### CONFIG
+%CONFIG - Retorna array de configuração do portal
+
 ### INDICE
 %INDICE - Retorna o índice do objeto da iteração. Utilizado dentro de laços do comando **localizar**, **filhos** ou outros comandos que funcionem como laço.
 
