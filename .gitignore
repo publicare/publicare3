@@ -1,2 +1,4 @@
-nbproject
-vendor
+/nbproject/
+/.vscode/
+/vendor/
+/composer.lock
