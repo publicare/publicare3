@@ -126,15 +126,20 @@ class Usuario
 		
 	function estaLogado($nivelInferior=NULL)
 	{
+        // x("usuario::estalogado - nivelInferior=".$nivelInferior);
+        // x($_SESSION['usuario']);
 		//echo ">>>".$_SESSION['usuario']['perfil'];
-            if ($nivelInferior && isset($_SESSION['usuario']['perfil'])) {
-                if ($_SESSION['usuario']['perfil'] > $nivelInferior)
-                    return null;
-                else 
-                    return is_array($_SESSION['usuario']);
-            }
+        if ($nivelInferior && isset($_SESSION['usuario']['perfil']))
+        {
+            if ($_SESSION['usuario']['perfil'] > $nivelInferior)
+                return null;
             else 
-                return (isset($_SESSION['usuario']) && is_array($_SESSION['usuario']));
+                return is_array($_SESSION['usuario']);
+        }
+        else 
+        {
+            return (isset($_SESSION['usuario']["cod_usuario"]));
+        }
 	}
 
 	function estaLogadoMilitarizado()
@@ -445,10 +450,11 @@ class Usuario
             if ($cod_objeto==0) $cod_objeto = $this->page->objeto->valor('cod_objeto');
             $caminho[] = $cod_objeto;
             $objeto = new Objeto($this->page, $cod_objeto);
-            $caminho = array_merge($caminho, array_reverse($objeto->CaminhoObjeto));
+            $caminho = array_merge($caminho, array_reverse($objeto->caminhoObjeto));
             
             foreach ($caminho as $cod_obj)
             {
+                $cod_obj = (int)$cod_obj;;
                 if (isset($_SESSION['usuario']['direitos'][$cod_obj]))
                 {
                     $this->cod_perfil = $_SESSION['usuario']['direitos'][$cod_obj];
@@ -462,9 +468,8 @@ class Usuario
 		
 	function podeExecutar($script)
 	{
-//            return true;
             if (!isset($this->cod_perfil)) $this->cod_perfil = _PERFIL_DEFAULT;
-//            xd($this->cod_perfil);
+
             //Administrador Pode Tudo
             if ($this->cod_perfil == _PERFIL_ADMINISTRADOR)
             {

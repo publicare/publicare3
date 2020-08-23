@@ -27,8 +27,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-// AJUSTES
-global $page, $cod;
+namespace Pbl;
+global $page;
+// xd($page);
 
 // força o código do status para despublicado
 $_POST['cod_status'] = 1;
@@ -52,8 +53,10 @@ elseif (isset($_POST["gravarepublicar"]))
     $publicar = 2;
 }
 
+
 $obj = $page->administracao->gravarObjeto($_POST, $acaoobj, $publicar, $cod);
 $local .= $obj["obj"]->valor("url");
+// xd("parou");
 
 if (isset($_POST["gravaroutro"]))
 {

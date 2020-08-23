@@ -27,6 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
 
 global $page;
 
@@ -99,7 +100,7 @@ else
         // cria
         elseif ($_POST['new'])
         {
-            $cod_pele = $page->administracao->CriaPele($nome, $prefixo, $publica);
+            $cod_pele = $page->administracao->criarPele($nome, $prefixo, $publica);
         }
     }
     else

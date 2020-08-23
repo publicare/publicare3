@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+namespace Pbl;
 global $page;
 //
 //$sql = "select count(cod_objeto) as total from objeto where apagado=1";

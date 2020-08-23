@@ -27,8 +27,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
-global $page, $cod_objeto;
+namespace Pbl;
+
+global $page;
+
+$cod_objeto = $page->objeto->valor("cod_objeto");
 //
 //$total = $page->administracao->PegaTotalDeVencidos($page, $cod_objeto);
 //$inicio = !isset($inicio)?0:$inicio;
@@ -111,7 +114,7 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
 { 
 ?>
-                            <a href="do/list_content/<?php echo($page->objeto->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="do/vencidos/<?php echo($page->objeto->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>

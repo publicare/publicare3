@@ -17,7 +17,7 @@ $vnome = preg_split("[\.]", $fonte);
 
 if ($fonte != "")
 {
-    $fon = new Includes(array($fonte), "font", $vnome[count($vnome)-1]);
+    $fon = new Pbl\Includes(array($fonte), "font", $vnome[count($vnome)-1]);
     $fon->imprimeResultado();
 }
 

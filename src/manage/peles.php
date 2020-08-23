@@ -27,7 +27,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
+namespace Pbl;
+
 global $page;
 
 $cod_pele = isset($_REQUEST['cod_pele']) ? (int)htmlspecialchars($_REQUEST['cod_pele'], ENT_QUOTES, "UTF-8") : 0;

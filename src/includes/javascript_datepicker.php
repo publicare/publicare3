@@ -12,6 +12,6 @@
  * de ADEQUAÇÃO a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU para maiores detalhes.
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este programa, se não, veja <http://www.gnu.org/licenses/>.
 */
-$js = new Includes(array("moment-with-locales.min.js", "bootstrap-datetimepicker.min.js", "datepicker_custom.js"), "js");
+$js = new Pbl\Includes(array("moment-with-locales.min.js", "bootstrap-datetimepicker.min.js", "datepicker_custom.js"), "js");
 $js->imprimeResultado();
 exit();

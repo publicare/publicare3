@@ -27,6 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
     include_once ("iniciar.php");
     $page->objManage->ObjectCopy($page->obj->cod_object);
     //header ("Location:"._URL."/index.php?action=/content/view&cod_object=".$cod_object);

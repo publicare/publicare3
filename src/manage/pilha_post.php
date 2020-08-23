@@ -27,8 +27,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
 
-global $page, $cod_objeto;
+global $page;
+
+$cod_objeto = $page->objeto->valor("cod_objeto");
 
 if (isset($_POST['copy'])) $page->administracao->copiarObjeto($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
 elseif (isset($_POST['pastelink'])) $page->administracao->colarComoLink($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));

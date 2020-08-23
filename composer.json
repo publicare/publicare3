@@ -1,5 +1,5 @@
 {
-    "name": "publicare/publicare3",
+    "name": "dcorazolla/pbl3-psr4",
     "description": "CMS Público Brasileiro",
     "type": "library",
     "keywords": ["cms", "publico", "brasileiro"],
@@ -13,15 +13,6 @@
         {
             "name": "Manuel Poppe",
             "email": "manuelpoppe@gmail.com"
-        },
-        {
-            "name": "Daniel Paraski"
-        },
-        {
-            "name": "Danilo Lisboa"
-        },
-        {
-            "name": "Marcos Rodrigo Ribeiro"
         },
         {
             "name": "Thiago Borges",

@@ -216,7 +216,7 @@ class Administracao
      */
     function carregarClasses()
     {
-        if (count($_SESSION['classesPrefixos']) == 0) $this->page->adminobjeto->carregarClasses();
+        $this->page->adminobjeto->carregarClasses();
         
         if (is_null($this->classesPrefixos) || !is_array($this->classesPrefixos))
         {
@@ -234,8 +234,9 @@ class Administracao
      */
     function codigoClasse($prefixo)
     {
-        $this->carregarClasses();
-        return $this->classesPrefixos[$prefixo];
+        $this->page->adminobjeto->carregarClasses();
+        // xd($prefixo);
+        return $_SESSION["classesPrefixos"][$prefixo];
     }
 
     /**
@@ -377,7 +378,21 @@ class Administracao
      */
     function pegarPropriedadesClasse($cod_classe)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." AS cod_tipodado, "
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("administracao::pegarPropriedadesClasse cod_classe=".$cod_classe);
+        }
+
+        $propriedades = array();
+        if (isset($_SESSION["classes"][$cod_classe]["propriedades"])
+            && is_array($_SESSION["classes"][$cod_classe]["propriedades"])
+            && count($_SESSION["classes"][$cod_classe]["propriedades"]))
+        {
+            $propriedades = $_SESSION["classes"][$cod_classe]["propriedades"];
+        }
+        else
+        {
+            $sql = "SELECT ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." AS cod_tipodado, "
                 . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
                 . " ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["nome"]." AS tipodado, "
                 . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref, "
@@ -397,9 +412,11 @@ class Administracao
                 . " ON ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
                 . " WHERE ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$cod_classe." "
                 . " ORDER BY ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["posicao"];
-        $rs = $this->page->db->ExecSQL($sql);
-        
-        return $rs->GetRows(); 
+            $rs = $this->page->db->ExecSQL($sql);
+            $propriedades = $rs->GetRows();
+            $_SESSION["classes"][$cod_classe]["propriedades"] = $propriedades;
+        }
+        return $propriedades;
     }
 
     /**
@@ -912,19 +929,22 @@ class Administracao
         $obj = new Objeto($this->page, $cod_objeto);
         $obj->pegarListaPropriedades();
         $classe = $this->pegarInfoDaClasse($obj->valor("cod_classe"));
-        unset($classe["todas"]);
-        unset($classe["obj_conta"]);
-        unset($classe["objetos"]);
-        unset($obj->page);
-        unset($obj->ponteiro);
-        unset($obj->quantidade);
-//        unset($obj->ArrayMetadados);
+        $versao = $obj->valor("versao");
+        if (isset($classe["todas"])) unset($classe["todas"]);
+        if (isset($classe["obj_conta"])) unset($classe["obj_conta"]);
+        if (isset($classe["objetos"])) unset($classe["objetos"]);
+        if (isset($obj->page)) unset($obj->page);
+        if (isset($obj->ponteiro)) unset($obj->ponteiro);
+        if (isset($obj->quantidade)) unset($obj->quantidade);
+        //        unset($obj->ArrayMetadados);
         $obj->classe = $classe;
         $arr_obj = json_encode($obj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT);
         $ip = $this->pegarIp();
         
         $sql = "";
         $bind = array();
+
+        
         
         if ($this->page->db->config["bd"]["tipo"] == "oracle11")
         {
@@ -943,7 +963,7 @@ class Administracao
                 . " :cod_usuario, "
                 . " :ip )";
             $bind = array("cod_objeto" => $cod_objeto,
-                "versao" => $obj->valor("versao"),
+                "versao" => $versao,
                 "conteudo" => $arr_obj, 
                 "data" => date("Y-m-d H:i:s"),
                 "cod_usuario" => $_SESSION["usuario"]["cod_usuario"],
@@ -966,7 +986,7 @@ class Administracao
                 . " ?, "
                 . " ? )";
             $bind = array(1 => $cod_objeto,
-                2 => $obj->valor("versao"),
+                2 => $versao,
                 3 => $arr_obj, 
                 4 => date("Y-m-d H:i:s"),
                 5 => $_SESSION["usuario"]["cod_usuario"],
@@ -975,8 +995,9 @@ class Administracao
         
         $sql = $this->page->db->getCon()->prepare($sql);
         $rs = $this->page->db->ExecSQL(array($sql, $bind));
+        // xd("aqui");
 
-        $this->page->log->RegistraLogWorkFlow("Criada versão ".$obj->valor("versao"), $cod_objeto, 1);
+        $this->page->log->RegistraLogWorkFlow("Criada versão ".$versao, $cod_objeto, 1);
     }
     
     function cacheFlush()
@@ -1937,7 +1958,7 @@ class Administracao
      * @param object $page - Referência de objeto da classe Pagina
      * @return array
      */
-    function pegarListaViews(&$page)
+    function pegarListaViews()
     {
         $retorno = array();
         
@@ -2199,10 +2220,15 @@ $str .= "*  <hr /> \r\n"
     {
         if (empty($cod_usuario)) return false;
         $perfil = $this->page->usuario->pegarDireitosUsuario($cod_usuario);
-        $caminho = explode(",", $this->page->adminobjeto->pegarCaminhoObjeto($cod_objeto));
+        $caminho = $this->page->adminobjeto->pegarCaminhoObjeto($cod_objeto);
+        $caminho2 = array();
+        foreach ($caminho as $cam)
+        {
+            $caminho2[] = $cam["cod_objeto"];
+        }
         foreach ($perfil as $objeto => $cod_perfil)
         {
-            if ((in_array($objeto, $caminho))) return $cod_perfil;
+            if ((in_array($objeto, $caminho2))) return $cod_perfil;
         }
         return false;
     }
@@ -2215,7 +2241,7 @@ $str .= "*  <hr /> \r\n"
      * @param int $limit - dados para paginação da busca
      * @return array - Lista de objetos apagados
      */
-    function pegarListaApagados($inicio, $start=-1, $limit=-1)
+    function pegarListaApagados($inicio=0, $start=-1, $limit=-1)
     {
         $out=array();
         $sql = "SELECT distinct ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
@@ -2224,12 +2250,16 @@ $str .= "*  <hr /> \r\n"
                 . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                 . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS classe "
                 . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-//                . " LEFT JOIN ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-//                . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
+               . " LEFT JOIN ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
+               . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
                 . " LEFT JOIN ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
                 . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 1 "
-                . " ORDER BY ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_exclusao"]." DESC";
+                . " WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 1 ";
+        if ($inicio > 0)
+        {
+            // $sql .= " AND ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$inicio." ";
+        }
+        $sql .= " ORDER BY ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_exclusao"]." DESC";
         
         $rs = $this->page->db->ExecSQL($sql, $start, $limit);
         $row = $rs->GetRows();
@@ -2388,8 +2418,7 @@ $str .= "*  <hr /> \r\n"
         
         $executa = false;
         $cod = 0;
-        
-//        xd($post);
+        //        xd($post);
         
         if ($acao=="create")
         {
@@ -2407,6 +2436,7 @@ $str .= "*  <hr /> \r\n"
             
             $obj = new Objeto($this->page, $cod);
             $this->gravarVersao($cod);
+            // xd("aha");
             $retorno["obj"] = $obj;
             
             if ($publicar==1)

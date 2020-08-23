@@ -27,8 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-global $page, $action;
+namespace Pbl;
 
 // Variaveis de definicao para estrutura de formulario
 // data atual
@@ -40,15 +39,16 @@ $dataValidade = date("d/m/Y", time() + (60*60*24*365*20));
 // lista de peles disponiveis
 $peles = $page->administracao->pegarListaPeles();
 // lista de views disponiveis
-$views = $page->administracao->pegarListaViews($page);
+$views = $page->administracao->pegarListaViews();
 $dadosPai = array();
 $edit = false;
 
+// xd($page->acao);
 // Pegando dados da classe conforme ação.. criação ou edição
 // Criação de objeto
-if (strpos($action,"edit") === false)
+if (strpos($page->acao,"edit") === false)
 {
-    $classname = substr($action,strpos($action,'_')+1);
+    $classname = substr($page->acao,strpos($page->acao,'_')+1);
 //    xd($action);
     $classe = $page->administracao->pegarInfoDaClasse($page->administracao->codigoClasse($classname));
     $titulo = "Criar";

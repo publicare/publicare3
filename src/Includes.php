@@ -47,6 +47,7 @@ class Includes
         $this->_tipo = $tipo;
         $this->_ext = $ext;
         $this->adicionarArquivos($scripts);
+        // xd($this->_arquivos);
     }
     
     public function adicionarArquivos($scripts = array())
@@ -56,11 +57,13 @@ class Includes
 //        xd( $PBLCONFIG["portal"]["pblpath"]);
         
         $this->_scripts = $scripts;
+        $pathorigem = __DIR__."/../assets/";
+        // xd(__DIR__);
         if (count($this->_scripts) > 0)
         {
             foreach ($this->_scripts as $script)
             {
-                $path = $PBLCONFIG["portal"]["pblpath"]."/includes/";
+                $path = $pathorigem;
                 if ($this->_tipo == "js") $path .= "javascript";
                 if ($this->_tipo == "css") $path .= "css";
                 if ($this->_tipo == "font") $path .= "fonts";

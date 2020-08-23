@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+namespace Pbl;
 global $page;
 
 $cod_classe = isset($_POST['cod_classe'])?(int)htmlspecialchars($_POST["cod_classe"], ENT_QUOTES, "UTF-8"):0;
@@ -49,7 +49,7 @@ if (isset($_POST['apagar_classe']) && $_POST['apagar_classe'] == "1" && $cod_cla
     $cod_classe = 0;
 }
 // criar / editar classe
-elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
+elseif (isset($_POST['btn_gravar']) && $_POST['btn_gravar']=="Gravar")
 {
     $numeroprops = isset($_POST["numeroPropriedades"])?(int)htmlspecialchars($_POST["numeroPropriedades"], ENT_QUOTES, "UTF-8"):0;
     
@@ -182,10 +182,10 @@ elseif ($_POST['btn_gravar'] && $_POST['btn_gravar']=="Gravar")
 // limpa cache
 $page->administracao->cacheFlush();
 
-$_SESSION['classesPrefixos'] = array();
-$_SESSION['classesNomes'] = array();
-$_SESSION['classes'] = array();
-$_SESSION['classesIndexaveis'] = array();
+if (isset($_SESSION['classesPrefixos'])) unset($_SESSION['classesPrefixos']);
+if (isset($_SESSION['classesNomes'])) unset($_SESSION['classesNomes']);
+if (isset($_SESSION['classes'])) unset($_SESSION['classes']);
+if (isset($_SESSION['classesIndexaveis'])) unset($_SESSION['classesIndexaveis']);
 
 $header = "Location:" . $page->config["portal"]["url"] . "/do/classes/" . $page->objeto->valor("cod_objeto") . ".html";
 header($header);

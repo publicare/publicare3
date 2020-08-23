@@ -27,6 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
 	include_once ("iniciar.php");
 	$page->objManage->Undelete($objlist);
 	header("Location:".$page->config["portal"]["url"].$return_path);

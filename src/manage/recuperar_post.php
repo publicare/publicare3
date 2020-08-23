@@ -27,6 +27,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
+
 global $page;
 
 if (isset($_POST['objlist']) && is_array($_POST['objlist']) && count($_POST['objlist'])>0)

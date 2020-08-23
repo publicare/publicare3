@@ -27,6 +27,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
+
 	include_once ("iniciar.php");
 	$page->objManage->ObjectQuickPaste($page->obj->cod_object);
 	

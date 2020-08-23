@@ -42,9 +42,17 @@ class Parse
     public $macros;
     public $types;
     public $cmdArray;
+    public $page;
 	
-    function __construct()
+    function __construct(&$page)
     {
+        $this->page = $page;
+
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::construct");
+        // }
+
         if (!defined ("_PARSEINITIALIZED"))
         {
             define ("_PARSEINITIALIZED", 1);
@@ -55,7 +63,11 @@ class Parse
 
     function initialize()
     {
-		
+		// if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::initialize");
+        // }
+
         $this->InitCmd = '<?php'."\n"
                             .'global $page;'."\n"
                             .'$_PAGINATIONSTACK_=array();'."\n"
@@ -737,6 +749,11 @@ class Parse
 
 	function start($file,$type=0)
 	{
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("parse::start file: ".($type==0?$file:""));
+        }
+
 		$this->tags=array();
 		$buffer = "";
 //                
@@ -812,6 +829,11 @@ exit;*/
 
 	function checkTags()
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::checkTags");
+        // }
+
 		if ($this->debug)
 		{
 			echo '<hr><bR>Tags<BR>';
@@ -831,6 +853,11 @@ exit;*/
 
 	function error($msg,$showhelp=true)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::error");
+        // }
+
 		echo "<B>Publicare Script Debuger</b><br>";
 
 		echo "<em>Erro na linha ".$this->key.":</em><br><font color=blue>".htmlspecialchars($this->line).'</font><br>'.$msg.'<br>';
@@ -841,6 +868,11 @@ exit;*/
 
 	function parseCommand($cmd,$buffer)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::parseCommand cmd=".$cmd." buffer=".$buffer);
+        // }
+
 		if ($this->debug)
 		{
 			echo "Comando: $cmd<br>Buffer: $buffer<br>";
@@ -934,6 +966,11 @@ exit;*/
 
 	function parseParams($buffer)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::parseParams buffer=".$buffer);
+        // }
+
 		$buffer=trim ($buffer);
 		while (preg_match("|(.*?)\=\s*\[(.*?)\](.*)|is",$buffer,$item))
 		{
@@ -971,6 +1008,10 @@ exit;*/
 
 	function addDefaultParams($array)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::addDefaultParams");
+        // }
 		//echo 'Default<BR>';
 		//var_dump($array);
 		//echo '<p>';
@@ -1004,6 +1045,11 @@ exit;*/
 
 	function parseValue($pos,$value)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::parseValue pos=".$pos." value=".$value);
+        // }
+
 		$value=trim($value);
 		$check=$this->command['itens'];
 		if ($check=='')
@@ -1021,6 +1067,10 @@ exit;*/
 
 	function evaluate($expression,$type=false)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::evaluate expression=".$expression);
+        // }
 		$exp=$expression;
 		$pout='/(.*?)(\'|")(.*)/is';
 		$out = "";
@@ -1097,6 +1147,11 @@ exit;*/
 
 	function parseObjectData($data)
 	{
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("parse::parseObjectData");
+        // }
+
 		$array = explode("#",$data);
 		//echo "ARRAY DE DADOS: <BR>";
 		//var_dump($array);

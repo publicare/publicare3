@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 
-
+namespace Pbl;
 global $page;
 
 	$page->administracao->submeterObjeto($_POST['message'], $page->objeto->valor('cod_objeto'));

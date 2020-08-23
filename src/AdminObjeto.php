@@ -40,6 +40,12 @@ class AdminObjeto
     
     function __construct(&$page) {
         $this->page = $page;
+
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::construct");
+        }
+
     }
 	
     /**
@@ -48,6 +54,11 @@ class AdminObjeto
      */
     function criarCondicaoPublicado()
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarCondicaoPublicado");
+        }
+
         return " AND ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_status"]." = "._STATUS_PUBLICADO;
     }
 
@@ -58,6 +69,11 @@ class AdminObjeto
      */
     function criarCondicaoAutor()
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarCondicaoAutor");
+        }
+
         return " AND ((".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_status"]." = "._STATUS_PUBLICADO.$this->criarCondicaoData($page).") "
                 . " OR ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'].') ';
     }
@@ -68,6 +84,10 @@ class AdminObjeto
      */
     function criarCondicaoData()
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarCondicaoData");
+        }
         return " AND (".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_publicacao"]." <= ".date("YmdH")."0000 "
                 . " AND ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_validade"]." >= ".date("YmdH")."5959) ";
     }
@@ -83,6 +103,10 @@ class AdminObjeto
      */
     function search($query, $excecoes="", $parentesco_excecoes="", $pagina=1, $paginacao=20, $classe=0)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::search");
+        }
         $retorno = array("total"=>0,
                         "paginas"=>0,
                         "pagina"=>$pagina,
@@ -176,6 +200,10 @@ class AdminObjeto
      */
     function pegarTags($cod_objeto)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarTags cod_objeto=".$cod_objeto);
+        }
         $tags = "";
         $sql = "SELECT ".$this->page->db->tabelas["tag"]["nick"].".".$this->page->db->tabelas["tag"]["colunas"]["nome_tag"]." AS nome_tag "
                 . "FROM ".$this->page->db->tabelas["tag"]["nome"]." ".$this->page->db->tabelas["tag"]["nick"]." "
@@ -204,6 +232,11 @@ class AdminObjeto
      */
     function pegarDadosObjetoTitulo($titulo)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarDadosObjetoTitulo titulo=".$titulo);
+        }
+
         $sql = $this->page->db->sqlobj." WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." = '".$titulo."' ";
         $rs = $this->page->db->ExecSQL($sql);
         $dados = $rs->fields;
@@ -217,6 +250,11 @@ class AdminObjeto
      */
     function pegarDadosObjetoId($cod_objeto)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarDadosObjetoId cod_objeto=".$cod_objeto);
+        }
+
         if (is_numeric($cod_objeto))
         {
             $sql = $this->page->db->sqlobj." WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
@@ -234,6 +272,11 @@ class AdminObjeto
      */
     function criarObjeto($cod_objeto)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarObjeto cod_objeto=".$cod_objeto);
+        }
+        
         $objeto = new Objeto($this->page, $cod_objeto);
         return $objeto;
     }
@@ -245,39 +288,57 @@ class AdminObjeto
      */
     function pegarCaminhoObjeto($cod_objeto)
     {
-        $result='';
-        $result = $this->recursivaCaminhoObjeto($cod_objeto);
-        return $result;
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarCaminhoObjeto cod_objeto=".$cod_objeto);
+        }
+        
+        return $this->recursivaCaminhoObjeto($cod_objeto);
     }
 
     /**
      * Busca o caminho do objeto recursivamente, utilizando tabela parentesco
      * @param int $cod_objeto - Codigo do objeto
-     * @return string - Caminho do objeto
+     * @return array - Caminho do objeto
      */
     function recursivaCaminhoObjeto($cod_objeto)
     {
-        $result = array();
-        $sql = "SELECT ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai "
-                ." FROM ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-                ." WHERE ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " ORDER BY ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["ordem"]." DESC";
-        $rs = $this->page->db->ExecSQL($sql);
-
-        if ($rs->_numOfRows>0)
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
         {
-            while (!$rs->EOF)
-            {
-                $result[] = $rs->fields['cod_pai'];
-                $rs->MoveNext();
-            }
-            return implode (',',$result);
-        } 
-        else 
-        {
-//            xd($this->page);
-            return $this->page->config["portal"]["objroot"];
+            x("adminobjeto::recursivaCaminhoObjeto cod_objeto=".$cod_objeto);
         }
+        
+        $result = array();
+
+        if ($cod_objeto != $this->page->config["portal"]["objroot"])
+        {
+            $sql = "SELECT ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai, "
+                    ." ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
+                    ." ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["script_exibir"]." AS script_exibir, "
+                    ." ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel "
+                    ." FROM ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
+                    ." LEFT JOIN ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
+                        ." ON ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
+                    ." WHERE ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                    . " ORDER BY ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["ordem"]." DESC";
+            $rs = $this->page->db->ExecSQL($sql);
+    
+            if ($rs->_numOfRows>0)
+            {
+                while (!$rs->EOF)
+                {
+                    $result[$rs->fields['cod_pai']] = array(
+                        "cod_objeto" => $rs->fields['cod_pai'],
+                        "titulo" => $rs->fields['titulo'],
+                        "script_exibir" => $rs->fields['script_exibir'],
+                        "url_amigavel" => $rs->fields['url_amigavel']
+                    );
+                    $rs->MoveNext();
+                }
+                // xd($result);
+            } 
+        }
+        return $result;
     }
 
     /**
@@ -287,6 +348,11 @@ class AdminObjeto
      */
     function pegarCaminhoObjetoComTitulo($cod_objeto)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarCaminhoObjetoComTitulo cod_objeto=".$cod_objeto);
+        }
+
         $result = array();
         
         
@@ -314,6 +380,28 @@ class AdminObjeto
         return $result;
     }
 
+    function pegarPropriedadesClasseObjeto($cod_objeto)
+    {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarPropriedades cod_objeto=".$cod_objeto);
+        }
+
+        if ($cod_objeto == $this->page->objeto->valor("cod_objeto"))
+        {
+            return $this->page->administracao->pegarPropriedadesClasse($this->page->objeto->valor("cod_classe"));
+        }
+        else
+        {
+            $sql = "SELECT ".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." AS cod_classe "
+                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
+                . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+            $rs = $this->page->db->ExecSQL($sql);
+            $row = $rs->GetRows();
+            return $this->page->administracao->pegarPropriedadesClasse($row[0]["cod_classe"]);
+        }
+    }
+
     /**
      * Busca todas as propriedades de determinado objeto
      * @param int $cod_objeto - Codigo do objeto
@@ -321,24 +409,14 @@ class AdminObjeto
      */
     function pegarPropriedades($cod_objeto)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarPropriedades cod_objeto=".$cod_objeto);
+        }
+
         $result = array();
-        
-        // Busca lista de propriedades da classe
-        $sql = "SELECT ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." AS cod_tipodado, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["nome"]." AS nome, "
-                . " ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela, "
-                . " ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["nome"]." AS tipodado, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["propriedade"]["nome"]." ".$this->page->db->tabelas["propriedade"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["tipodado"]["nome"]." ".$this->page->db->tabelas["tipodado"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " ORDER BY ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["posicao"];
-        $rs = $this->page->db->ExecSQL($sql);
+
+        $props = $this->pegarPropriedadesClasseObjeto($cod_objeto);
         
         $join = array();
         $campos = array();
@@ -346,7 +424,7 @@ class AdminObjeto
 
         // popula array de propriedades e busca informações
         // caso seja objeto-ref e a referencia não seja metadado
-        $props = $rs->GetRows();
+        // $props = $rs->GetRows();
 //        while ($row = $rs->FetchRow())
 //        {
 //            if ($row["tabela"] == "tbl_objref" && !$this->ehMetadado($row["campo_ref"]))
@@ -481,6 +559,10 @@ class AdminObjeto
      */
     function pegarListaFilhos($cod_objeto, $classe='*', $ordem='', $inicio=-1, $limite=-1)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarListaFilhos cod_objeto=".$cod_objeto);
+        }
             return $this->localizarObjetos($classe, '', $ordem, $inicio, $limite, $cod_objeto, 0);
     }
 
@@ -491,6 +573,11 @@ class AdminObjeto
      */
     function pegarListaFilhosCod($cod_objeto)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarListaFilhosCod cod_objeto=".$cod_objeto);
+        }
+
         $sql = "SELECT cod_objeto "
                 . "FROM parentesco "
                 . "WHERE cod_pai = ".$cod_objeto." "
@@ -510,6 +597,11 @@ class AdminObjeto
      */
     function criarInfoTeste($str)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarInfoTeste");
+        }
+
         $result = array();
         if ($str == '') return $result;
         
@@ -572,6 +664,10 @@ class AdminObjeto
      */
     function ehMetadado($teste)
     {
+        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // {
+        //     x("adminobjeto::ehMetadado teste=".$teste);
+        // }
 //        xd($this->page->db->metadados);
         if (strpos($teste, '.'))
         {
@@ -600,6 +696,12 @@ class AdminObjeto
      */
     function localizarObjetos($classe, $qry, $ordem='', $inicio=-1, $limite=-1, $pai=-1, $niveis=-1, $apagados=false, $likeas='', $likenocase='', $tags='')
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::localizarObjetos classe=".$classe);
+        }
+        // x("adminobjeto::localizarObjetos classe=".$classe);
+
         if (!isset($classe) || $classe==null || $classe=='') return false;
 		
         $array_qry = $this->criarInfoTeste($qry);
@@ -609,14 +711,14 @@ class AdminObjeto
         $tags_where = "";
         $tags_temp = "";
         $apagado_where = "";
-
+        
         if ($tags != "")
         {
             $array_tags = preg_split("[,]", $tags);
             $tags_join .= " INNER JOIN ".$this->page->db->tabelas['tagxobjeto']["nome"]." ".$this->page->db->tabelas['tagxobjeto']['nick']." "
-                    . " ON ".$this->page->db->tabelas['objeto']["nick"].".".$this->page->db->tabelas['objeto']["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas['tagxobjeto']["nick"].".".$this->page->db->tabelas['tagxobjeto']["colunas"]["cod_objeto"]." "
-                    . " INNER JOIN ".$this->page->db->tabelas['tag']["nome"]." ".$this->page->db->tabelas['tag']["nick"]." "
-                        . " ON ".$this->page->db->tabelas['tagxobjeto']['nick'].".".$this->page->db->tabelas['tagxobjeto']['colunas']["cod_tag"]." = ".$this->page->db->tabelas['tag']["nick"].".".$this->page->db->tabelas['tag']['colunas']["cod_tag"]." ";
+            . " ON ".$this->page->db->tabelas['objeto']["nick"].".".$this->page->db->tabelas['objeto']["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas['tagxobjeto']["nick"].".".$this->page->db->tabelas['tagxobjeto']["colunas"]["cod_objeto"]." "
+            . " INNER JOIN ".$this->page->db->tabelas['tag']["nome"]." ".$this->page->db->tabelas['tag']["nick"]." "
+            . " ON ".$this->page->db->tabelas['tagxobjeto']['nick'].".".$this->page->db->tabelas['tagxobjeto']['colunas']["cod_tag"]." = ".$this->page->db->tabelas['tag']["nick"].".".$this->page->db->tabelas['tag']['colunas']["cod_tag"]." ";
             $tags_where .= " AND ( ";
             foreach ($array_tags as $tag)
             {
@@ -625,19 +727,19 @@ class AdminObjeto
             $tags_where .= substr($tags_temp, 3);
             $tags_where .= ") ";
         }
-	
+        
         // Deve buscar objetos apagados?
         if (!$apagados) $apagado_where = " AND (".$this->page->db->tabelas['objeto']["nick"].".".$this->page->db->tabelas['objeto']["colunas"]["apagado"]." <> 1) ";
-
+        
         $cod_classe_array = array();
-
+        
         // Se ordem não tiver sido informada, ordena por peso
         if ($ordem=='') $ordem = array('peso');
         else
         {
             if (!is_array($ordem)) $ordem = explode (",", $ordem);
         }
-
+        
         if(!$likeas=='')
         {
             $like_as = " AND ".$this->page->db->tabelas['objeto']["nick"].".".$this->page->db->tabelas['objeto']["colunas"]["titulo"]." LIKE '".$likeas."' ";
@@ -665,7 +767,7 @@ class AdminObjeto
             else $array_ordem[$key]['campo'] = $item;
             if (!$this->ehMetadado($array_ordem[$key]['campo'])) $tem_propriedade_na_ordem = true;
         }
-
+        
         
         // Verifica se tem propriedade na query
         $tem_propriedade_na_qry = false;
@@ -694,7 +796,10 @@ class AdminObjeto
             if (!is_array($classe)) $classe = explode (",",strtolower($classe));
             if (count($classe)>1) $multiclasse = true; // usa temp table
         }
+        // x("localizarOb0jetos 800");
+        // x($classe);
         $classes = $this->codigosClasses($classe);
+        // x($classes);
         
         if ($tem_propriedade_na_ordem || ($multiclasse && $tem_propriedade_na_qry))
         {
@@ -755,8 +860,16 @@ class AdminObjeto
      */
     function codigosClasses($classes)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::codigosClasses");
+        }
+
         $this->carregarClasses();
         $saida=array();
+
+        
+        // xd($_SESSION['classes']);
         if ($classes=='*')
         {
             return $_SESSION['classesNomes'];
@@ -765,10 +878,11 @@ class AdminObjeto
         {
             foreach ($classes as $nome)
             {
-                if (isset($_SESSION['classesNomes'][strtolower($nome)])) $saida[] = $_SESSION['classesNomes'][strtolower($nome)];
+                
+                if (isset($_SESSION['classesNomes'][strtolower(trim($nome))])) $saida[] = $_SESSION['classesNomes'][strtolower($nome)];
                 else
                 {
-                    if (isset($_SESSION['classesPrefixos'][strtolower($nome)])) $saida[] = $_SESSION['classesPrefixos'][strtolower($nome)];
+                    if (isset($_SESSION['classesPrefixos'][strtolower(trim($nome))])) $saida[] = $_SESSION['classesPrefixos'][strtolower($nome)];
                 }
             }
         }
@@ -780,8 +894,18 @@ class AdminObjeto
      */
     function carregarClasses()
     {
-        if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0 || ($this->page->usuario->estaLogado()))
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
         {
+            x("adminobjeto::carregarClasses");
+        }
+
+        if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0)
+        {
+            if (!isset($_SESSION['classes'])) $_SESSION['classes'] = array();
+            $_SESSION['classesPrefixos'] = array();
+            $_SESSION['classesNomes'] = array();
+            $_SESSION['classesIndexaveis'] = array();
+
             $sql = "SELECT ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
                     . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo, "
                     . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS nome, "
@@ -792,13 +916,15 @@ class AdminObjeto
                     . " ORDER BY ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"];
             $rs = $this->page->db->ExecSQL($sql);
 
-            if ($rs->_numOfRows > 0){
-                while ($row = $rs->FetchRow()){
+            if ($rs->_numOfRows > 0)
+            {
+                while ($row = $rs->FetchRow())
+                {
+                    $row["propriedades"] = isset($_SESSION['classes'][$row['cod_classe']]["propriedades"])?$_SESSION['classes'][$row['cod_classe']]["propriedades"]:array();
+                    $_SESSION['classes'][$row['cod_classe']] = $row;
+
                     $_SESSION['classesPrefixos'][$row['prefixo']] = $row['cod_classe'];
                     $_SESSION['classesNomes'][strtolower($row['nome'])] = $row['cod_classe'];
-                    $_SESSION['classes'][$row['cod_classe']] = $row;
-                    if (!isset($_SESSION['classesIndexaveis']) || !is_array($_SESSION['classesIndexaveis'])) $_SESSION['classesIndexaveis'] = array();
-
                     if ($row['indexar']) {
                         if (!in_array($row['cod_classe'], $_SESSION['classesIndexaveis'])) $_SESSION['classesIndexaveis'][] = $row['cod_classe'];
                     }
@@ -818,7 +944,10 @@ class AdminObjeto
      */
     function localizarObjetosTabelaTemporaria ($classes, $array_qry, $array_ordem, $default_where, $pai_join)
     {
-        
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::localizarObjetosTabelaTemporaria");
+        }
         // Variavel para controlar a criacao dos campos na tabela temporaria //
         $campo_incluido = array();
         $campo_incluido_natabela = array();
@@ -1072,6 +1201,10 @@ class AdminObjeto
      */
     function localizarObjetosTabela($classes, $array_qry, $array_ordem)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::localizarObjetosTabela");
+        }
         //x($this->page->db->tabelas["objeto"]["colunas"]);
         
         foreach ($array_ordem as $item)
@@ -1149,6 +1282,11 @@ class AdminObjeto
      */
     function criarSQLCondicao($array_qry, $cod_classe)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarSQLCondicao");
+        }
+
         $out = array("where"=>"", "from"=>"", "condicao"=>array());
         foreach ($array_qry as $condicao)
         {
@@ -1195,6 +1333,11 @@ class AdminObjeto
      */
     function localizarPendentes($cod_pai, $cod_usuario, $ord1, $ord2, $inicio=-1, $limite=-1)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::localizarPendentes");
+        }
+
         $sql_pendentes = "SELECT "
                 . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
                 . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo "
@@ -1245,6 +1388,11 @@ class AdminObjeto
      */
     function criarCondicaoUsuario()
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarCondicaoUsuario");
+        }
+
         $sql_condicao = "";
 //        xd($_SESSION['usuario']);
         switch ($_SESSION['usuario']['perfil'])
@@ -1285,6 +1433,11 @@ class AdminObjeto
      */
     function pegarParentescoCompleto($cod_objeto, $nivel, $excecoes=array(), $excecoes_classes=array(), $desc=false)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarParentescoCompleto");
+        }
+
         $rtnLista = array();
         $contador = 0;
         
@@ -1352,12 +1505,27 @@ class AdminObjeto
      */
     function pegarNomeClasse($cod_classe)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." as nome, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." as prefixo "
-                . " FROM ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
-                . " WHERE ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$cod_classe; 
-        $rs = $this->page->db->ExecSQL($sql);
-        return $rs->fields;
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarNomeClasse cod_classe=".$cod_classe);
+        }
+
+        $this->carregarClasses();
+        if (isset($_SESSION["classes"][$cod_classe]))
+        {
+            return array(
+                "nome" => $_SESSION["classes"][$cod_classe]["nome"],
+                "prefixo" => $_SESSION["classes"][$cod_classe]["prefixo"]
+            );
+        }
+
+        // $sql = "SELECT ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." as nome, "
+        //         . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." as prefixo "
+        //         . " FROM ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
+        //         . " WHERE ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$cod_classe; 
+        // $rs = $this->page->db->ExecSQL($sql);
+        // return $rs->fields;
+        return false;
     }
 
     /**
@@ -1369,7 +1537,11 @@ class AdminObjeto
      */
     function criarSQLPropriedade($campo, $direcao, $cod_classe)
     {
-        
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarSQLPropriedade campo=".$campo);
+        }
+
         $info = $this->pegarInfoPropriedade($cod_classe, $campo);
         $montagem = array();
 		
@@ -1431,6 +1603,11 @@ class AdminObjeto
      */
     function pegarInfoPropriedade($cod_classe, $prop)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarInfoPropriedade cod_classe=".$cod_classe." prop=".$prop);
+        }
+
         $tabelas = $this->page->db->tabelas;
 
         // Removendo parenteses para verificacao da propriedade
@@ -1484,6 +1661,11 @@ class AdminObjeto
      */
     function criarSQLParentesco($pai, $niveis, $campo="objeto.cod_pai")
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::criarSQLParentesco pai=".$pai." niveis=".$niveis);
+        }
+
         $return = "";
         if ($campo === "objeto.cod_pai")
         {
@@ -1536,6 +1718,10 @@ class AdminObjeto
      */
     function pegarNumFilhos($pai)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::pegarNumFilhos pai=".$pai);
+        }
         $sql = "SELECT COUNT(*) AS total "
                 . " FROM ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
                 . " LEFT JOIN ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
@@ -1554,6 +1740,11 @@ class AdminObjeto
      */
     function ehFilho($cod_objeto, $cod_pai)
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::ehFilho cod_objeto=".$cod_objeto." pai=".$pai);
+        }
+
         $sql = "SELECT ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
                 . " FROM ".$this->page->db->tabelas["parentesco"]["nome"]." "
                 . " WHERE ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_pai." "
@@ -1639,6 +1830,11 @@ class AdminObjeto
      */
     function executarScript($codClasse=0, $codPele=0, $codTexto="antes")
     {
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::executarScript");
+        }
+
         $cod_classe = (int)htmlspecialchars($codClasse, ENT_QUOTES, "UTF-8");
         $cod_pele = (int)htmlspecialchars($codPele, ENT_QUOTES, "UTF-8");
         
@@ -1676,29 +1872,23 @@ class AdminObjeto
      */
     function estaSobAreaProtegida($cod_objeto=-1)
     {
-        $this->page->incluirAdmin();
+        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        {
+            x("adminobjeto::estaSobAreaProtegida cod_objeto=".$cod_objeto);
+        }
+
         $protegido = false;
-        $caminho2 = $this->page->objeto->CaminhoObjeto;
+        $caminho2 = $this->page->objeto->caminhoObjeto;
         $objBlob = clone $this->page->objeto;
         $caminho = is_array($caminho2)?$caminho2:array();
-        
-//        xd($cod_objeto);
-        
+
         if ($cod_objeto != -1)
         {
-//            if ($caminho2 != "")
-//            {
-                $caminho = explode(",", $this->page->adminobjeto->recursivaCaminhoObjeto($cod_objeto));
-//            }
+            $caminho = $this->recursivaCaminhoObjeto($cod_objeto);
             $objBlob = new Objeto($this->page, $cod_objeto);
         }
-        else
-        {
-            $cod_objeto = $this->page->objeto->valor("cod_objeto");
-        }
-//        $caminho[] = $cod_objeto;
-
-
+        
+        
         // pegando permissao do usuario no objeto
         $permissao = false;
         if (isset($_SESSION['usuario']["cod_usuario"]))
@@ -1706,11 +1896,10 @@ class AdminObjeto
             $permissao = $this->page->administracao->pegarPerfilUsuarioObjeto($_SESSION['usuario']["cod_usuario"], $cod_objeto);
         }
         
-
         // verificando se o objeto está publicado
         if ($objBlob->valor("cod_status") != "2" && !$permissao)
         {
-           return false;
+            return false;
         }
         
         // verifica se o objeto é protegido
@@ -1720,22 +1909,18 @@ class AdminObjeto
         }
         else
         {
-            // verificando se tem objeto protegido no parentesco
-            
-//            xd($caminho);
-            if (count($caminho) > 0)
+            if ($cod_objeto != $this->page->config["portal"]["objroot"])
             {
-                $sql = "SELECT DISTINCT ".$this->page->db->tabelas["objeto"]["colunas"]["script_exibir"]." AS script_exibir "
-                        . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." IN (". implode(",", $caminho).") "
-                        . " AND ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." <> ".$cod_objeto;
-                $rs = $this->page->db->ExecSQL($sql);
-                while ($row = $rs->FetchRow())
+                if (count($caminho) > 0)
                 {
-                    if (preg_match("/_protegido.*/", $row["script_exibir"]))
+                    // verificando se tem objeto protegido no parentesco
+                    foreach ($caminho as $cam)
                     {
-                        $protegido = true;
-                        break;
+                        if (preg_match("/_protegido.*/", $cam["script_exibir"]))
+                        {
+                            $protegido = true;
+                            break;
+                        }
                     }
                 }
             }

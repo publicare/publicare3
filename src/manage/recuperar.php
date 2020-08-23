@@ -27,10 +27,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace Pbl;
 
 global $page;
 
-$inicio = 0;
+$inicio = $page->objeto->valor("cod_objeto");
 ?>
 
 <script type="text/javascript">
@@ -75,6 +76,14 @@ $(document).ready(function(){
 					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
 						<a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<?php 
+if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
+{ 
+?>
+                            <a href="do/recuperar/<?php echo($page->objeto->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+<?php
+}
+?>
 					</div>
 				</div>
 			</div>
