@@ -1,0 +1,38 @@
+{
+    "name": "dcorazolla/pbl3-psr4",
+    "description": "CMS Público Brasileiro",
+    "type": "library",
+    "keywords": ["cms", "publico", "brasileiro"],
+    "homepage": "https://publicare.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Diogo Corazolla",
+            "email": "diogocorazolla@gmail.com"
+        },
+        {
+            "name": "Manuel Poppe",
+            "email": "manuelpoppe@gmail.com"
+        },
+        {
+            "name": "Thiago Borges",
+            "email": "thiago.m2r@gmail.com"
+        }
+    ],
+    "require": {
+        "php" : ">=5.5",
+        "adodb/adodb-php": "^5.20",
+        "phpmailer/phpmailer": "~6.1",
+        "endroid/qr-code": "^3.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pbl\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PblTest\\": "test/"
+        }
+    }
+}
