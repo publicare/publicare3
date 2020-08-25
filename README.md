@@ -1,6 +1,6 @@
 O Publicare é um Sistema Gerenciador de Conteúdo livre e de código aberto, utilizado na criação e gerenciamento de conteúdos de sites dinâmicos. Ideal para websites e portais com grande volume de conteúdo, onde existem inúmeros departamentos envolvidos com a tarefa de administração de conteúdos na Internet.
 
-O conteúdo das páginas é inserido e editado através de um editor próprio e mostrado através de moldes (templates) pré definidos do site.  Assim, até mesmo o número de pessoas produzindo páginas para publicação direta pode ser grande, a consistência de estilo, e o mais importante, a consistência na estrutura do conteúdo estão garantidas.
+O conteúdo das páginas é inserido e editado através de um editor próprio e mostrado através de moldes (templates) pré definidos do site.  Assim, até mesmo o número de pessoas produzindo páginas para publicação direta pode ser grande, a consistência de estilo, e o mais importante, a consistência na estrutura do conteúdo estão garantidas..
 
 [O que é um sistema de gerenciamento de conteúdo](https://github.com/publicare/publicare3/wiki/O-que-%C3%A9-um-Sistema-de-Gerenciamento-de-Conte%C3%BAdo)  
 [Conceitos](https://github.com/publicare/publicare3/wiki/Conceitos)  
