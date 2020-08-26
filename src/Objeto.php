@@ -38,9 +38,8 @@ class Objeto
     public $caminhoObjeto = array();
     public $metadados;
     public $propriedades;
-    public $ArrayMetadados;
     
-    public $page;
+    private $page;
 
     /**
      * Método construtor da classe objeto
@@ -57,7 +56,6 @@ class Objeto
             x("objeto::construct cod_objeto=".$cod_objeto);
         }
         
-        $this->ArrayMetadados = $this->page->db->metadados;
         if ($cod_objeto!=-1)
         {
             if (is_numeric($cod_objeto))
