@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
+namespace Pbl\Core;
 global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
 ?>
 <!-- === Menu === -->

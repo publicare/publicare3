@@ -1,7 +1,8 @@
 <?php
 /**
  * Publicare - O CMS Público Brasileiro
- * @description Arquivo
+ * @file verifica_instalacao.php
+ * @description Verifica requisitos minimos para fucionamento
  * @copyright MIT © 2020
  * @package publicare
  *
@@ -26,10 +27,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
-namespace Pbl\Core;
-global $page;
+*/
 
-$page->administracao->apagarObjeto($page->objeto->valor("cod_objeto"));
-header("Location:".$page->config["portal"]["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");
-?>
+// PHP 5.5 minimo
+if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+    throw new Exception('O Publicare precisa do PHP na versão >= 5.5');
+}
+
+// Verificando extensões
+foreach (array('gd', 'mbstring', 'json', 'hash', 'session', 'dom', 'filter', 'SimpleXML', 'xml') as $ext) {
+    if (! extension_loaded($ext)) {
+        throw new Exception('É necessária a extensão PHP: "'.$ext.'"');
+    }
+}
+
+// Fix wrong value for arg_separator.output, used by the function http_build_query()
+if (ini_get('arg_separator.output') === '&amp;') {
+    ini_set('arg_separator.output', '&');
+}
+
+// Make sure we can read files with "\r", "\r\n" and "\n"
+if (ini_get('auto_detect_line_endings') != 1) {
+    ini_set("auto_detect_line_endings", 1);
+}

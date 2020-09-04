@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
+namespace Pbl\Core;
 	global $page;
 	
 	header("Content-Type: text/html; charset=ISO-8859-1",true);

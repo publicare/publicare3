@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
+namespace Pbl\Core;
 global $page;
 
 $cod_classe = isset($_POST['cod_classe'])?(int)htmlspecialchars($_POST["cod_classe"], ENT_QUOTES, "UTF-8"):0;

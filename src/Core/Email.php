@@ -1,7 +1,8 @@
 <?php
 /**
  * Publicare - O CMS Público Brasileiro
- * @description Arquivo
+ * @file Email.php
+ * @description Classe responsável por gerenciar envio de emails pela aplicaçao
  * @copyright MIT © 2020
  * @package publicare
  *
@@ -26,43 +27,57 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
+*/
+
 namespace Pbl\Core;
-global $page;
 
-	if ($_POST['submit'])
-	{ 	
-			if (($_POST['senha']==$_POST['confirma']) && ($_POST['senha']!=$_POST['login']))
-			{
-				if ($_POST['cod_usuario'])
-				{
-					$sql = "update usuario set nome='".$_POST['nome']."', email='".$_POST['email']."', secao='".$_POST['secao']."', altera_senha='".$_POST['altera_senha']."' , ramal='".$_POST['ramal']."'";
-					if ($_POST['senha']!=$_POST['nomehidden'])
-						$sql .= ",senha='".md5($_POST['senha'])."'";
-					$sql .= " where cod_usuario=".$_POST['cod_usuario'];
-					$page->db->ExecSQL($sql);
-				}
-			}
-			else
-			{
-				$Msg="Senha diferente da confirmação ou muito simples. Digite novamente.";
-			}
-		
-	}
+class Email
+{
 
-	$url = "Location:".$page->config["portal"]["url"]."/do/gerdadospessoais/".$page->objeto->valor('cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
-	if ($Msg)
-	{
-		$url .= "&Msg=".urlencode($Msg)."&nome=".urlencode($_POST['nome']).'&login='.urlencode($_POST['login']).'&email='.urlencode($_POST['senha']);
-		header($url);
-		exit();
-	}
-	else
-	{
-		$url = "Location:".$page->config["portal"]["url"]."/security/logout/1.html";
-		header($url);
-		exit();
-	}
-?>
-		
+	public $_remetente = "";
+	public $_destinatario = "";
+	public $_assunto = "";
+	public $_corpo = "";
+	public $_headers = "";
+        public $_anexos = array();
 	
+	function __construct($rem="", $des="", $ass="", $cor="")
+	{
+            $this->_remetente = $rem;
+            $this->_destinatario = $des;
+            $this->_assunto = $ass;
+            $this->_corpo = $cor;
+            
+            if (defined("_mailsmtp") && _mailsmtp === true)
+            {
+                
+            }
+            else
+            {
+                $this->montaHeaders();
+            }
+	}
+	
+	function montaHeaders()
+	{
+            $this->_headers = "MIME-Version: 1.0".EmailNewLine; 
+            $this->_headers .= "Content-type: text/html; charset=utf-8".EmailNewLine; 
+            $this->_headers .= "From: $this->_remetente".EmailNewLine; 
+            $this->_headers .= "Return-Path: $this->_remetente".EmailNewLine;
+	}
+	
+	function Send()
+	{
+            return $this->envia();
+	}
+	
+	function envia()
+	{
+            if (mail($this->_destinatario, $this->_assunto, $this->_corpo, $this->_headers))
+                return true;
+            else
+                return false;
+	}
+
+}
+?>
