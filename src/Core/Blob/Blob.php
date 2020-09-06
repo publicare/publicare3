@@ -28,13 +28,15 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core;
+namespace Pbl\Core\Blob;
+
+use Pbl\Core\Base;
 
 /**
  * blob.class.php
  * Classe responsável por gerenciar os BLOBs
  */
-class Blob
+class Blob extends Base
 {
     public $subacao;
     public $cod_blob;
@@ -48,148 +50,148 @@ class Blob
     /**
      * Método construtor, inicia as variaveis comuns para a classe
      */
-    function __construct(&$page)
-    {
-        $this->page = $page;
+    // function __construct(&$page)
+    // {
+    //     $this->page = $page;
         
-        $this->pasta_classes = $page->config["portal"]["uploadpath"] . "classes/";
+    //     $this->pasta_classes = $page->config["portal"]["uploadpath"] . "classes/";
         
-        $this->tipos_classe = array("gif" => "image/gif",
-            "png" => "image/png",
-            "svg" => "image/svg+xml");
+    //     $this->tipos_classe = array("gif" => "image/gif",
+    //         "png" => "image/png",
+    //         "svg" => "image/svg+xml");
         
-        // Extensoes dos arquivos que podem ser visualizados
-        $this->tipos_ver = array(
-            "jpg" => array("image/jpeg", true), 
-            "jpeg" => array("image/jpeg", true),
-            "png" => array("image/png", true), 
-            "gif" => array("image/gif", true), 
-            "svg" => array("image/svg+xml", false), 
-            "svgz" => array("image/svg+xml", false), 
-            "mp4" => array("video/mp4", false));
+    //     // Extensoes dos arquivos que podem ser visualizados
+    //     $this->tipos_ver = array(
+    //         "jpg" => array("image/jpeg", true), 
+    //         "jpeg" => array("image/jpeg", true),
+    //         "png" => array("image/png", true), 
+    //         "gif" => array("image/gif", true), 
+    //         "svg" => array("image/svg+xml", false), 
+    //         "svgz" => array("image/svg+xml", false), 
+    //         "mp4" => array("video/mp4", false));
         
-        // extensoes dos arquivos que podem ser baixados
-        $this->tipos_baixar = array(
-            "3gp" => "video/3gpp",
-            "3g2" => "video/3gpp2",
-            "7z" => "application/x-7z-compressed",
-            "aac" => "audio/aac",
-            "abw" => "application/x-abiword",
-            "ai" => "application/postscript",
-            "aif" => "audio/x-aiff",
-            "aifc" => "audio/x-aiff",
-            "aiff" => "audio/x-aiff",
-            "arc" => "application/octet-stream",
-            "asc" => "text/plain",
-            "au" => "audio/basic",
-            "avi" => "video/x-msvideo",
-            "azw" => "application/vnd.amazon.ebook",
-            "bin" => "application/octet-stream",
-            "bmp" => "image/bmp",
-            "bz" => "application/x-bzip",
-            "bz2" => "application/x-bzip2",
-            "cdr" => "application/cdr",
-            "css" => "text/css",
-            "csv" => "text/csv",
-            "doc" => "application/msword",
-            "dot" => "application/msword",
-            "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "dotx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-            "docm" => "application/vnd.ms-word.document.macroEnabled.12",
-            "dotm" => "application/vnd.ms-word.template.macroEnabled.12",
-            "eot" => "application/vnd.ms-fontobject", 
-            "eps" => "application/postscript",
-            "epub" => "application/epub+zip",
-            "gif" => "image/gif",
-            "htm" => "text/html",
-            "html" => "text/html",
-            "ico" => "image/x-icon",
-            "ics" => "text/calendar",
-            "ief" => "image/ief",
-            "jar" => "application/java-archive",
-            "jpe" => "image/jpeg",
-            "jpg" => "image/jpeg",
-            "jpeg" => "image/jpeg",
-            "js" => "application/javascript",
-            "json" => "application/json",
-            "kar" => "audio/midi",
-            "m3u" => "audio/x-mpegurl",
-            "mdb" => "application/vnd.ms-access",
-            "mid" => "audio/midi",
-            "midi" => "audio/midi",
-            "mov" => "video/quicktime",
-            "mp2" => "audio/mpeg",
-            "mp3" => "audio/mpeg",
-            "mpe" => "video/mpeg",
-            "mpeg" => "video/mpeg",
-            "mpg" => "video/mpeg",
-            "mpga" => "audio/mpeg",
-            "mpkg" => "application/vnd.apple.installer+xml",
-            "odp" => "application/vnd.oasis.opendocument.presentation",
-            "ods" => "application/vnd.oasis.opendocument.spreadsheet",
-            "odt" => "application/vnd.oasis.opendocument.text",
-            "oga" => "audio/ogg",
-            "ogv" => "video/ogg",
-            "ogx" => "application/ogg",
-            "otf" => "font/otf",
-            "png" => "image/png",
-            "pdf" => "application/pdf",
-            "pot" => "application/vnd.ms-powerpoint",
-            "potm" => "application/vnd.ms-powerpoint.template.macroEnabled.12",
-            "potx" => "application/vnd.openxmlformats-officedocument.presentationml.template",
-            "ppa" => "application/vnd.ms-powerpoint",
-            "ppam" => "application/vnd.ms-powerpoint.addin.macroEnabled.12",
-            "pps" => "application/vnd.ms-powerpoint",
-            "ppsm" => "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
-            "ppsx" => "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-            "ppt" => "application/vnd.ms-powerpoint",
-            "pptm" => "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
-            "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            "ps" => "application/postscript",
-            "qt" => "video/quicktime",
-            "ra" => "audio/x-realaudio",
-            "ram" => "audio/x-pn-realaudio",
-            "rar" => "application/x-rar-compressed",
-            "rm" => "audio/x-pn-realaudio",
-            "rpm" => "audio/x-pn-realaudio-plugin",
-            "rtf" => "application/rtf",
-            "rtx" => "text/richtext",
-            "sh" => "application/x-sh",
-            "snd" => "audio/basic",
-            "svg" => "image/svg+xml",
-            "swf" => "application/x-shockwave-flash",
-            "tar" => "application/x-tar",
-            "tif" => "image/tiff",
-            "tiff" => "image/tiff",
-            "ts" => "application/typescript",
-            "ttf" => "font/ttf",
-            "txt" => "text/plain",
-            "vsd" => "application/vnd.visio",
-            "wav" => "audio/x-wav",
-            "wbmp" => "image/vnd.wap.wbmp",
-            "wbxml" => "application/vnd.wap.wbxml",
-            "weba" => "audio/webm",
-            "webm" => "video/webm",
-            "webp" => "image/webp",
-            "wmlc" => "application/vnd.wap.wmlc",
-            "wmlsc" => "application/vnd.wap.wmlscriptc",
-            "woff" => "font/woff",
-            "woff2" => "font/woff2",
-            "xhtml" => "application/xhtml+xml",
-            "xht" => "application/xhtml+xml",
-            "xla" => "application/vnd.ms-excel",
-            "xlam" => "application/vnd.ms-excel.addin.macroEnabled.12",
-            "xls" => "application/vnd.ms-excel",
-            "xlt" => "application/vnd.ms-excel",
-            "xlsb" => "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
-            "xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
-            "xltm" => "application/vnd.ms-excel.template.macroEnabled.12",
-            "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "xltx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-            "xml" => "application/xml",
-            "xul" => "application/vnd.mozilla.xul+xml",
-            "zip" => "application/zip");
-    }
+    //     // extensoes dos arquivos que podem ser baixados
+    //     $this->tipos_baixar = array(
+    //         "3gp" => "video/3gpp",
+    //         "3g2" => "video/3gpp2",
+    //         "7z" => "application/x-7z-compressed",
+    //         "aac" => "audio/aac",
+    //         "abw" => "application/x-abiword",
+    //         "ai" => "application/postscript",
+    //         "aif" => "audio/x-aiff",
+    //         "aifc" => "audio/x-aiff",
+    //         "aiff" => "audio/x-aiff",
+    //         "arc" => "application/octet-stream",
+    //         "asc" => "text/plain",
+    //         "au" => "audio/basic",
+    //         "avi" => "video/x-msvideo",
+    //         "azw" => "application/vnd.amazon.ebook",
+    //         "bin" => "application/octet-stream",
+    //         "bmp" => "image/bmp",
+    //         "bz" => "application/x-bzip",
+    //         "bz2" => "application/x-bzip2",
+    //         "cdr" => "application/cdr",
+    //         "css" => "text/css",
+    //         "csv" => "text/csv",
+    //         "doc" => "application/msword",
+    //         "dot" => "application/msword",
+    //         "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    //         "dotx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+    //         "docm" => "application/vnd.ms-word.document.macroEnabled.12",
+    //         "dotm" => "application/vnd.ms-word.template.macroEnabled.12",
+    //         "eot" => "application/vnd.ms-fontobject", 
+    //         "eps" => "application/postscript",
+    //         "epub" => "application/epub+zip",
+    //         "gif" => "image/gif",
+    //         "htm" => "text/html",
+    //         "html" => "text/html",
+    //         "ico" => "image/x-icon",
+    //         "ics" => "text/calendar",
+    //         "ief" => "image/ief",
+    //         "jar" => "application/java-archive",
+    //         "jpe" => "image/jpeg",
+    //         "jpg" => "image/jpeg",
+    //         "jpeg" => "image/jpeg",
+    //         "js" => "application/javascript",
+    //         "json" => "application/json",
+    //         "kar" => "audio/midi",
+    //         "m3u" => "audio/x-mpegurl",
+    //         "mdb" => "application/vnd.ms-access",
+    //         "mid" => "audio/midi",
+    //         "midi" => "audio/midi",
+    //         "mov" => "video/quicktime",
+    //         "mp2" => "audio/mpeg",
+    //         "mp3" => "audio/mpeg",
+    //         "mpe" => "video/mpeg",
+    //         "mpeg" => "video/mpeg",
+    //         "mpg" => "video/mpeg",
+    //         "mpga" => "audio/mpeg",
+    //         "mpkg" => "application/vnd.apple.installer+xml",
+    //         "odp" => "application/vnd.oasis.opendocument.presentation",
+    //         "ods" => "application/vnd.oasis.opendocument.spreadsheet",
+    //         "odt" => "application/vnd.oasis.opendocument.text",
+    //         "oga" => "audio/ogg",
+    //         "ogv" => "video/ogg",
+    //         "ogx" => "application/ogg",
+    //         "otf" => "font/otf",
+    //         "png" => "image/png",
+    //         "pdf" => "application/pdf",
+    //         "pot" => "application/vnd.ms-powerpoint",
+    //         "potm" => "application/vnd.ms-powerpoint.template.macroEnabled.12",
+    //         "potx" => "application/vnd.openxmlformats-officedocument.presentationml.template",
+    //         "ppa" => "application/vnd.ms-powerpoint",
+    //         "ppam" => "application/vnd.ms-powerpoint.addin.macroEnabled.12",
+    //         "pps" => "application/vnd.ms-powerpoint",
+    //         "ppsm" => "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
+    //         "ppsx" => "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+    //         "ppt" => "application/vnd.ms-powerpoint",
+    //         "pptm" => "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+    //         "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    //         "ps" => "application/postscript",
+    //         "qt" => "video/quicktime",
+    //         "ra" => "audio/x-realaudio",
+    //         "ram" => "audio/x-pn-realaudio",
+    //         "rar" => "application/x-rar-compressed",
+    //         "rm" => "audio/x-pn-realaudio",
+    //         "rpm" => "audio/x-pn-realaudio-plugin",
+    //         "rtf" => "application/rtf",
+    //         "rtx" => "text/richtext",
+    //         "sh" => "application/x-sh",
+    //         "snd" => "audio/basic",
+    //         "svg" => "image/svg+xml",
+    //         "swf" => "application/x-shockwave-flash",
+    //         "tar" => "application/x-tar",
+    //         "tif" => "image/tiff",
+    //         "tiff" => "image/tiff",
+    //         "ts" => "application/typescript",
+    //         "ttf" => "font/ttf",
+    //         "txt" => "text/plain",
+    //         "vsd" => "application/vnd.visio",
+    //         "wav" => "audio/x-wav",
+    //         "wbmp" => "image/vnd.wap.wbmp",
+    //         "wbxml" => "application/vnd.wap.wbxml",
+    //         "weba" => "audio/webm",
+    //         "webm" => "video/webm",
+    //         "webp" => "image/webp",
+    //         "wmlc" => "application/vnd.wap.wmlc",
+    //         "wmlsc" => "application/vnd.wap.wmlscriptc",
+    //         "woff" => "font/woff",
+    //         "woff2" => "font/woff2",
+    //         "xhtml" => "application/xhtml+xml",
+    //         "xht" => "application/xhtml+xml",
+    //         "xla" => "application/vnd.ms-excel",
+    //         "xlam" => "application/vnd.ms-excel.addin.macroEnabled.12",
+    //         "xls" => "application/vnd.ms-excel",
+    //         "xlt" => "application/vnd.ms-excel",
+    //         "xlsb" => "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+    //         "xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
+    //         "xltm" => "application/vnd.ms-excel.template.macroEnabled.12",
+    //         "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //         "xltx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+    //         "xml" => "application/xml",
+    //         "xul" => "application/vnd.mozilla.xul+xml",
+    //         "zip" => "application/zip");
+    // }
     
     /**
      * Exibe blobs imagens internos do PBL
@@ -204,20 +206,20 @@ class Blob
         
         foreach ($this->tipos_ver as $ext=>$type)
         {
-            if (file_exists($this->page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $ext))
+            if (file_exists($this->container["config"]->portal["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
                 break;
             }
         }
 
-        if (is_null($filetype)) $this->page->headerHtml(404, "Arquivo não encontrado");
+        if (is_null($filetype)) $this->container["page"]->headerHtml(404, "Arquivo não encontrado");
 
-        $arquivo = $this->page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype;
+        $arquivo = $this->container["config"]->portal["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype;
         
-//        xd($this->page->config["portal"]["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype);
+//        xd($this->container["config"]->portal["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype);
         
-        if (!file_exists($arquivo)) $this->page->headerHtml(404, "Arquivo não encontrado");
+        if (!file_exists($arquivo)) $this->container["page"]->headerHtml(404, "Arquivo não encontrado");
 
 //        $conteudo = file_get_contents($arquivo);
         $tamanho = filesize($arquivo);
@@ -257,8 +259,8 @@ class Blob
         
         foreach ($this->tipos_ver as $ext=>$type)
         {
-//        xd($this->page->config["portal"]["uploadpath"]);
-            if (file_exists($this->page->config["portal"]["uploadpath"] . '/' . Blob::identificaPasta($this->page, $cod_blob) . '/' . $cod_blob . '.' . $ext))
+//        xd($this->container["config"]->portal["uploadpath"]);
+            if (file_exists($this->container["config"]->portal["uploadpath"] . '/' . Blob::identificaPasta($this->container["page"], $cod_blob) . '/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
                 break;
@@ -266,17 +268,17 @@ class Blob
         }
         
 
-        if (is_null($filetype)) $this->page->headerHtml(404, "Arquivo não encontrado");
+        if (is_null($filetype)) $this->container["page"]->headerHtml(404, "Arquivo não encontrado");
         $cod_objeto = $this->CodigoObjeto($cod_blob);
         $cod_objeto = $cod_objeto["cod"];
         
         
-        if (!$this->page->adminobjeto->estaSobAreaProtegida($cod_objeto)) $this->page->headerHtml(403, "Acesso não permitido");
+        if (!$this->container["adminobjeto"]->estaSobAreaProtegida($cod_objeto)) $this->container["page"]->headerHtml(403, "Acesso não permitido");
 
         $arquivo = $this->VerificaCache($cod_blob, $filetype, $largura, $altura);
 //        xd($arquivo);
         
-        if (!file_exists($arquivo)) $this->page->headerHtml(404, "Arquivo não encontrado");
+        if (!file_exists($arquivo)) $this->container["page"]->headerHtml(404, "Arquivo não encontrado");
 
 //        $conteudo = file_get_contents($arquivo);
         $tamanho = filesize($arquivo);
@@ -317,9 +319,9 @@ class Blob
         
         $file_ext = Blob::PegaExtensaoArquivo($filename);
         
-        if ($this->page->adminobjeto->estaSobAreaProtegida($cod_objeto))
+        if ($this->container["adminobjeto"]->estaSobAreaProtegida($cod_objeto))
 	{
-            if (!isset($this->page->config["portal"]["uploadpath"]) || $this->page->config["portal"]["uploadpath"]=="")
+            if (!isset($this->container["config"]->portal["uploadpath"]) || $this->container["config"]->portal["uploadpath"]=="")
             {
                 $nao_compactar = array ('zip', 'jpg');
                 if (in_array ($file_ext, $nao_compactar)) $data = $rs->fields['valor'];
@@ -329,9 +331,9 @@ class Blob
             {
                 if (isset($this->tipos_baixar[$file_ext]))
                 {
-                    if (file_exists($this->page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext))
+                    if (file_exists($this->container["config"]->portal["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext))
                     {
-                        $size = filesize($this->page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
+                        $size = filesize($this->container["config"]->portal["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
                         $nome = limpaString($filename);
                         $nome = substr($nome, 0, strlen($nome)-strlen($file_ext)).".".$file_ext;
                         
@@ -339,24 +341,24 @@ class Blob
                         header("Content-Disposition: attachment; filename=".$nome."");
                         header("Content-type: ".$this->tipos_baixar[$file_ext]);
                         
-                        $this->readfile_chunked($this->page->config["portal"]["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
+                        $this->readfile_chunked($this->container["config"]->portal["uploadpath"].$subpasta."/".$cod_blob.'.'.$file_ext);
                         
                         exit(0);
                     }
                     else
                     {
-                        $this->page->headerHtml(404, "Arquivo não encontrado"); //die("Arquivo não encontrado.");
+                        $this->container["page"]->headerHtml(404, "Arquivo não encontrado"); //die("Arquivo não encontrado.");
                     }
                 }
                 else
                 {
-                    $this->page->headerHtml(403, "Tipo de arquivo com download não permitido"); //die("Tipo de arquivo com download não permitido.");
+                    $this->container["page"]->headerHtml(403, "Tipo de arquivo com download não permitido"); //die("Tipo de arquivo com download não permitido.");
                 }
             }
         }
         else
         {
-            $this->page->headerHtml(403, "Acesso não permitido"); //die("Acesso ao arquivo não permitido para o perfil.");
+            $this->container["page"]->headerHtml(403, "Acesso não permitido"); //die("Acesso ao arquivo não permitido para o perfil.");
         }
     }
     
@@ -367,11 +369,11 @@ class Blob
      */
     private function CodigoObjeto($cod_blob)
     {
-        $sql = 'SELECT '.$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_objeto"].' AS cod_objeto, '
-                . ' '.$this->page->db->tabelas["tbl_blob"]["colunas"]["arquivo"].' AS arquivo '
-                . ' FROM '.$this->page->db->tabelas["tbl_blob"]["nome"].' '
-                . ' WHERE '.$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"].' = '.$cod_blob;
-	$rs = $this->page->db->ExecSQL($sql);
+        $sql = 'SELECT '.$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_objeto"].' AS cod_objeto, '
+                . ' '.$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["arquivo"].' AS arquivo '
+                . ' FROM '.$this->container["config"]->bd["tabelas"]["tbl_blob"]["nome"].' '
+                . ' WHERE '.$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_blob"].' = '.$cod_blob;
+	$rs = $this->container["db"]->execSQL($sql);
 	return array("cod"=>$rs->fields['cod_objeto'], "nome"=>$rs->fields['arquivo']);
     }
     
@@ -388,14 +390,14 @@ class Blob
      */
     function VerificaCache($cod_blob, $ext, $largura, $altura)
     {
-        $endereco = $this->page->config["portal"]["uploadpath"] . "/" . Blob::identificaPasta($this->page, $cod_blob) . "/" . $cod_blob . "." . $ext;
+        $endereco = $this->container["config"]->portal["uploadpath"] . "/" . Blob::identificaPasta($this->page, $cod_blob) . "/" . $cod_blob . "." . $ext;
         
         if ($largura != "0" || $altura != "0")
         {
             if ($this->tipos_ver[$ext][1])
             {
                 $endereco_original = $endereco;
-                $pasta = $this->page->config["portal"]["uploadpath"] . '/cache/' . Blob::identificaPasta($this->page, $cod_blob) . '/';
+                $pasta = $this->container["config"]->portal["uploadpath"] . '/cache/' . Blob::identificaPasta($this->page, $cod_blob) . '/';
                 $pasta = preg_replace("[\/\/]", "/", $pasta);
                 $endereco = $pasta . $cod_blob . "_" . $largura . "_" . $altura . "." . $ext;
                 if (!file_exists($pasta)) mkdir($pasta, 0770, true);
@@ -492,7 +494,7 @@ class Blob
             for ($i=strlen($ret); $i<4; $i++) $ret="0".$ret;
         }
         // cria a pasta caso não exista
-//        xd($this->page->config["portal"]["uploadpath"].$ret);
+//        xd($this->container["config"]->portal["uploadpath"].$ret);
         if (!is_dir($page->config["portal"]["uploadpath"].$ret))
         {
             mkdir($page->config["portal"]["uploadpath"].$ret, 0755);
@@ -508,7 +510,7 @@ class Blob
      */
     function gravarBlob($file, $cod_blob)
     {
-        $pasta = $this->page->config["portal"]["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/";
+        $pasta = $this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/";
         $nome_original = $file["name"];
         $nome_temp = $file["tmp_name"];
         $extensao = Blob::PegaExtensaoArquivo($nome_original);
@@ -547,9 +549,9 @@ class Blob
     function apagaBlob($cod_blob, $arquivo)
     {
         $file_ext = Blob::PegaExtensaoArquivo($arquivo);
-        if (file_exists($this->page->config["portal"]["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext))
+        if (file_exists($this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext))
         {
-            $checkDelete = unlink($this->page->config["portal"]["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext);
+            $checkDelete = unlink($this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext);
         }
     }
     
@@ -627,7 +629,7 @@ class Blob
         // se o arquivo nao existir na pasta do site, procura na pasta de icones do publicare
         if (!isset($retorno["arquivo"]) || $retorno["arquivo"]=="")
         {
-            $pasta = $this->page->config["portal"]["pblpath"] . "/blobs/classes/";
+            $pasta = $this->container["config"]->portal["pblpath"] . "/blobs/classes/";
             $retorno = $this->verificaExistenciaArquivoPasta($pasta, $nome, $this->tipos_classe, $pasta_destino);
         }
         
@@ -642,7 +644,7 @@ class Blob
         if (!isset($retorno["arquivo"]) || $retorno["arquivo"]=="")
         {
             $nome = "ic_default";
-            $pasta = $this->page->config["portal"]["pblpath"] . "/blobs/classes/";
+            $pasta = $this->container["config"]->portal["pblpath"] . "/blobs/classes/";
             $retorno = $this->verificaExistenciaArquivoPasta($pasta, $nome, $this->tipos_classe, $pasta_destino, true);
         }
         
@@ -663,9 +665,9 @@ class Blob
         
 //        xd($_SERVER['DOCUMENT_ROOT']);
         
-        if (!is_dir($this->page->config["portal"]["uploadpath"] . "blobs/"))
+        if (!is_dir($this->container["config"]->portal["uploadpath"] . "blobs/"))
         {
-            mkdir($this->page->config["portal"]["uploadpath"] . "blobs/", 0755, true);
+            mkdir($this->container["config"]->portal["uploadpath"] . "blobs/", 0755, true);
         }
         
         // procura na pasta /html/imagens do portal
@@ -691,9 +693,9 @@ class Blob
             {
                 $nome = "icnx_" . $extensao . "." . $ext;
                 // caso encontre na pasta do portal
-                if (file_exists($this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome))
+                if (file_exists($this->container["config"]->portal["uploadpath"] . "/blobs/" . $nome))
                 {
-                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    $caminho = $this->container["config"]->portal["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = false;
@@ -710,11 +712,11 @@ class Blob
             {
                 $nome = "icnx_" . $extensao . "." . $ext;
                 // caso encontre na pasta do publicare
-                if (file_exists($this->page->config["portal"]["pblpath"] . "/imagens/blobs/" . $nome))
+                if (file_exists($this->container["config"]->portal["pblpath"] . "/imagens/blobs/" . $nome))
                 {
                     // copia da pasta do publicare para a pasta do portal
-                    copy($this->page->config["portal"]["pblpath"]."/imagens/blobs/".$nome, $this->page->config["portal"]["uploadpath"]."/blobs/".$nome);
-                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    copy($this->container["config"]->portal["pblpath"]."/imagens/blobs/".$nome, $this->container["config"]->portal["uploadpath"]."/blobs/".$nome);
+                    $caminho = $this->container["config"]->portal["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = false;
@@ -748,9 +750,9 @@ class Blob
             {
                 $nome = "icnx_generic." . $ext;
                 // caso encontre na pasta do portal
-                if (file_exists($this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome))
+                if (file_exists($this->container["config"]->portal["uploadpath"] . "/blobs/" . $nome))
                 {
-                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    $caminho = $this->container["config"]->portal["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = true;
@@ -767,10 +769,10 @@ class Blob
             {
                 $nome = "icnx_generic." . $ext;
                 // caso encontre na pasta do portal
-                if (file_exists($this->page->config["portal"]["pblpath"] . "/imagens/blobs/" . $nome))
+                if (file_exists($this->container["config"]->portal["pblpath"] . "/imagens/blobs/" . $nome))
                 {
-                    copy($this->page->config["portal"]["pblpath"]."/imagens/blobs/".$nome, $this->page->config["portal"]["uploadpath"]."/blobs/".$nome);
-                    $caminho = $this->page->config["portal"]["uploadpath"] . "/blobs/" . $nome;
+                    copy($this->container["config"]->portal["pblpath"]."/imagens/blobs/".$nome, $this->container["config"]->portal["uploadpath"]."/blobs/".$nome);
+                    $caminho = $this->container["config"]->portal["uploadpath"] . "/blobs/" . $nome;
                     $retorno["arquivo"] = $nome;
                     $retorno["caminho"] = $caminho;
                     $retorno["default"] = true;

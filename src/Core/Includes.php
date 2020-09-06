@@ -40,15 +40,14 @@ class Includes
     private $_tipo;
     private $_ext;
     private $_nome;
-    public $page;
     
-    function __construct($scripts = array(), $tipo="js", $ext="")
-    {
-        $this->_tipo = $tipo;
-        $this->_ext = $ext;
-        $this->adicionarArquivos($scripts);
-        // xd($this->_arquivos);
-    }
+    // function __construct($scripts = array(), $tipo="js", $ext="")
+    // {
+    //     $this->_tipo = $tipo;
+    //     $this->_ext = $ext;
+    //     $this->adicionarArquivos($scripts);
+    //     // xd($this->_arquivos);
+    // }
     
     public function adicionarArquivos($scripts = array())
     {

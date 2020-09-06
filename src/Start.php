@@ -186,10 +186,10 @@ class Start
         if ($amigavel != "")
         {
             // procura no banco pela url amigavel
-            $sql = "SELECT ".$db->tabelas["objeto"]["nick"].".".$db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                    . " FROM ".$db->tabelas["objeto"]["nome"]." ".$db->tabelas["objeto"]["nick"]." "
-                    . " WHERE ".$db->tabelas["objeto"]["nick"].".".$db->tabelas["objeto"]["colunas"]["url_amigavel"]." = '" . $amigavel . "'";
-            $rs = $db->ExecSQL($sql, 0, 1);
+            $sql = "SELECT ".$container["config"]->bd["tabelas"]["objeto"]["nick"].".".$container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                    . " FROM ".$container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$container["config"]->bd["tabelas"]["objeto"]["nick"]." "
+                    . " WHERE ".$container["config"]->bd["tabelas"]["objeto"]["nick"].".".$container["config"]->bd["tabelas"]["objeto"]["colunas"]["url_amigavel"]." = '" . $amigavel . "'";
+            $rs = $container["db"]->execSQL($sql, 0, 1);
             while ($row = $rs->FetchRow())
             {
                 $cod_objeto = (int)$row["cod_objeto"];
@@ -215,61 +215,6 @@ class Start
 
         // xd($container);
         return $container;
-
-
-        // // inicia sessao caso não esteja iniciada ainda
-        // if (!isset($_SESSION)) 
-        // {
-        //     // definindo nome de sessao proprio, para evitar roubo de sessao/cookie
-        // //    session_name(md5('pbl'.$_SERVER["REMOTE_ADDR"]));
-            
-        //     // utilizando cookies
-        //     ini_set("session.use_cookies", true);
-        //     // apenas cookies
-        //     ini_set("session.use_only_cookies", true);
-        //     // permite apenas sessoes inicializadas por aqui
-        //     ini_set("session.use_strict_mode", true);
-        //     // bloqueia acesso ao cookie de sessao por scripts
-        //     ini_set("session.cookie_httponly", true);
-            
-        //     session_start();
-        // }
-
-        
-
-        // // iniciando banco de dados
-        // $db = new DBLayer($config);
-
-        
-
-        // caso tenha array de dominios definido, verifica codigo objeto root do dominio
-        // if (isset($_dominios))
-        // {
-        //    $dominio = htmlspecialchars($_SERVER['HTTP_HOST'], ENT_QUOTES, "UTF-8");
-        //    foreach ($_dominios as $dom => $dom1) 
-        //    {
-        //        if ($dominio == $dom) $cod_root = $_dominios[$dominio];
-        //    }
-        // }
-
-
-        
-
-        
-
-        
-
-       
-        $page = new Pagina($db, $cod_objeto, $cod_blob);
-        $page->setAction($action);
-
-        if ($incluir != "") {
-            $incluir = str_replace("\.\.\/", "", $incluir);
-            include($incluir);
-            exit();
-        }
-
-        return $page;
     }
 }
 ?>

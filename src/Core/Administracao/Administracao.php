@@ -28,30 +28,19 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core;
+namespace Pbl\Core\Administracao;
+
+use Pbl\Core\Base;
 
 /**
  * Classe que contém métodos para manipulação de objetos
  */
-class Administracao
+class Administracao extends Base
 {
     public $classesPrefixos;
     public $classesNomes;
-    public $classesIndexaveis;
+    public $classesIndexaveis = array();
     public $_index;
-    public $page;
-
-    /**
-     * Método construtor da classe Administracao.class.php
-     * @param object $page - Referência de objeto da classe Pagina
-     */
-    function __construct(&$page)
-    {
-        $this->page = $page;
-        
-        $this->metadados = $this->page->db->metadados;
-        $this->classesIndexaveis = array();
-    }
     
     /**
      * Adiciona propriedade em classe
@@ -60,20 +49,20 @@ class Administracao
      */
     function acrescentarPropriedadeAClasse($cod_classe, $novo)
     {
-        $sql = "INSERT INTO ".$this->page->db->tabelas["propriedade"]["nome"]." ("
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["cod_classe"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["cod_referencia_classe"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["campo_ref"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["nome"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["posicao"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["rotulo"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["descricao"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["obrigatorio"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["seguranca"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["valorpadrao"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["rot1booleano"].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["rot2booleano"].") "
+        $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"]." ("
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_classe"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_tipodado"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_referencia_classe"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["campo_ref"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["nome"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["posicao"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rotulo"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["descricao"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["obrigatorio"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["seguranca"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["valorpadrao"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rot1booleano"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rot2booleano"].") "
                 . " VALUES (".$cod_classe.", "
                 . " ".$novo['tipodado'].", "
                 . " ".($novo['codrefclasse']==0?"NULL":$novo['codrefclasse']).", "
@@ -87,29 +76,10 @@ class Administracao
                 . " '".$novo['valorpadrao']."', "
                 . " '".$novo['rot1booleano']."', "
                 . " '".$novo['rot2booleano']."')";
-        $this->page->db->ExecSQL($sql);
+        $this->container["db"]->execSQL($sql);
     }
     
-    /**
-     * Altera a lista de objetos que podem conter objetos de determinada classe
-     * @param object $page - Referência de objeto da classe Pagina
-     * @param int $cod_classe - Codigo da classe
-     * @param array $lista - Array com códigos dos objetos
-     */
-//    function AlterarListaDeObjetosQueContemClasse(&$page, $cod_classe, $lista)
-//    {
-//        $sql = 'delete from classexobjeto 
-//        where cod_classe='.$cod_classe;
-//        $this->page->db->ExecSQL($sql);	
-//
-//        if (is_array($lista))
-//        {
-//            foreach ($lista as $item)
-//            {
-//                $this->page->db->ExecSQL("insert into classexobjeto(cod_classe,cod_objeto) values(".$cod_classe.",".$item.")");
-//            }
-//        }
-//    }
+    
     
     /**
      * Altera objeto no banco de dados
@@ -155,10 +125,10 @@ class Administracao
         }
 
         // Verifica se teve mudança na pele e caso positivo altera a pele de todos os filhos
-        $sql_pele = "SELECT ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." AS cod_pele "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $row_pele = $this->page->db->ExecSQL($sql_pele);
+        $sql_pele = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." AS cod_pele "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $row_pele = $this->container["db"]->execSQL($sql_pele);
         $row_pele = $row_pele->GetRows();
         $row_pele = $row_pele[0];
         if (is_array($row_pele) && $row_pele['cod_pele'] != $cod_pele)
@@ -167,7 +137,7 @@ class Administracao
         }
 
         // Objeto root deverá ser sempre publicado
-        if ($cod_objeto == 1 || $cod_objeto == $this->page->config["portal"]["objroot"])
+        if ($cod_objeto == 1 || $cod_objeto == $this->container["config"]->portal["objroot"])
         {
             $cod_status = _STATUS_PUBLICADO;
         }
@@ -175,29 +145,29 @@ class Administracao
         // verifica se já existe objeto com a URL amigável
         $url_amigavel = $this->verificarExistenciaUrlAmigavel($url_amigavel, $cod_objeto);
 			
-        $sql = "UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " SET ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pai"]." = ".$cod_pai.", "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["script_exibir"]." = '".$script_exibir."', "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$cod_classe.", "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["cod_usuario"]." = ".$cod_usuario.", ";
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pai"]." = ".$cod_pai.", "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["script_exibir"]." = '".$script_exibir."', "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." = ".$cod_classe.", "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_usuario"]." = ".$cod_usuario.", ";
         if ($cod_pele > 0) 
         {
-            $sql .= " ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." = ".$cod_pele.", ";
+            $sql .= " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." = ".$cod_pele.", ";
         }
         else 
         {
-            $sql .= " ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." = null, ";
+            $sql .= " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." = null, ";
         }
-        $sql .= " ".$this->page->db->tabelas["objeto"]["colunas"]["cod_status"]." = ".$cod_status.", "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." = '".$titulo."', "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["descricao"]." = '".$descricao."', "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["data_publicacao"]." = '".ConverteData($data_publicacao, 27)."', "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["data_validade"]." = '".ConverteData($data_validade, 27)."', "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["peso"]." = ".$peso.", "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]." = '".$url_amigavel."', "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["versao"]." = ".$this->page->db->tabelas["objeto"]["colunas"]["versao"]." + 1 "
-                . "WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $this->page->db->ExecSQL($sql);
+        $sql .= " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_status"]." = ".$cod_status.", "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]." = '".$titulo."', "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["descricao"]." = '".$descricao."', "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_publicacao"]." = '".ConverteData($data_publicacao, 27)."', "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_validade"]." = '".ConverteData($data_validade, 27)."', "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["peso"]." = ".$peso.", "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["url_amigavel"]." = '".$url_amigavel."', "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["versao"]." = ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["versao"]." + 1 "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $this->container["db"]->execSQL($sql);
 
         $this->apagarPropriedades($cod_objeto, false);
         $this->gravarPropriedades($cod_objeto, $cod_classe, $proplist);
@@ -205,7 +175,7 @@ class Administracao
 			
         if ($log)
         {
-            $this->page->log->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_EDITAR);
+            $this->container["log"]->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_EDITAR);
         }
         
         return $cod_objeto;
@@ -216,7 +186,7 @@ class Administracao
      */
     function carregarClasses()
     {
-        $this->page->adminobjeto->carregarClasses();
+        $this->container["adminobjeto"]->carregarClasses();
         
         if (is_null($this->classesPrefixos) || !is_array($this->classesPrefixos))
         {
@@ -234,7 +204,7 @@ class Administracao
      */
     function codigoClasse($prefixo)
     {
-        $this->page->adminobjeto->carregarClasses();
+        $this->container["adminobjeto"]->carregarClasses();
         // xd($prefixo);
         return $_SESSION["classesPrefixos"][$prefixo];
     }
@@ -250,28 +220,27 @@ class Administracao
         $result=array();
         $sqladd = "";
         
-        if ($rcvPele && $rcvPele!=NULL && $rcvPele!=0) $sqladd = " AND ".$this->page->db->tabelas["pele"]["colunas"]["cod_pele"]." = ".$rcvPele;
+        if ($rcvPele && $rcvPele!=NULL && $rcvPele!=0) $sqladd = " AND ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." = ".$rcvPele;
         
-        $sql = "SELECT ".$this->page->db->tabelas["pele"]["colunas"]["cod_pele"]." AS codigo, "
-                . " ".$this->page->db->tabelas["pele"]["colunas"]["nome"]." AS texto, "
-                . " ".$this->page->db->tabelas["pele"]["colunas"]["prefixo"]." AS prefixo, "
-                . " ".$this->page->db->tabelas["pele"]["colunas"]["publica"]." AS publica "
-                . " FROM ".$this->page->db->tabelas["pele"]["nome"]." "
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS codigo, "
+                . " ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"]." AS texto, "
+                . " ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["prefixo"]." AS prefixo, "
+                . " ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["publica"]." AS publica "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
                 . " WHERE 1=1 ";
         if ($_SESSION['usuario']['perfil'] != _PERFIL_ADMINISTRADOR) {
-            $sql .= " AND ".$this->page->db->tabelas["pele"]["colunas"]["publica"]." = '1'";
+            $sql .= " AND ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["publica"]." = '1'";
         }
         $sql .= $sqladd;
-        $sql .= " ORDER BY ".$this->page->db->tabelas["pele"]["colunas"]["nome"];
+        $sql .= " ORDER BY ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"];
         
-        $res = $this->page->db->ExecSQL($sql);
+        $res = $this->container["db"]->execSQL($sql);
         return $res->GetRows();
     }
 
     /**
      * Busca lista de usuários dependentes, caso usuario logado 
      * seja administrador traz todos usuários
-     * @param object $page - Referência de objeto da classe Pagina
      * @param int $cod_usuario - código do usuário chefe
      * @return array
      */
@@ -281,25 +250,25 @@ class Administracao
         
         if($_SESSION['usuario']['perfil'] == _PERFIL_ADMINISTRADOR)
         {
-            $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS texto, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao "
-                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                    . " OR ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$cod_usuario." "
-                    . " ORDER BY ".$this->page->db->tabelas["usuario"]["colunas"]["secao"].", ".$this->page->db->tabelas["usuario"]["colunas"]["nome"];
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS texto, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                    . " OR ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$cod_usuario." "
+                    . " ORDER BY ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"].", ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"];
         }
         else
         {
             if ($_SESSION['usuario']['cod_usuario'] == $cod_usuario)
             {
-                $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS texto, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao "
-                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                    . " AND (".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." = ".$cod_usuario." OR ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$cod_usuario.") "
-                    . " ORDER BY ".$this->page->db->tabelas["usuario"]["colunas"]["secao"].", ".$this->page->db->tabelas["usuario"]["colunas"]["nome"];
+                $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS texto, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                    . " AND (".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." = ".$cod_usuario." OR ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$cod_usuario.") "
+                    . " ORDER BY ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"].", ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"];
 //                $sql = "SELECT usuario.cod_usuario AS codigo, "
 //                        . "usuario.nome AS texto, "
 //                        . "usuario.secao AS secao "
@@ -314,24 +283,11 @@ class Administracao
             }
         }
         
-        $rs = $this->page->db->ExecSQL($sql);
+        $rs = $this->container["db"]->execSQL($sql);
         $result = $rs->GetRows();
 
         return $result;
     }
-
-//    /**
-//     * Chama metodo pegarListaDependentes e com retorno deste método
-//     * e passa o array de resposta para o método criarDropDown
-//     * @param object $page - Referência de objeto da classe Pagina
-//     * @param int $cod_usuario
-//     * @return string com lista de <options>
-//     */
-//    function DropDownListaDependentes(&$page, $cod_usuario)
-//    {
-//        $lista=$this->pegarListaDependentes($page, $cod_usuario);
-//        return $this->criarDropDown($lista, $cod_usuario, false, 30);
-//    }
 
     /**
      * Recebe array e monta string com <options> para o select do dropdown
@@ -378,7 +334,7 @@ class Administracao
      */
     function pegarPropriedadesClasse($cod_classe)
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         {
             x("administracao::pegarPropriedadesClasse cod_classe=".$cod_classe);
         }
@@ -392,27 +348,27 @@ class Administracao
         }
         else
         {
-            $sql = "SELECT ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." AS cod_tipodado, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
-                . " ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["nome"]." AS tipodado, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["campo_ref"]." AS campo_ref, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["nome"]." AS nome, "
-                . " ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["posicao"]." AS posicao, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["descricao"]." AS descricao, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["rotulo"]." AS rotulo, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["obrigatorio"]." AS obrigatorio, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["seguranca"]." AS seguranca, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["valorpadrao"]." AS valorpadrao, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["rot1booleano"]." AS rot1booleano, "
-                . " ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["rot2booleano"]." AS rot2booleano "
-                . " FROM ".$this->page->db->tabelas["propriedade"]["nome"]." ".$this->page->db->tabelas["propriedade"]["nick"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["tipodado"]["nome"]." ".$this->page->db->tabelas["tipodado"]["nick"]." "
-                . " ON ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
-                . " WHERE ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_classe"]." = ".$cod_classe." "
-                . " ORDER BY ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["posicao"];
-            $rs = $this->page->db->ExecSQL($sql);
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_tipodado"]." AS cod_tipodado, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
+                . " ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["nome"]." AS tipodado, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["campo_ref"]." AS campo_ref, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["nome"]." AS nome, "
+                . " ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["tabela"]." AS tabela, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_referencia_classe"]." AS cod_referencia_classe, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["posicao"]." AS posicao, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["descricao"]." AS descricao, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rotulo"]." AS rotulo, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["obrigatorio"]." AS obrigatorio, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["seguranca"]." AS seguranca, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["valorpadrao"]." AS valorpadrao, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rot1booleano"]." AS rot1booleano, "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rot2booleano"]." AS rot2booleano "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"]." ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["tipodado"]["nome"]." ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"]." "
+                . " ON ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_tipodado"]." = ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["cod_tipodado"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_classe"]." = ".$cod_classe." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["posicao"];
+            $rs = $this->container["db"]->execSQL($sql);
             $propriedades = $rs->GetRows();
             $_SESSION["classes"][$cod_classe]["propriedades"] = $propriedades;
         }
@@ -429,14 +385,14 @@ class Administracao
     function pegarListaObjetos($cod_classe, $propriedade)
     {
         $result=array();
-        if (in_array($propriedade, $this->page->db->metadados))
+        if (in_array($propriedade, $this->container["db"]->getMetadados()))
         {
-            $sql = "SELECT ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." as codigo, "
-                    . " ".$this->page->db->tabelas["objeto"]["colunas"][$propriedade]." as texto "
-                    . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$cod_classe." "
-                    . " AND ".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." <> 1 "
-                    . " ORDER BY ".$this->page->db->tabelas["objeto"]["colunas"][$propriedade];
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." as codigo, "
+                    . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"][$propriedade]." as texto "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." = ".$cod_classe." "
+                    . " AND ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." <> 1 "
+                    . " ORDER BY ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"][$propriedade];
 //                    . " ".$propriedade." as texto "
 //                    . "from objeto "
 //                    . "where cod_classe=".$cod_classe." "
@@ -445,16 +401,16 @@ class Administracao
         }
         else
         {
-            $info = $this->page->adminobjeto->criarSQLPropriedade($propriedade, ' asc', $cod_classe);
-            $sql = "SELECT ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS codigo, "
+            $info = $this->container["adminobjeto"]->criarSQLPropriedade($propriedade, ' asc', $cod_classe);
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS codigo, "
                     . " ".$info['field']." as texto "
-                    . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
                     . " ".$info['from']." "
                     . " WHERE ".$info['where']." "
-                    . " AND ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." <> 1 "
+                    . " AND ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." <> 1 "
                     . " ORDER BY ".$info['field'];
         }
-        $res=$this->page->db->ExecSQL($sql);
+        $res=$this->container["db"]->execSQL($sql);
         
         return $res->GetRows();
     }
@@ -466,15 +422,15 @@ class Administracao
      */
     function trocarPeleFilhos($cod_objeto, $cod_pele)
     {
-        $filhos = $this->page->adminobjeto->pegarListaFilhosCod($cod_objeto);
+        $filhos = $this->container["adminobjeto"]->pegarListaFilhosCod($cod_objeto);
 
         if (is_array($filhos) && count($filhos) > 0)
         {
-            $sql_pele_filhos = "UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." ";
-            if ($cod_pele==0) $sql_pele_filhos .= " SET ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." = null ";
-            else $sql_pele_filhos .= " SET ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." = ".$cod_pele." ";
-            $sql_pele_filhos .= "WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." IN (".join(',',$filhos).")";
-            $this->page->db->ExecSQL($sql_pele_filhos);
+            $sql_pele_filhos = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ";
+            if ($cod_pele==0) $sql_pele_filhos .= " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." = null ";
+            else $sql_pele_filhos .= " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." = ".$cod_pele." ";
+            $sql_pele_filhos .= "WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." IN (".join(',',$filhos).")";
+            $this->container["db"]->execSQL($sql_pele_filhos);
             
             foreach ($filhos as $filho)
             {
@@ -507,11 +463,11 @@ class Administracao
         }
         
         $sql = "SELECT "
-                . " ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]." = '".$url."' ";
-        if ($cod_objeto>0) $sql .= " AND NOT ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $rs = $this->page->db->ExecSQL($sql);
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["url_amigavel"]." = '".$url."' ";
+        if ($cod_objeto>0) $sql .= " AND NOT ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $rs = $this->container["db"]->execSQL($sql);
         if ($tamanho==0) $tamanho = strlen($url);
         if ($rs->_numOfRows > 0)
         {
@@ -529,41 +485,41 @@ class Administracao
      */
     function apagarPropriedades($cod_objeto, $tudo = true)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]."  "
-                . " INNER JOIN ".$this->page->db->tabelas["propriedade"]["nome"]." ".$this->page->db->tabelas["propriedade"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_classe"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["tipodado"]["nome"]." ".$this->page->db->tabelas["tipodado"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["propriedade"]["nick"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." = ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["tabela"]." AS tabela "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]."  "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"]." ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." = ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_classe"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["tipodado"]["nome"]." ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["propriedade"]["nick"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_tipodado"]." = ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["cod_tipodado"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
 
         if (!$tudo)
         {
-            $sql .= " AND ".$this->page->db->tabelas["tipodado"]["nick"].".".$this->page->db->tabelas["tipodado"]["colunas"]["tabela"]." <> 'tbl_blob'";   
+            $sql .= " AND ".$this->container["config"]->bd["tabelas"]["tipodado"]["nick"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["tabela"]." <> 'tbl_blob'";   
         }
 
-        $res = $this->page->db->ExecSQL($sql);
+        $res = $this->container["db"]->execSQL($sql);
         $row = $res->GetRows();
 
         for ($i=0; $i<sizeof($row); $i++)
         {
             if ($row[$i]['tabela']=='tbl_blob')
             {
-                if (isset($this->page->config["portal"]["uploadpath"]) && $this->page->config["portal"]["uploadpath"]!="")
+                if (isset($this->container["config"]->portal["uploadpath"]) && $this->container["config"]->portal["uploadpath"]!="")
                 {
-                    $sql = "SELECT ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
-                            . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS arquivo "
-                            . " FROM ".$this->page->db->tabelas["tbl_blob"]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-                    $res_blob = $this->page->db->ExecSQL($sql);
+                    $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
+                            . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_blob"]." AS arquivo "
+                            . " FROM ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+                    $res_blob = $this->container["db"]->execSQL($sql);
                     $row_blob = $res_blob->GetRows();
 
                     for ($j=0; $j<sizeof($row_blob); $j++)
                     {
                         $file_ext = Blob::PegaExtensaoArquivo($row_blob[$j]['arquivo']);
-                        if (file_exists($this->page->config["portal"]["uploadpath"]."/".Blob::identificaPasta($this->page, $row_blob[$j]['cod_blob'])."/".$row_blob[$j]['cod_blob'].'.'.$file_ext))
+                        if (file_exists($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->container, $row_blob[$j]['cod_blob'])."/".$row_blob[$j]['cod_blob'].'.'.$file_ext))
                         {
-                            $checkDelete = unlink($this->page->config["portal"]["uploadpath"]."/".Blob::identificaPasta($this->page, $row_blob[$j]['cod_blob'])."/".$row_blob[$j]['cod_blob'].'.'.$file_ext);
+                            $checkDelete = unlink($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->container, $row_blob[$j]['cod_blob'])."/".$row_blob[$j]['cod_blob'].'.'.$file_ext);
                         }
                         if (defined ("_THUMBDIR"))
                         {
@@ -576,9 +532,9 @@ class Administracao
                 }
             }
             
-            $sql = "DELETE FROM ".$this->page->db->tabelas[$row[$i]['tabela']]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas[$row[$i]['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-            $this->page->db->ExecSQL($sql);
+            $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"][$row[$i]['tabela']]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"][$row[$i]['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+            $this->container["db"]->execSQL($sql);
         }
     }
 
@@ -617,7 +573,7 @@ class Administracao
                     if ($valor != "")
                     {
                         // pega as informações da propriedade
-                        $info = $this->page->adminobjeto->pegarInfoPropriedade($cod_classe, $ar_fld[1]);
+                        $info = $this->container["adminobjeto"]->pegarInfoPropriedade($cod_classe, $ar_fld[1]);
                         // se for tipo texto avançado, transforma quebras de linhas \n em <br>
                         if ($info['tabela'] == 'tbl_text')
                         {
@@ -645,12 +601,12 @@ class Administracao
                             $sql = "";
                             $bind = array();
                             
-                            if ($this->page->db->config["bd"]["tipo"] == "oracle11")
+                            if ($this->container["config"]->bd["tipo"] == "oracle11")
                             {
-                                $sql = "INSERT INTO ".$this->page->db->tabelas[$info['tabela']]["nome"]." ("
-                                        . " ".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"].", "
-                                        . " ".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"].", "
-                                        . " ".$this->page->db->tabelas[$info['tabela']]["colunas"]["valor"]." "
+                                $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"][$info['tabela']]["nome"]." ("
+                                        . " ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"].", "
+                                        . " ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"].", "
+                                        . " ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["valor"]." "
                                         . " ) VALUES ( "
                                         . " ".$info['cod_propriedade'].", "
                                         . " ".$cod_objeto.", "
@@ -660,10 +616,10 @@ class Administracao
                             }
                             else
                             {
-                                $sql = "INSERT INTO ".$this->page->db->tabelas[$info['tabela']]["nome"]." ("
-                                        . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"].", "
-                                        . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"].", "
-                                        . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["valor"].""
+                                $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"][$info['tabela']]["nome"]." ("
+                                        . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"].", "
+                                        . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"].", "
+                                        . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["valor"].""
                                         . ") VALUES ("
                                         . "".$info['cod_propriedade'].", "
                                         . "".$cod_objeto.", "
@@ -672,8 +628,8 @@ class Administracao
                                         . ")";
                                 $bind = array(1 => $this->page->db->Slashes($valor));
                             }
-                            $sql = $this->page->db->getCon()->prepare($sql);
-                            $rs = $this->page->db->ExecSQL(array($sql, $bind));
+                            $sql = $this->container["db"]->getCon()->prepare($sql);
+                            $rs = $this->container["db"]->execSQL(array($sql, $bind));
                         }
                     }
                 }
@@ -681,30 +637,30 @@ class Administracao
                 {
                     $ar_fld = explode("^", $ar_fld[1]);
 
-                    $info = $this->page->adminobjeto->pegarInfoPropriedade($cod_classe, $ar_fld[0]);
+                    $info = $this->container["adminobjeto"]->pegarInfoPropriedade($cod_classe, $ar_fld[0]);
 
                     if ($info['tabela'] == "tbl_blob")
                     {
                         $sql = "SELECT "
-                                . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
-                                . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                                . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
-                                . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["arquivo"]." AS arquivo, "
-                                . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["tamanho"]." AS tamanho "
-                                . " FROM ".$this->page->db->tabelas["tbl_blob"]["nome"]." "
-                                . " WHERE ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_propriedade"]." = ".$info["cod_propriedade"]." "
-                                . " AND ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-                        $rs = $this->page->db->ExecSQL($sql);
+                                . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
+                                . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                                . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_propriedade"]." AS cod_propriedade, "
+                                . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["arquivo"]." AS arquivo, "
+                                . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["tamanho"]." AS tamanho "
+                                . " FROM ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["nome"]." "
+                                . " WHERE ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_propriedade"]." = ".$info["cod_propriedade"]." "
+                                . " AND ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+                        $rs = $this->container["db"]->execSQL($sql);
                         while ($row = $rs->FetchRow())
                         {
-                            $this->page->blob->apagaBlob($row['cod_blob'], $row['arquivo']);
+                            $this->container["blob"]->apagaBlob($row['cod_blob'], $row['arquivo']);
                         }
                     }
 
-                    $sql = "DELETE FROM ".$this->page->db->tabelas[$info['tabela']]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"]." = ".$info['cod_propriedade']." "
-                            . " AND ".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-                    $this->page->db->ExecSQL($sql);  
+                    $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"][$info['tabela']]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"]." = ".$info['cod_propriedade']." "
+                            . " AND ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+                    $this->container["db"]->execSQL($sql);  
                 }
             }
         }
@@ -720,13 +676,13 @@ class Administracao
                     $ar_fld = preg_split("[___]", $key);
                     if (count($ar_fld)>1) { $prop = $ar_fld[1]; }
                     else { $prop = $key; }
-                    $info = $this->page->adminobjeto->pegarInfoPropriedade($cod_classe, $prop);
+                    $info = $this->container["adminobjeto"]->pegarInfoPropriedade($cod_classe, $prop);
                     
                     // Apaga registro, caso já exista
-                    $sql = "DELETE FROM ".$this->page->db->tabelas[$info['tabela']]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"]." = ".$info['cod_propriedade']." "
-                            . " AND ".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-                    $this->page->db->ExecSQL($sql);
+                    $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"][$info['tabela']]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"]." = ".$info['cod_propriedade']." "
+                            . " AND ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+                    $this->container["db"]->execSQL($sql);
                     
                     if ($source=='post') $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
                     else {
@@ -735,35 +691,35 @@ class Administracao
                     }
 
                     // caso seja gravação do blob no banco
-                    if (!isset($this->page->config["portal"]["uploadpath"]) || $this->page->config["portal"]["uploadpath"]=="")
+                    if (!isset($this->container["config"]->portal["uploadpath"]) || $this->container["config"]->portal["uploadpath"]=="")
                     {
                         $campo = gzcompress($data);
-                        $sql = "INSERT INTO ".$this->page->db->tabelas[$info['tabela']]["nome"]." ("
-                                . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"].", "
-                                . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"].", "
-                                . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["valor"].", "
-                                . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["arquivo"].", "
-                                . "".$this->page->db->tabelas[$info['tabela']]["colunas"]["tamanho"].""
+                        $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"][$info['tabela']]["nome"]." ("
+                                . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"].", "
+                                . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"].", "
+                                . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["valor"].", "
+                                . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["arquivo"].", "
+                                . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["tamanho"].""
                                 . ") values ("
                                 . "".$info['cod_propriedade'].", "
                                 . "".$cod_objeto.", "
                                 . "".$info['delimitador'].$this->page->db->BlobSlashes($data).$info['delimitador'].", "
                                 . "'".$valor['name']."', "
                                 . "".filesize($valor['tmp_name']).")";
-                        $this->page->db->ExecSQL($sql);
+                        $this->container["db"]->execSQL($sql);
                     }
                     // gravação do arquivo em disco
                     else
                     {
                         $campos = array();
-                        $campos[$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_propriedade"]] = (int)$info['cod_propriedade'];
-                        $campos[$this->page->db->tabelas[$info['tabela']]["colunas"]["cod_objeto"]] = (int)$cod_objeto;
-                        $campos[$this->page->db->tabelas[$info['tabela']]["colunas"]["arquivo"]] = strtolower($valor['name']);
-                        $campos[$this->page->db->tabelas[$info['tabela']]["colunas"]["tamanho"]] = filesize($valor['tmp_name']);
-                        $cod_blob = $this->page->db->Insert($this->page->db->tabelas[$info['tabela']]["nome"], $campos);
+                        $campos[$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"]] = (int)$info['cod_propriedade'];
+                        $campos[$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"]] = (int)$cod_objeto;
+                        $campos[$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["arquivo"]] = strtolower($valor['name']);
+                        $campos[$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["tamanho"]] = filesize($valor['tmp_name']);
+                        $cod_blob = $this->container["db"]->insert($this->container["config"]->bd["tabelas"][$info['tabela']]["nome"], $campos);
                         
                         // Chama o método de gravação de blob no disco
-                        $this->page->blob->gravarBlob($valor, $cod_blob);
+                        $this->container["blob"]->gravarBlob($valor, $cod_blob);
                     }
                 }
             }
@@ -824,28 +780,28 @@ class Administracao
 
         // prepara dados para gravação, prevenção de sql injection
         $campos = array();
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["script_exibir"]] = isset($dados['script_exibir'])?htmlspecialchars($dados['script_exibir'], ENT_QUOTES, "UTF-8"):"";
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_pai"]] = (int)htmlspecialchars($dados['cod_pai'], ENT_QUOTES, "UTF-8");
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]] = (int)htmlspecialchars($dados['cod_classe'], ENT_QUOTES, "UTF-8");
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_usuario"]] = isset($dados['cod_usuario'])?(int)htmlspecialchars($dados['cod_usuario'], ENT_QUOTES, "UTF-8"):$_SESSION['usuario']['cod_usuario'];
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]] = isset($dados['cod_pele'])?(int)htmlspecialchars($dados['cod_pele'], ENT_QUOTES, "UTF-8"):"";
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_status"]] = (int)htmlspecialchars($dados['cod_status'], ENT_QUOTES, "UTF-8");
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["titulo"]] = htmlspecialchars($dados['titulo'], ENT_QUOTES, "UTF-8");
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["descricao"]] = htmlspecialchars($dados['descricao'], ENT_QUOTES, "UTF-8");
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["data_publicacao"]] = ConverteData(htmlspecialchars($dados['data_publicacao'], ENT_QUOTES, "UTF-8"), 27);
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["data_validade"]] = ConverteData(htmlspecialchars($dados['data_validade'], ENT_QUOTES, "UTF-8"), 27);
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["peso"]] = (int)htmlspecialchars($dados['peso'], ENT_QUOTES, "UTF-8");
-//        $campos[$this->page->db->tabelas["objeto"]["colunas"]["script_exibir"]'script_exibir'] = htmlspecialchars($dados['script_exibir'], ENT_QUOTES, "UTF-8");
-        if ($dados['url_amigavel']=="") $dados['url_amigavel'] = limpaString($campos[$this->page->db->tabelas["objeto"]["colunas"]["titulo"]]);
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]] = $this->verificarExistenciaUrlAmigavel($dados['url_amigavel']);
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["script_exibir"]] = isset($dados['script_exibir'])?htmlspecialchars($dados['script_exibir'], ENT_QUOTES, "UTF-8"):"";
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pai"]] = (int)htmlspecialchars($dados['cod_pai'], ENT_QUOTES, "UTF-8");
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]] = (int)htmlspecialchars($dados['cod_classe'], ENT_QUOTES, "UTF-8");
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_usuario"]] = isset($dados['cod_usuario'])?(int)htmlspecialchars($dados['cod_usuario'], ENT_QUOTES, "UTF-8"):$_SESSION['usuario']['cod_usuario'];
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]] = isset($dados['cod_pele'])?(int)htmlspecialchars($dados['cod_pele'], ENT_QUOTES, "UTF-8"):"";
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_status"]] = (int)htmlspecialchars($dados['cod_status'], ENT_QUOTES, "UTF-8");
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]] = htmlspecialchars($dados['titulo'], ENT_QUOTES, "UTF-8");
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["descricao"]] = htmlspecialchars($dados['descricao'], ENT_QUOTES, "UTF-8");
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_publicacao"]] = ConverteData(htmlspecialchars($dados['data_publicacao'], ENT_QUOTES, "UTF-8"), 27);
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_validade"]] = ConverteData(htmlspecialchars($dados['data_validade'], ENT_QUOTES, "UTF-8"), 27);
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["peso"]] = (int)htmlspecialchars($dados['peso'], ENT_QUOTES, "UTF-8");
+//        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["script_exibir"]'script_exibir'] = htmlspecialchars($dados['script_exibir'], ENT_QUOTES, "UTF-8");
+        if ($dados['url_amigavel']=="") $dados['url_amigavel'] = limpaString($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]]);
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["url_amigavel"]] = $this->verificarExistenciaUrlAmigavel($dados['url_amigavel']);
         
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["apagado"]] = 0;
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["objetosistema"]] = 0;
-        $campos[$this->page->db->tabelas["objeto"]["colunas"]["versao"]] = 1;
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]] = 0;
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["objetosistema"]] = 0;
+        $campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["versao"]] = 1;
         
-        if ($campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]]==0) { unset($campos[$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]]); }
+        if ($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]]==0) { unset($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]]); }
         
-        $cod_objeto = $this->page->db->Insert($this->page->db->tabelas["objeto"]["nome"], $campos);
+        $cod_objeto = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]["objeto"]["nome"], $campos);
         
         
         // grava as propriedades do objeto
@@ -857,7 +813,7 @@ class Administracao
         $this->gravarTags($cod_objeto, $tagslist);
         
         // grava o log
-        if ($log) $this->page->log->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
+        if ($log) $this->container["log"]->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
         
         return $cod_objeto;
     }
@@ -946,15 +902,15 @@ class Administracao
 
         
         
-        if ($this->page->db->config["bd"]["tipo"] == "oracle11")
+        if ($this->container["config"]->bd["tipo"] == "oracle11")
         {
-            $sql = "INSERT INTO ".$this->page->db->tabelas["versaoobjeto"]["nome"]." ("
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["versao"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["conteudo"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["data_criacao"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_usuario"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["ip"].""
+            $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["nome"]." ("
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_objeto"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["versao"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["conteudo"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["data_criacao"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_usuario"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["ip"].""
                 . ") VALUES ("
                 . " :cod_objeto, "
                 . " :versao, "
@@ -971,13 +927,13 @@ class Administracao
         }
         else
         {
-            $sql = "INSERT INTO ".$this->page->db->tabelas["versaoobjeto"]["nome"]." ("
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["versao"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["conteudo"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["data_criacao"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_usuario"].", "
-                . "".$this->page->db->tabelas["versaoobjeto"]["colunas"]["ip"].""
+            $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["nome"]." ("
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_objeto"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["versao"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["conteudo"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["data_criacao"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_usuario"].", "
+                . "".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["ip"].""
                 . ") VALUES ("
                 . " ?, "
                 . " ?, "
@@ -993,21 +949,21 @@ class Administracao
                 6 => $ip);
         }
         
-        $sql = $this->page->db->getCon()->prepare($sql);
-        $rs = $this->page->db->ExecSQL(array($sql, $bind));
+        $sql = $this->container["db"]->getCon()->prepare($sql);
+        $rs = $this->container["db"]->execSQL(array($sql, $bind));
         // xd("aqui");
 
-        $this->page->log->RegistraLogWorkFlow("Criada versão ".$versao, $cod_objeto, 1);
+        $this->container["log"]->RegistraLogWorkFlow("Criada versão ".$versao, $cod_objeto, 1);
     }
     
     function cacheFlush()
     {
         GLOBAL $ADODB_CACHE_DIR;
         
-        if ($this->page->db->config["bd"]["cache"] === true) 
+        if ($this->container["config"]->bd["cache"] === true) 
         {
             if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
-            $this->page->db->getCon()->CacheFlush();
+            $this->container["db"]->getCon()->CacheFlush();
         }
     }
 
@@ -1025,13 +981,13 @@ class Administracao
             foreach ($tagslist as $tag)
             {
                 $tag = trim($tag);
-                $sql = "SELECT ".$this->page->db->tabelas["tag"]["colunas"]["cod_tag"]." AS cod_tag "
-                        . " FROM ".$this->page->db->tabelas["tag"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["tag"]["colunas"]["nome_tag"]." = '".$tag."'";
-                $rs = $this->page->db->ExecSQL($sql);
+                $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["tag"]["colunas"]["cod_tag"]." AS cod_tag "
+                        . " FROM ".$this->container["config"]->bd["tabelas"]["tag"]["nome"]." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["tag"]["colunas"]["nome_tag"]." = '".$tag."'";
+                $rs = $this->container["db"]->execSQL($sql);
                 if ($rs->_numOfRows == 0)
                 {
-                    $cod_tag = $this->page->db->Insert($this->page->db->tabelas["tag"]["nome"], array($this->page->db->tabelas["tag"]["colunas"]["nome_tag"] => $tag));
+                    $cod_tag = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]["tag"]["nome"], array($this->container["config"]->bd["tabelas"]["tag"]["colunas"]["nome_tag"] => $tag));
                 }
                 else
                 {
@@ -1040,13 +996,13 @@ class Administracao
                 }
 
                 $sql = "INSERT INTO "
-                        . " ".$this->page->db->tabelas["tagxobjeto"]["nome"]." ("
-                        . "".$this->page->db->tabelas["tagxobjeto"]["colunas"]["cod_tag"].", "
-                        . "".$this->page->db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"].""
+                        . " ".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["nome"]." ("
+                        . "".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["colunas"]["cod_tag"].", "
+                        . "".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["colunas"]["cod_objeto"].""
                         . ") VALUES ("
                         . "".$cod_tag.", "
                         . "".$cod_objeto.")";
-                $rs = $this->page->db->ExecSQL($sql);
+                $rs = $this->container["db"]->execSQL($sql);
             }
         }
     }
@@ -1058,13 +1014,13 @@ class Administracao
      */
     function apagarTags($cod_objeto)
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["tagxobjeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $rs = $this->container["db"]->execSQL($sql);
 
-        $sql = "DELETE FROM ".$this->page->db->tabelas["tag"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["tag"]["colunas"]["cod_tag"]." NOT IN (SELECT ".$this->page->db->tabelas["tagxobjeto"]["colunas"]["cod_tag"]." FROM ".$this->page->db->tabelas["tagxobjeto"]["nome"].")";
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["tag"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["tag"]["colunas"]["cod_tag"]." NOT IN (SELECT ".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["colunas"]["cod_tag"]." FROM ".$this->container["config"]->bd["tabelas"]["tagxobjeto"]["nome"].")";
+        $rs = $this->container["db"]->execSQL($sql);
     }
     
     /**
@@ -1073,14 +1029,14 @@ class Administracao
      */
     function apagarPele($cod_pele)
     {
-        $sql = "UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . "SET ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." = null "
-                . "WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pele"]." = ".$cod_pele;
-	$this->page->db->ExecSQL($sql);
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . "SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." = null "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]." = ".$cod_pele;
+	$this->container["db"]->execSQL($sql);
 	
-	$sql = "DELETE FROM ".$this->page->db->tabelas["pele"]["nome"]." "
-                . "WHERE ".$this->page->db->tabelas["pele"]["colunas"]["cod_pele"]." = ".$cod_pele;
-	$this->page->db->ExecSQL($sql);
+	$sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." = ".$cod_pele;
+	$this->container["db"]->execSQL($sql);
 	
 	return 0;
     }
@@ -1094,12 +1050,12 @@ class Administracao
      */
     function atualizarPele($cod_pele, $nome, $prefixo, $publica)
     {
-        $sql = "UPDATE ".$this->page->db->tabelas["pele"]["nome"]." "
-                . " SET ".$this->page->db->tabelas["pele"]["colunas"]["nome"]." = '".$nome."', "
-                . " ".$this->page->db->tabelas["pele"]["colunas"]["prefixo"]." = '".$prefixo."', "
-                . " ".$this->page->db->tabelas["pele"]["colunas"]["publica"]." = ".$publica." "
-                . " WHERE ".$this->page->db->tabelas["pele"]["colunas"]["cod_pele"]." = ".$cod_pele;
-	$this->page->db->ExecSQL($sql);
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
+                . " SET ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"]." = '".$nome."', "
+                . " ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["prefixo"]." = '".$prefixo."', "
+                . " ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["publica"]." = ".$publica." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." = ".$cod_pele;
+	$this->container["db"]->execSQL($sql);
     }
     
      /**
@@ -1111,11 +1067,11 @@ class Administracao
     function criarPele($nome, $prefixo, $publica)
     {
         $campos=array();
-        $campos[$this->page->db->tabelas["pele"]["colunas"]["nome"]] = $nome;
-        $campos[$this->page->db->tabelas["pele"]["colunas"]["prefixo"]] = $prefixo;
-        $campos[$this->page->db->tabelas["pele"]["colunas"]["publica"]] = $publica;
+        $campos[$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"]] = $nome;
+        $campos[$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["prefixo"]] = $prefixo;
+        $campos[$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["publica"]] = $publica;
                 
-        return($this->page->db->Insert($this->page->db->tabelas["pele"]["nome"], $campos));
+        return($this->container["db"]->insert($this->container["config"]->bd["tabelas"]["pele"]["nome"], $campos));
     }
 
     /**
@@ -1124,8 +1080,8 @@ class Administracao
      */
     function apagarParentesco($cod_objeto)
     {
-        $this->page->db->ExecSQL("DELETE FROM ".$this->page->db->tabelas["parentesco"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
+        $this->container["db"]->execSQL("DELETE FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
     }
 
     /**
@@ -1136,25 +1092,25 @@ class Administracao
     function criarParentesco($cod_objeto, $cod_pai)
     {
         // duplica parentesco do objeto pai, incrementando o nível
-        $sql = "INSERT INTO ".$this->page->db->tabelas["parentesco"]["nome"]." ("
-                . "".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"].", "
-                . "".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"].", "
-                . "".$this->page->db->tabelas["parentesco"]["colunas"]["ordem"].") "
+        $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ("
+                . "".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"].", "
+                . "".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"].", "
+                . "".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["ordem"].") "
                 . " SELECT ".$cod_objeto.", "
-                . "".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"].", "
-                . "".$this->page->db->tabelas["parentesco"]["colunas"]["ordem"]."+1 "
-                . "FROM ".$this->page->db->tabelas["parentesco"]["nome"]." "
-                . "WHERE ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_pai;
-        $this->page->db->ExecSQL($sql);
+                . "".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"].", "
+                . "".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["ordem"]."+1 "
+                . "FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_pai;
+        $this->container["db"]->execSQL($sql);
         
         // cria parentesco entre objeto e o pai
-        $sql = "INSERT INTO ".$this->page->db->tabelas["parentesco"]["nome"]." ("
-                . " ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"].", "
-                . " ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"].", "
-                . " ".$this->page->db->tabelas["parentesco"]["colunas"]["ordem"].""
+        $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ("
+                . " ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["ordem"].""
                 . ") "
                 . "values (".$cod_objeto.", ".$cod_pai.", 1)";
-        $this->page->db->ExecSQL($sql);
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -1166,16 +1122,16 @@ class Administracao
     {
         if (!$definitivo)
         {
-            $sql = "SELECT distinct ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                    . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_status"]." AS cod_status "
-                    . " FROM ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-                    . " INNER JOIN ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-                        . " ON ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
-                    . " WHERE (".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
-                    . " OR ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
-                    . " AND (".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 0"
-                        . " OR ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." is null) ";
-            $res = $this->page->db->ExecSQL($sql);
+            $sql = "SELECT distinct ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                    . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_status"]." AS cod_status "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"]." "
+                    . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
+                        . " ON ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." "
+                    . " WHERE (".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
+                    . " OR ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
+                    . " AND (".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 0"
+                        . " OR ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." is null) ";
+            $res = $this->container["db"]->execSQL($sql);
 
             while ($row = $res->FetchRow())
             {
@@ -1184,13 +1140,13 @@ class Administracao
                     $this->removerPendencia("Removida pendência de publicação por remoção do objeto", $row['cod_objeto']);
                 }
                 
-                $sql = "UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." "
-                        . " SET ".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 1, "
-                        . " ".$this->page->db->tabelas["objeto"]["colunas"]["data_exclusao"]." = ".date("YmdHis")." "
-                        . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
-                $this->page->db->ExecSQL($sql);
+                $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                        . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 1, "
+                        . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_exclusao"]." = ".date("YmdHis")." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
+                $this->container["db"]->execSQL($sql);
                 
-                $this->page->log->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_REMOVER);
+                $this->container["log"]->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_REMOVER);
             
                 if ($row["cod_objeto"] != $cod_objeto)
                 {
@@ -1216,7 +1172,7 @@ class Administracao
     function usuarioEDono($cod_usuario, $cod_objeto)
     {
         $sql = "select cod_objeto from objeto where cod_objeto=$cod_objeto and cod_usuario=$cod_usuario";
-        $rs = $this->page->db->ExecSQL($sql);
+        $rs = $this->container["db"]->execSQL($sql);
         if ($rs->_numOfRows > 0) return true;
         else return false;
     }
@@ -1232,8 +1188,8 @@ class Administracao
                 || (($_SESSION['usuario']['perfil']==_PERFIL_AUTOR) && $this->usuarioEdono($_SESSION['usuario']['cod_usuario'], $cod_objeto)))
         {
             $this->trocarStatusObjeto($mensagem, $cod_objeto, _STATUS_REJEITADO);
-            $this->page->db->ExecSQL("DELETE FROM ".$this->page->db->tabelas["pendencia"]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
+            $this->container["db"]->execSQL("DELETE FROM ".$this->container["config"]->bd["tabelas"]["pendencia"]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"]["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
         }
     }
 
@@ -1248,15 +1204,15 @@ class Administracao
         {
 //            xd($mensagem);
             $this->trocarStatusObjeto($mensagem, $cod_objeto, _STATUS_PUBLICADO);
-            $this->page->db->ExecSQL("DELETE FROM ".$this->page->db->tabelas["pendencia"]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
+            $this->container["db"]->execSQL("DELETE FROM ".$this->container["config"]->bd["tabelas"]["pendencia"]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"]["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
 
             if (defined("_avisoPublicacao") && _avisoPublicacao==true)
             {
                 $objetoPublicado = new Objeto($this->page, $cod_objeto);
                 $array_objeto = null;
                 $array_objeto[] = array($objetoPublicado->metadados["cod_objeto"], $objetoPublicado->metadados["titulo"]);
-                $caminhoObjeto = $this->page->adminobjeto->pegarParentescoCompleto($cod_objeto, 100, array(0), array(), false);
+                $caminhoObjeto = $this->container["adminobjeto"]->pegarParentescoCompleto($cod_objeto, 100, array(0), array(), false);
                 foreach ($caminhoObjeto as $codigo=>$titulo) 
                 {
                     $array_objeto[] = array($codigo, $titulo[0]);
@@ -1264,13 +1220,13 @@ class Administracao
 
                 $mensagemEmail = "<html><head><title>Objeto Publicado</title></head>
                 <body>
-                Objeto publicado no site: <b>".$this->page->config["portal"]["nome"]."</b><br>
+                Objeto publicado no site: <b>".$this->container["config"]->portal["nome"]."</b><br>
                 Data: ".date("d/m/Y H:i:s")."<br>
-                Objeto: <a href=\"".$this->page->config["portal"]["url"]."/index.php/content/view/".$array_objeto[0][0].".html\" target=\"_blank\">".$array_objeto[0][1]."</a><br><br>
+                Objeto: <a href=\"".$this->container["config"]->portal["url"]."/index.php/content/view/".$array_objeto[0][0].".html\" target=\"_blank\">".$array_objeto[0][1]."</a><br><br>
                 Caminho do objeto: <br>";
 
                 for ($i=1; $i<sizeof($array_objeto); $i++) {
-                    $mensagemEmail .= $i." - <a href=\"".$this->page->config["portal"]["url"]."/index.php/content/view/".$array_objeto[$i][0].".html\" target=\"_blank\">".$array_objeto[$i][1]."</a><br>";
+                    $mensagemEmail .= $i." - <a href=\"".$this->container["config"]->portal["url"]."/index.php/content/view/".$array_objeto[$i][0].".html\" target=\"_blank\">".$array_objeto[$i][1]."</a><br>";
                 }
 
                 $mensagemEmail .= "<br><small>Mensagem gerada automaticamente. Nao responda.</small>
@@ -1278,7 +1234,7 @@ class Administracao
 
                 $destinatario = _emailAvisoPublicacao;
                 $remetente =  _remetenteAvisoPublicacao;
-                $assunto = "Objeto publicado no site: ".$this->page->config["portal"]["nome"];
+                $assunto = "Objeto publicado no site: ".$this->container["config"]->portal["nome"];
                 $wassent = EnviarEmail($remetente, $destinatario, $assunto, $mensagemEmail); 
             }
         }
@@ -1304,26 +1260,26 @@ class Administracao
      */
     function submeterObjeto($mensagem, $cod_objeto)
     {
-        $dadosObjeto = $this->page->adminobjeto->pegarDadosObjetoId($cod_objeto);
+        $dadosObjeto = $this->container["adminobjeto"]->pegarDadosObjetoId($cod_objeto);
 
         if ((($_SESSION['usuario']['perfil']==_PERFIL_AUTOR) || ($this->usuarioEdono($_SESSION['usuario']['cod_usuario'],$cod_objeto))) && ($dadosObjeto['cod_status'] == _STATUS_PRIVADO))
         {
             $this->trocarStatusObjeto($mensagem, $cod_objeto, _STATUS_SUBMETIDO);
 
             $sql = "select ".$_SESSION["usuario"]["chefia"]." as cod_usuario,".$cod_objeto." as cod_objeto from usuarioxobjetoxperfil inner join parentesco on (usuarioxobjetoxperfil.cod_objeto=parentesco.cod_pai or usuarioxobjetoxperfil.cod_objeto=parentesco.cod_objeto) where parentesco.cod_objeto=".$cod_objeto." group by cod_usuario, cod_usuario";
-            $rs = $this->page->db->ExecSQL($sql, 1, 1);
+            $rs = $this->container["db"]->execSQL($sql, 1, 1);
             $campos = $rs->fields;
 
             $sql = "select * from pendencia where cod_usuario = ".$campos['cod_usuario']." and cod_objeto = ".$campos['cod_objeto'];
-            $rs = $this->page->db->ExecSQL($sql);
+            $rs = $this->container["db"]->execSQL($sql);
 
             if (!$rs->GetRows())
             {
                 $sql = "insert into pendencia(cod_usuario, cod_objeto) values (".$campos['cod_usuario'].", ".$campos['cod_objeto'].")";
-                $this->page->db->ExecSQL($sql);
+                $this->container["db"]->execSQL($sql);
             }
 
-            $enviarEmailSolicitacao = $this->page->adminobjeto->enviarEmailSolicitacao($_SESSION['usuario']['chefia'], $cod_objeto, $mensagem);
+            $enviarEmailSolicitacao = $this->container["adminobjeto"]->enviarEmailSolicitacao($_SESSION['usuario']['chefia'], $cod_objeto, $mensagem);
         }
     }
 
@@ -1335,9 +1291,9 @@ class Administracao
     function removerPendencia($mensagem, $cod_objeto)
     {
         $this->trocarStatusObjeto($mensagem, $cod_objeto, _STATUS_PRIVADO);
-        $sql = "DELETE FROM ".$this->page->db->tabelas["pendencia"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["pendencia"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -1348,12 +1304,12 @@ class Administracao
      */
     function trocarStatusObjeto($mensagem, $cod_objeto, $cod_status)
     {
-        if ($cod_objeto != $this->page->config["portal"]["objroot"])
+        if ($cod_objeto != $this->container["config"]->portal["objroot"])
         {
-            $this->page->db->ExecSQL("UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." "
-                    . " SET ".$this->page->db->tabelas["objeto"]["colunas"]["cod_status"]." = ".$cod_status." "
-                    . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
-            $this->page->log->RegistraLogWorkFlow($mensagem, $cod_objeto, $cod_status);
+            $this->container["db"]->execSQL("UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                    . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_status"]." = ".$cod_status." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
+            $this->container["log"]->RegistraLogWorkFlow($mensagem, $cod_objeto, $cod_status);
             $this->cacheFlush();
         }
     }
@@ -1378,17 +1334,17 @@ class Administracao
     
     function pegarVersao($cod_versaoobjeto)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." AS cod_versaoobjeto, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["versao"]." AS versao, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["data_criacao"]." AS data_criacao, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["conteudo"]." AS conteudo, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["ip"]." AS ip "
-                . " FROM ".$this->page->db->tabelas["versaoobjeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." = ".$cod_versaoobjeto." "
-                . " ORDER BY ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["versao"]." ";
-        $res = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." AS cod_versaoobjeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["versao"]." AS versao, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["data_criacao"]." AS data_criacao, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["conteudo"]." AS conteudo, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["ip"]." AS ip "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." = ".$cod_versaoobjeto." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["versao"]." ";
+        $res = $this->container["db"]->execSQL($sql);
         return $res->GetRows();
     }
 
@@ -1399,16 +1355,16 @@ class Administracao
      */
     function pegarVersoes($cod_objeto)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." AS cod_versaoobjeto, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["versao"]." AS versao, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["data_criacao"]." AS data_criacao, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                . " ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["ip"]." AS ip "
-                . " FROM ".$this->page->db->tabelas["versaoobjeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " ORDER BY ".$this->page->db->tabelas["versaoobjeto"]["colunas"]["versao"]." ";
-        $res = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_versaoobjeto"]." AS cod_versaoobjeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["versao"]." AS versao, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["data_criacao"]." AS data_criacao, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["ip"]." AS ip "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["versaoobjeto"]["colunas"]["versao"]." ";
+        $res = $this->container["db"]->execSQL($sql);
         return $res->GetRows();
     }
     
@@ -1434,25 +1390,25 @@ class Administracao
         {
                 $cod_objeto = $this->pegarPrimeiroPilha();
         }
-        $sql = "UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " SET ".$this->page->db->tabelas["objeto"]["colunas"]["cod_pai"]." = ".$cod_pai." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $this->page->db->ExecSQL($sql);
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pai"]." = ".$cod_pai." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $this->container["db"]->execSQL($sql);
 
         $this->apagarParentesco($cod_objeto);
         $this->criarParentesco($cod_objeto, $cod_pai);
         
-        $this->page->log->RegistraLogWorkflow("Objeto movido para ".$cod_pai, $cod_objeto, _OPERACAO_OBJETO_MOVER);
+        $this->container["log"]->RegistraLogWorkflow("Objeto movido para ".$cod_pai, $cod_objeto, _OPERACAO_OBJETO_MOVER);
 
-        $sql = "SELECT ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_pai"]." AS cod_pai, "
-                . " ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["parentesco"]["nome"]." "
-                . " ON ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["parentesco"]["nome"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." "
-                . " WHERE ".$this->page->db->tabelas["parentesco"]["nome"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
-                . " GROUP BY ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"].", "
-                . " ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_pai"];
-        $res = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pai"]." AS cod_pai, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
+                . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
+                . " GROUP BY ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pai"];
+        $res = $this->container["db"]->execSQL($sql);
         $row = $res->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
@@ -1475,7 +1431,7 @@ class Administracao
             $cod_objeto = $this->pegarPrimeiroPilha();
         }
 
-        $orig_obj = $this->page->adminobjeto->criarObjeto($cod_objeto);
+        $orig_obj = $this->container["adminobjeto"]->criarObjeto($cod_objeto);
         $dados = $orig_obj->metadados;
 
         $status = $this->pegarStatusNovoObjeto();
@@ -1492,7 +1448,7 @@ class Administracao
         $campos['data_publicacao'] = ConverteData($dados['data_publicacao'],27);
         $campos['data_validade'] = ConverteData($dados['data_validade'],27);
 
-        $novo_cod_objeto = $this->page->db->Insert('objeto',$campos);		
+        $novo_cod_objeto = $this->container["db"]->insert('objeto',$campos);		
 //        xd($novo_cod_objeto);
 
         $this->gravarPropriedades($novo_cod_objeto, $cod_classe_interlink, array('property___link'=>$cod_objeto));
@@ -1506,10 +1462,10 @@ class Administracao
      */
     function pegarPrimeiroPilha()
     {
-        $sql = "SELECT ".$this->page->db->tabelas["pilha"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                . " FROM ".$this->page->db->tabelas["pilha"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
+        $rs = $this->container["db"]->execSQL($sql);
         $row = $rs->fields;
         
         return $row['cod_objeto'];
@@ -1528,26 +1484,26 @@ class Administracao
             $cod_objeto = $this->pegarPrimeiroPilha();
         }
 
-        $orig_obj = $this->page->adminobjeto->criarObjeto($cod_objeto);
+        $orig_obj = $this->container["adminobjeto"]->criarObjeto($cod_objeto);
         $dados = $orig_obj->metadados;
         
         if ($cod_pai==-1) $cod_pai = $dados['cod_pai'];
 
         $campos = array();
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["script_exibir"]] = $dados['script_exibir'];
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["cod_pai"]] = $cod_pai;
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["cod_classe"]] = $dados['cod_classe'];
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["cod_usuario"]] = $dados['cod_usuario'];
-        if (!is_null($dados['cod_pele'])) $campos[$this->page->db->tabelas['objeto']["colunas"]["cod_pele"]] = $dados['cod_pele'];
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["cod_status"]] = $dados['cod_status'];
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["titulo"]] = $this->page->db->Slashes($dados['titulo']);
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["descricao"]] = $this->page->db->Slashes($dados['descricao']);
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["data_publicacao"]] = ConverteData($dados['data_publicacao'],27);
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["data_validade"]] = ConverteData($dados['data_validade'],27);
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["url_amigavel"]] = $this->verificarExistenciaUrlAmigavel($dados['url_amigavel']);
-        $campos[$this->page->db->tabelas['objeto']["colunas"]["peso"]] = $dados['peso'];
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["script_exibir"]] = $dados['script_exibir'];
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_pai"]] = $cod_pai;
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_classe"]] = $dados['cod_classe'];
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_usuario"]] = $dados['cod_usuario'];
+        if (!is_null($dados['cod_pele'])) $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_pele"]] = $dados['cod_pele'];
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_status"]] = $dados['cod_status'];
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["titulo"]] = $this->page->db->Slashes($dados['titulo']);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["descricao"]] = $this->page->db->Slashes($dados['descricao']);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["data_publicacao"]] = ConverteData($dados['data_publicacao'],27);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["data_validade"]] = ConverteData($dados['data_validade'],27);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["url_amigavel"]] = $this->verificarExistenciaUrlAmigavel($dados['url_amigavel']);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["peso"]] = $dados['peso'];
 
-        $cod_objeto = $this->page->db->Insert($this->page->db->tabelas['objeto']["nome"], $campos);	
+        $cod_objeto = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]['objeto']["nome"], $campos);	
         $this->duplicarPropriedades($cod_objeto, $orig_obj);
         $this->criarParentesco($cod_objeto, $cod_pai);
 
@@ -1559,7 +1515,7 @@ class Administracao
             }
         }
 
-        $this->page->log->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
+        $this->container["log"]->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
         
         $this->cacheFlush();
         
@@ -1605,16 +1561,16 @@ class Administracao
     {
         $out=array();
         $sql = "SELECT "
-                . " ".$this->page->db->tabelas["classexfilhos"]["nick"].".".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." AS cod_classe, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS nome, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["descricao"]." AS descricao, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo "
-                . " FROM ".$this->page->db->tabelas["classexfilhos"]["nome"]." ".$this->page->db->tabelas["classexfilhos"]["nick"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["classexfilhos"]["nick"].".".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." "
-                . " WHERE ".$this->page->db->tabelas["classexfilhos"]["nick"].".".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe"]." = ".$cod_classe." "
-                . " ORDER BY ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"];
-        $res = $this->page->db->ExecSQL($sql);
+                . " ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe_filho"]." AS cod_classe, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS nome, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"]." AS descricao, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"]." AS prefixo "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nick"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classe"]["nick"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." = ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe_filho"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe"]." = ".$cod_classe." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"];
+        $res = $this->container["db"]->execSQL($sql);
         return $res->GetRows();
     }
     
@@ -1627,16 +1583,16 @@ class Administracao
     {
         $out=array();
         $sql = "SELECT "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS nome, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["descricao"]." AS descricao, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo "
-                . " FROM ".$this->page->db->tabelas["classexobjeto"]["nome"]." ".$this->page->db->tabelas["classexobjeto"]["nick"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["classexobjeto"]["nick"].".".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_classe"]." "
-                . " WHERE ".$this->page->db->tabelas["classexobjeto"]["nick"].".".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " ORDER BY ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"];
-        $rs = $this->page->db->ExecSQL($sql);
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS nome, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"]." AS descricao, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"]." AS prefixo "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nick"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classe"]["nick"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." = ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_classe"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"];
+        $rs = $this->container["db"]->execSQL($sql);
         return $rs->GetRows();
     }
 
@@ -1646,10 +1602,10 @@ class Administracao
      */
     function copiarObjetoParaPilha($cod_objeto)
     {
-        $sql = "INSERT INTO ".$this->page->db->tabelas["pilha"]["nome"]." "
-                . " (".$this->page->db->tabelas["pilha"]["colunas"]["cod_objeto"].", ".$this->page->db->tabelas["pilha"]["colunas"]["cod_usuario"].") "
+        $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"]." "
+                . " (".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_objeto"].", ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_usuario"].") "
                 . " VALUES (".$cod_objeto.", ".$_SESSION['usuario']['cod_usuario'].")";
-        $this->page->db->ExecSQL($sql);
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -1658,13 +1614,13 @@ class Administracao
      */
     function removerObjetoPilha($cod_objeto, $user=1)
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["pilha"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["pilha"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         if ($user == 1)
         {
-            $sql .= " AND ".$this->page->db->tabelas["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
+            $sql .= " AND ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
         }
-        $this->page->db->ExecSQL($sql);
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -1672,9 +1628,9 @@ class Administracao
      */
     function limparPilha()
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["pilha"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["pilha"]["colunas"]["cod_usuario"]." =" .$_SESSION['usuario']['cod_usuario'];
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_usuario"]." =" .$_SESSION['usuario']['cod_usuario'];
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -1685,14 +1641,14 @@ class Administracao
     {
         $result=array();
         $this->ContadorPilha=0;
-        $sql = "SELECT ".$this->page->db->tabelas["pilha"]["nome"].".".$this->page->db->tabelas["pilha"]["colunas"]["cod_objeto"]." AS codigo, "
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"].".".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_objeto"]." AS codigo, "
                 . ""
-                . " ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS texto "
-                . " FROM ".$this->page->db->tabelas["pilha"]["nome"]." "
-                . " LEFT JOIN ".$this->page->db->tabelas["objeto"]["nome"]." "
-                    . " ON ".$this->page->db->tabelas["objeto"]["nome"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["pilha"]["nome"].".".$this->page->db->tabelas["pilha"]["colunas"]["cod_objeto"]." "
-                . " WHERE ".$this->page->db->tabelas["pilha"]["nome"].".".$this->page->db->tabelas["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
-        $rs = $this->page->db->ExecSQL($sql);
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]." AS texto "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"]." "
+                . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"].".".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"].".".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'];
+        $rs = $this->container["db"]->execSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
@@ -1711,9 +1667,9 @@ class Administracao
         if (!$this->ContadorPilha)
         {
             $sql = "SELECT COUNT(*) AS contador "
-                    . " FROM ".$this->page->db->tabelas["pilha"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["pilha"]["colunas"]["cod_usuario"]."=".$_SESSION['usuario']['cod_usuario'];
-            $rs = $this->page->db->ExecSQL($sql);
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["pilha"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["pilha"]["colunas"]["cod_usuario"]."=".$_SESSION['usuario']['cod_usuario'];
+            $rs = $this->container["db"]->execSQL($sql);
             $this->ContadorPilha = $rs->fields["contador"];
         }
         return $this->ContadorPilha;
@@ -1740,9 +1696,9 @@ class Administracao
     function montarRelacionamentoClasseObjeto($cod_classe, $relacao, $relacaourl)
     {
         // Atualiza lista de objetos onde pode ser criada
-        $sql = "DELETE FROM ".$this->page->db->tabelas["classexobjeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_classe"]." = " . $cod_classe;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_classe"]." = " . $cod_classe;
+        $this->container["db"]->execSQL($sql);
         
         if (is_array($relacao) && count($relacao) > 0)
         {
@@ -1756,10 +1712,10 @@ class Administracao
                 
                 if ($cod > 0)
                 {
-                    $sql = "SELECT ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." as cod_objeto "
-                            . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod;
-                    $rs = $this->page->db->ExecSQL($sql);
+                    $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." as cod_objeto "
+                            . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod;
+                    $rs = $this->container["db"]->execSQL($sql);
                     if ($rs->_numOfRows > 0)
                     {
                         $objs[] = $cod;
@@ -1769,10 +1725,10 @@ class Administracao
                 {
                     if ($url != "")
                     {
-                        $sql = "SELECT ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." as cod_objeto "
-                            . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                            . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]." = '".$url."'";
-                        $rs = $this->page->db->ExecSQL($sql);
+                        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." as cod_objeto "
+                            . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                            . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["url_amigavel"]." = '".$url."'";
+                        $rs = $this->container["db"]->execSQL($sql);
                         if ($rs->_numOfRows > 0)
                         {
                             while ($row = $rs->FetchRow())
@@ -1785,12 +1741,12 @@ class Administracao
             }
             foreach ($objs as $obj)
             {
-                $sql = "INSERT INTO ".$this->page->db->tabelas["classexobjeto"]["nome"]." "
-                        . " (".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_classe"].", "
-                        . " ".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_objeto"].") "
+                $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nome"]." "
+                        . " (".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_classe"].", "
+                        . " ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_objeto"].") "
                         . " VALUES (".$cod_classe.", "
                         . " ".$obj.")";
-                $this->page->db->ExecSQL($sql);
+                $this->container["db"]->execSQL($sql);
             }
         }
     }
@@ -1804,11 +1760,11 @@ class Administracao
     function montarRelacionamentoClasses($cod_classe, $relacao, $tipo)
     {
         // Apagando relação existente
-        $sql = "DELETE FROM ".$this->page->db->tabelas["classexfilhos"]["nome"]." "
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nome"]." "
                 . " WHERE ";
-        if ($tipo == "1") $sql .= " ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe"]." = " . $cod_classe;
-        else $sql .= " ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." = " . $cod_classe;
-        $this->page->db->ExecSQL($sql);
+        if ($tipo == "1") $sql .= " ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe"]." = " . $cod_classe;
+        else $sql .= " ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe_filho"]." = " . $cod_classe;
+        $this->container["db"]->execSQL($sql);
         
         if (is_array($relacao) && count($relacao) > 0)
         {
@@ -1816,12 +1772,12 @@ class Administracao
             {
                 $cod = (int)htmlspecialchars($rel, ENT_QUOTES, "UTF-8");
 
-                $sql = "INSERT INTO ".$this->page->db->tabelas["classexfilhos"]["nome"]." "
-                        . " (".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe"].", "
-                        . " ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"].") ";
+                $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nome"]." "
+                        . " (".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe"].", "
+                        . " ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe_filho"].") ";
                 if ($tipo=="1") $sql .= "VALUES (" . $cod_classe . ", " . $cod . ")";
                 else $sql .= "VALUES (" . $cod . ", " . $cod_classe . ")";
-                $this->page->db->ExecSQL($sql);
+                $this->container["db"]->execSQL($sql);
             }
         }
     }
@@ -1833,45 +1789,45 @@ class Administracao
      */
     function pegarInfoDaClasse($cod_classe)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." AS cod_classe,  "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS nome,  "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." AS prefixo,  "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["descricao"]." AS descricao,  "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["temfilhos"]." AS temfilhos,  "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["sistema"]." AS sistema,  "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["indexar"]." AS indexar "
-                . " FROM ".$this->page->db->tabelas["classe"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$cod_classe." "
-                . " ORDER BY ".$this->page->db->tabelas["classe"]["colunas"]["nome"];
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." AS cod_classe,  "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS nome,  "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"]." AS prefixo,  "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"]." AS descricao,  "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["temfilhos"]." AS temfilhos,  "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["sistema"]." AS sistema,  "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["indexar"]." AS indexar "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." = ".$cod_classe." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"];
 //        xd($sql);
-        $rs = $this->page->db->ExecSQL($sql);
+        $rs = $this->container["db"]->execSQL($sql);
         $result['classe'] = $rs->fields;
 
-        $sql = "SELECT ".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS nome "
-                . " FROM ".$this->page->db->tabelas["classe"]["nome"]." "
-                . " ORDER BY ".$this->page->db->tabelas["classe"]["colunas"]["nome"];
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS nome "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"];
+        $rs = $this->container["db"]->execSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
             $result['todas'][$row[$i]['cod_classe']]=$row[$i];
         }
 
-        $sql = "SELECT ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." AS cod_classe_filho "
-                . " FROM ".$this->page->db->tabelas["classexfilhos"]["nome"]." "
-                . "WHERE ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe"]." = ".$cod_classe;
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe_filho"]." AS cod_classe_filho "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nome"]." "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe"]." = ".$cod_classe;
+        $rs = $this->container["db"]->execSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
             $result['todas'][$row[$i]['cod_classe_filho']]['permitido']=true;
         }
 
-        $sql = "SELECT ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe"]." AS cod_classe "
-                . " FROM ".$this->page->db->tabelas["classexfilhos"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["classexfilhos"]["colunas"]["cod_classe_filho"]." = ".$cod_classe;
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe"]." AS cod_classe "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classexfilhos"]["colunas"]["cod_classe_filho"]." = ".$cod_classe;
+        $rs = $this->container["db"]->execSQL($sql);
         $row = $rs->GetRows();
         for ($i=0; $i<sizeof($row); $i++)
         {
@@ -1890,23 +1846,23 @@ class Administracao
         }
 
         $sql = "SELECT COUNT(*) AS cnt "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$cod_classe;
-        $rs = $this->page->db->ExecSQL($sql);
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." = ".$cod_classe;
+        $rs = $this->container["db"]->execSQL($sql);
         $result['obj_conta'] = $rs->fields["cnt"];
 
         $sql = "SELECT "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel "
-                . " FROM ".$this->page->db->tabelas["classexobjeto"]["nome"]." ".$this->page->db->tabelas["classexobjeto"]["nick"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-                . " ON ".$this->page->db->tabelas["classexobjeto"]["nick"].".".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
-                . " WHERE ".$this->page->db->tabelas["classexobjeto"]["nick"].".".$this->page->db->tabelas["classexobjeto"]["colunas"]["cod_classe"]." = ".$cod_classe;
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]." AS titulo, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nick"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
+                . " ON ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classexobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["classexobjeto"]["colunas"]["cod_classe"]." = ".$cod_classe;
 //                . " objeto.titulo, objeto.url_amigavel from classexobjeto "
 //                . "inner join objeto on classexobjeto.cod_objeto=objeto.cod_objeto "
 //                . "where classexobjeto.cod_classe=$cod_classe";
-        $res = $this->page->db->ExecSQL($sql);
+        $res = $this->container["db"]->execSQL($sql);
         $row = $res->GetRows();
         for ($k=0; $k<sizeof($row); $k++)
         {
@@ -1933,11 +1889,11 @@ class Administracao
      */
     function pegarListaTipoDado()
     {
-        $sql = "SELECT ".$this->page->db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." AS codigo, "
-                . " ".$this->page->db->tabelas["tipodado"]["colunas"]["nome"]." AS texto "
-                . " FROM ".$this->page->db->tabelas["tipodado"]["nome"]." "
-                . " ORDER BY ".$this->page->db->tabelas["tipodado"]["colunas"]["nome"];
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["cod_tipodado"]." AS codigo, "
+                . " ".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["nome"]." AS texto "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["tipodado"]["nome"]." "
+                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["nome"];
+        $rs = $this->container["db"]->execSQL($sql);
         return $rs->GetRows();
     }
 
@@ -2037,14 +1993,14 @@ class Administracao
      */
     function atualizarClasse($cod_classe, $dados)
     {
-         $sql = "UPDATE ".$this->page->db->tabelas["classe"]["nome"]." "
-                . " SET ".$this->page->db->tabelas["classe"]["colunas"]["nome"]." = '" . $dados["nome"] . "', "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["prefixo"]." = '" . $dados["prefixo"] . "', "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["descricao"]." = '" . $dados["descricao"] . "', "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["temfilhos"]." = '" . $dados["temfilhos"] . "', "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["indexar"]." = '" . $dados["index"] . "' "
-                . "WHERE ".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = " . $cod_classe;
-        $this->page->db->ExecSQL($sql);
+         $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." "
+                . " SET ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." = '" . $dados["nome"] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"]." = '" . $dados["prefixo"] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"]." = '" . $dados["descricao"] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["temfilhos"]." = '" . $dados["temfilhos"] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["indexar"]." = '" . $dados["index"] . "' "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." = " . $cod_classe;
+        $this->container["db"]->execSQL($sql);
     }
     
     /**
@@ -2056,21 +2012,21 @@ class Administracao
     {
         $cod_classe = 0;
         
-        $sql = "INSERT INTO ".$this->page->db->tabelas["classe"]["nome"]." "
-                . " (".$this->page->db->tabelas["classe"]["colunas"]["nome"].", "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["prefixo"].", "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["descricao"].", "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["temfilhos"].", "
-                . " ".$this->page->db->tabelas["classe"]["colunas"]["indexar"].") "
+        $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." "
+                . " (".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["temfilhos"].", "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["indexar"].") "
                 . " VALUES ('" . $dados["nome"] . "', "
                 . " '" . $dados["prefixo"] . "', "
                 . " '" . $dados["descricao"] . "', "
                 . " '" . $dados["temfilhos"] . "', "
                 . " '" . $dados["index"] . "')";
-        $this->page->db->ExecSQL($sql);
+        $this->container["db"]->execSQL($sql);
         
-        $sql = "SELECT max(".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"].") AS cod FROM ".$this->page->db->tabelas["classe"]["nome"]."";
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT max(".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"].") AS cod FROM ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]."";
+        $rs = $this->container["db"]->execSQL($sql);
         while ($row = $rs->FetchRow())
         {
             $cod_classe = $row["cod"];
@@ -2086,42 +2042,42 @@ class Administracao
      */
     function apagarPropriedadeDaClasse($cod_propriedade)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["tipodado"]["nome"].".".$this->page->db->tabelas["tipodado"]["colunas"]["tabela"]." AS tabela "
-                . " FROM ".$this->page->db->tabelas["propriedade"]["nome"]." "
-                . " LEFT JOIN ".$this->page->db->tabelas["tipodado"]["nome"]." "
-                    . " ON ".$this->page->db->tabelas["tipodado"]["nome"].".".$this->page->db->tabelas["tipodado"]["colunas"]["cod_tipodado"]." = ".$this->page->db->tabelas["propriedade"]["nome"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_tipodado"]." "
-                . " WHERE ".$this->page->db->tabelas["propriedade"]["nome"].".".$this->page->db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["tipodado"]["nome"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["tabela"]." AS tabela "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"]." "
+                . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["tipodado"]["nome"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["tipodado"]["nome"].".".$this->container["config"]->bd["tabelas"]["tipodado"]["colunas"]["cod_tipodado"]." = ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_tipodado"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"].".".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
+        $rs = $this->container["db"]->execSQL($sql);
         $row = $rs->fields;
 
         if (isset($row['tabela']) && $row['tabela']!="")
         {
             if ($row['tabela'] == "tbl_blob")
             {
-                $sql = "SELECT ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
-                        . " ".$this->page->db->tabelas["tbl_blob"]["colunas"]["arquivo"]." AS arquivo "
-                        . " FROM ".$this->page->db->tabelas["tbl_blob"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["tbl_blob"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
-                $rs2 = $this->page->db->ExecSQL($sql);
+                $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_blob"]." AS cod_blob, "
+                        . " ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["arquivo"]." AS arquivo "
+                        . " FROM ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["nome"]." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
+                $rs2 = $this->container["db"]->execSQL($sql);
 
                 while ($row2 = $rs2->FetchRow())
                 {
                     $file_ext = Blob::PegaExtensaoArquivo($row2['arquivo']);
-                    if (file_exists($this->page->config["portal"]["uploadpath"]."/".Blob::identificaPasta($this->page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext))
+                    if (file_exists($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext))
                     {
-                        $checkDelete = unlink($this->page->config["portal"]["uploadpath"]."/".Blob::identificaPasta($this->page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext);
+                        $checkDelete = unlink($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext);
                     }
                 }
             }
             
-            $sql = "DELETE FROM ".$this->page->db->tabelas[$row['tabela']]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas[$row['tabela']]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
-            $this->page->db->ExecSQL($sql);
+            $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"][$row['tabela']]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"][$row['tabela']]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
+            $this->container["db"]->execSQL($sql);
         }
         
-        $sql = "DELETE FROM ".$this->page->db->tabelas["propriedade"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -2131,24 +2087,24 @@ class Administracao
      */
     function atualizarDadosPropriedade($cod_propriedade, $dados)
     {
-        $sql = "UPDATE ".$this->page->db->tabelas["propriedade"]["nome"]." SET ";
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["propriedade"]["nome"]." SET ";
 //        if(isset($dados["codrefclasse"]) && $dados["codrefclasse"]>0) 
 //        {
-            $sql .= " ".$this->page->db->tabelas["propriedade"]["colunas"]["cod_referencia_classe"]." = ".(!isset($dados["codrefclasse"]) || $dados["codrefclasse"]==0?"NULL":$dados["codrefclasse"]).", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["campo_ref"]." = '".$dados["camporef"]."', ";
+            $sql .= " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_referencia_classe"]." = ".(!isset($dados["codrefclasse"]) || $dados["codrefclasse"]==0?"NULL":$dados["codrefclasse"]).", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["campo_ref"]." = '".$dados["camporef"]."', ";
 //        }
-        $sql .= " ".$this->page->db->tabelas["propriedade"]["colunas"]["nome"]." = '".$dados['nome']."', "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["posicao"]." = ".$dados['posicao'].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["descricao"]." = '".$dados['descricao']."', "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["rotulo"]." = '".$dados['rotulo']."', "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["rot1booleano"]." = '".$dados['rot1booleano']."', "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["rot2booleano"]." = '".$dados['rot2booleano']."', "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["obrigatorio"]." = ".$dados['obrigatorio'].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["seguranca"]." = ".$dados['seguranca'].", "
-                . " ".$this->page->db->tabelas["propriedade"]["colunas"]["valorpadrao"]." = '".$dados['valorpadrao']."' "
-                . "WHERE ".$this->page->db->tabelas["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
+        $sql .= " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["nome"]." = '".$dados['nome']."', "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["posicao"]." = ".$dados['posicao'].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["descricao"]." = '".$dados['descricao']."', "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rotulo"]." = '".$dados['rotulo']."', "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rot1booleano"]." = '".$dados['rot1booleano']."', "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["rot2booleano"]." = '".$dados['rot2booleano']."', "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["obrigatorio"]." = ".$dados['obrigatorio'].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["seguranca"]." = ".$dados['seguranca'].", "
+                . " ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["valorpadrao"]." = '".$dados['valorpadrao']."' "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["propriedade"]["colunas"]["cod_propriedade"]." = ".$cod_propriedade;
 //        xd($sql);
-        $this->page->db->ExecSQL($sql);
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -2159,9 +2115,9 @@ class Administracao
     {
         // apagando a classe
         $sql  = "DELETE "
-                . " FROM ".$this->page->db->tabelas["classe"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." = ".$cod_classe;
-        $this->page->db->ExecSQL($sql);
+                . " FROM ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." = ".$cod_classe;
+        $this->container["db"]->execSQL($sql);
     }
     
     /**
@@ -2219,8 +2175,8 @@ $str .= "*  <hr /> \r\n"
     function pegarPerfilUsuarioObjeto($cod_usuario, $cod_objeto)
     {
         if (empty($cod_usuario)) return false;
-        $perfil = $this->page->usuario->pegarDireitosUsuario($cod_usuario);
-        $caminho = $this->page->adminobjeto->pegarCaminhoObjeto($cod_objeto);
+        $perfil = $this->container["usuario"]->pegarDireitosUsuario($cod_usuario);
+        $caminho = $this->container["adminobjeto"]->pegarCaminhoObjeto($cod_objeto);
         $caminho2 = array();
         foreach ($caminho as $cam)
         {
@@ -2244,24 +2200,24 @@ $str .= "*  <hr /> \r\n"
     function pegarListaApagados($inicio=0, $start=-1, $limit=-1)
     {
         $out=array();
-        $sql = "SELECT distinct ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_exclusao"]." AS data_exclusao, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS classe "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-               . " LEFT JOIN ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-               . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." "
-                . " LEFT JOIN ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
-                . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 1 ";
+        $sql = "SELECT distinct ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_exclusao"]." AS data_exclusao, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]." AS titulo, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS classe "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
+               . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"]." "
+               . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." "
+                . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classe"]["nick"]." "
+                . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." = ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 1 ";
         if ($inicio > 0)
         {
-            // $sql .= " AND ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$inicio." ";
+            // $sql .= " AND ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$inicio." ";
         }
-        $sql .= " ORDER BY ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_exclusao"]." DESC";
+        $sql .= " ORDER BY ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_exclusao"]." DESC";
         
-        $rs = $this->page->db->ExecSQL($sql, $start, $limit);
+        $rs = $this->container["db"]->execSQL($sql, $start, $limit);
         $row = $rs->GetRows();
         for ($l=0; $l<sizeof($row); $l++)
         {
@@ -2283,20 +2239,20 @@ $str .= "*  <hr /> \r\n"
     function pegarListaVencidos($ord1="titulo", $ord2="asc", $inicio=-1, $limite=-1, $cod_objeto=1)
     {
         $out=array();
-        $sql = "SELECT ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                . " ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_validade"]." AS data_validade, "
-                . " ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["nome"]." AS classe "
-                . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["classe"]["nome"]." ".$this->page->db->tabelas["classe"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_classe"]." = ".$this->page->db->tabelas["classe"]["nick"].".".$this->page->db->tabelas["classe"]["colunas"]["cod_classe"]." "
-                . " INNER JOIN ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-                    . " ON ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." "
-                . " WHERE ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
-                . " AND ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["data_validade"]." < ".date("Ymd")."000000 "
-                . " AND ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 0 ";
-        $rs = $this->page->db->ExecSQL($sql, $inicio, $limite);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["titulo"]." AS titulo, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_validade"]." AS data_validade, "
+                . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS classe "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classe"]["nick"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." = ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." "
+                . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"]." "
+                    . " ON ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
+                . " AND ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_validade"]." < ".date("Ymd")."000000 "
+                . " AND ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 0 ";
+        $rs = $this->container["db"]->execSQL($sql, $inicio, $limite);
         $row = $rs->GetRows();
 
         for ($i=0; $i<sizeof($row); $i++)
@@ -2314,9 +2270,9 @@ $str .= "*  <hr /> \r\n"
      */
     function apagarLogObjeto($cod_objeto)
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["logobjeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["logobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["logobjeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["logobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $this->container["db"]->execSQL($sql);
     }
     
     /**
@@ -2325,9 +2281,9 @@ $str .= "*  <hr /> \r\n"
      */
     function apagarLogWorkflow($cod_objeto)
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["logworkflow"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $this->container["db"]->execSQL($sql);
     }
 
     /**
@@ -2336,10 +2292,10 @@ $str .= "*  <hr /> \r\n"
      */
     function apagarEmDefinitivo($cod_objeto)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                . " FROM ".$this->page->db->tabelas["parentesco"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto;
-        $res=$this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto;
+        $res=$this->container["db"]->execSQL($sql);
         $row = $res->GetRows();
 
         for ($c=0; $c<sizeof($row); $c++)
@@ -2347,8 +2303,8 @@ $str .= "*  <hr /> \r\n"
             $this->apagarEmDefinitivo($row[$c]["cod_objeto"]);
         }
 
-        $this->page->db->ExecSQL("DELETE FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
+        $this->container["db"]->execSQL("DELETE FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
     }
 
     /**
@@ -2357,24 +2313,24 @@ $str .= "*  <hr /> \r\n"
      */
     function recuperarObjeto($cod_objeto)
     {
-        $sql = "SELECT distinct ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
-                    . " FROM ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-                    . " INNER JOIN ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-                        . " ON ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
-                    . " WHERE (".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
-                    . " OR ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
-                    . " AND (".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 1) ";
-        $res = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT distinct ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"]." "
+                    . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
+                        . " ON ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." "
+                    . " WHERE (".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
+                    . " OR ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
+                    . " AND (".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 1) ";
+        $res = $this->container["db"]->execSQL($sql);
 
         while ($row = $res->FetchRow())
         {
-            $sql = "UPDATE ".$this->page->db->tabelas["objeto"]["nome"]." "
-                    . " SET ".$this->page->db->tabelas["objeto"]["colunas"]["apagado"]." = 0, "
-                    . " ".$this->page->db->tabelas["objeto"]["colunas"]["data_exclusao"]." = null "
-                    . " WHERE ".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
-            $this->page->db->ExecSQL($sql);
+            $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                    . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 0, "
+                    . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_exclusao"]." = null "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
+            $this->container["db"]->execSQL($sql);
 
-            $this->page->log->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_RECUPERAR);
+            $this->container["log"]->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_RECUPERAR);
 
             if ($row["cod_objeto"] != $cod_objeto)
             {
@@ -2413,7 +2369,7 @@ $str .= "*  <hr /> \r\n"
         // executa scripts antes da gravacao do objeto
         
         $_POST = $post;
-        $execAntes = $this->page->adminobjeto->executarScript($post['cod_classe'], $post['cod_pele'], 'antes');
+        $execAntes = $this->container["adminobjeto"]->executarScript($post['cod_classe'], $post['cod_pele'], 'antes');
         $post = $_POST;
         
         $executa = false;
@@ -2450,7 +2406,7 @@ $str .= "*  <hr /> \r\n"
         }
         
         // chama a execução de scripts depois de gravar o objeto
-        $execDepois = $this->page->adminobjeto->executarScript($post['cod_classe'], $post['cod_pele'], 'depois');
+        $execDepois = $this->container["adminobjeto"]->executarScript($post['cod_classe'], $post['cod_pele'], 'depois');
         
         return $retorno;
     }

@@ -31,6 +31,8 @@
     
 namespace Pbl\Core\Parse;
 
+use Exception;
+
 use Pbl\Core\Base;
 
 class Parse extends Base
@@ -51,7 +53,7 @@ class Parse extends Base
     // {
     //     $this->page = $page;
 
-    //     // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+    //     // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
     //     // {
     //     //     x("parse::construct");
     //     // }
@@ -70,7 +72,7 @@ class Parse extends Base
         if (defined ("_PARSEINITIALIZED")) return false;
         define ("_PARSEINITIALIZED", 1);
 
-		// if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+		// if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::initialize");
         // }
@@ -130,9 +132,9 @@ class Parse extends Base
             'MES' => 'date("m")',
             'ANO' => 'date("Y")',
             'DATA'=> 'date("d/m/Y")',
-            'ROOT'=> '$page->config["portal"]["objroot"]',
+            'ROOT'=> '$this->container["config"]->getDados()["portal"]["objroot"]',
             'PERFIL' => '$this->container["usuario"]->cod_perfil',
-            'CONFIG' => '$this->container["config"]->',
+            'CONFIG' => '$this->container["config"]->getDados()',
             'USUARIO' => '$_SESSION["usuario"]',
             'INDICE' => '$_LOOP_["count"]',
             'FIM' => '$_LOOP_["max"]',
@@ -434,7 +436,7 @@ class Parse extends Base
             "localizar" => array (
                 'opentag' => 'localizar',
                 'regex' => '|(.*)|',
-                'output' => '<?php <#P:nome#>_array = $page->adminobjeto->localizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,<#P:inicio#>,<#P:limite#>,<#P:pai#>,<#P:niveis#>,false,<#P:like#>,<#P:ilike#>,<#P:tags#>);'."\n"
+                'output' => '<?php <#P:nome#>_array = $this->container["adminobjeto"]->localizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,<#P:inicio#>,<#P:limite#>,<#P:pai#>,<#P:niveis#>,false,<#P:like#>,<#P:ilike#>,<#P:tags#>);'."\n"
                     .'if (<#P:nome#>_max = count(<#P:nome#>_array)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_LOOPSTACK_,$_LOOP_);'."\n"
@@ -501,7 +503,7 @@ class Parse extends Base
             "localizaraleatorio" => array (
                 'opentag' => 'localizaraleatorio',
                 'regex' => '|(.*)|',
-                'output' => '<?php <#P:nome#>_array = $page->adminobjeto->localizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,-1,-1,<#P:pai#>,<#P:niveis#>);'."\n"
+                'output' => '<?php <#P:nome#>_array = $this->container["adminobjeto"]->localizarObjetos(<#P:classes#>,<#P:condicao#>,<#P:ordem#>,-1,-1,<#P:pai#>,<#P:niveis#>);'."\n"
                     .'if (<#P:nome#>_max = count(<#P:nome#>_array)) {'."\n"
                         .'if (!isset($_LOOP_)) $_LOOP_=array();'."\n"
                         .'array_push($_STACK_,$_OBJ_);'."\n"
@@ -560,8 +562,8 @@ class Parse extends Base
             "usarobjeto" => array (
                 'opentag' => 'objeto',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:titulo#>!="") $_tmp_=$page->adminobjeto->criarObjeto(<#P:titulo#>);'."\n"
-                    .'else { if (<#P:cod_objeto#>!=-1) $_tmp_=$page->adminobjeto->criarObjeto(<#P:cod_objeto#>); }'."\n"
+                'output' => '<?php if (<#P:titulo#>!="") $_tmp_=$this->container["adminobjeto"]->criarObjeto(<#P:titulo#>);'."\n"
+                    .'else { if (<#P:cod_objeto#>!=-1) $_tmp_=$this->container["adminobjeto"]->criarObjeto(<#P:cod_objeto#>); }'."\n"
                     .'if ($_tmp_) {'."\n"
                         .'array_push($_STACK_,$_OBJ_);'."\n"
                         .'$_OBJ_=$_tmp_;'."\n"
@@ -585,14 +587,14 @@ class Parse extends Base
             
             "incluimenu" => array(
                 'regex' => '',
-                'output' => '<?php if ($page->usuario->estaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
+                'output' => '<?php if ($this->container["usuario"]->estaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
                 'parameters' => false,
                 'helptext' => 'O comando <strong>incluimenu</strong> deve ser escrito assim: <strong>&lt;@incluimenu@&gt;</strong>',
             ),
             
             "incluir" => array (
                 'regex' => '|(.*)|',
-                'output' => '<?php $page->parser->start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
+                'output' => '<?php $this->container["parse"]->start($_SERVER["DOCUMENT_ROOT"].<#P:arquivo#>);?>'."\n",
                 'parameters' => 1,
                 'helptext' => 'O comando <strong>incluir</strong> deve ser escrito assim: <strong>&lt;@incluir arquivo=[{string}]@&gt;</strong>',
                 'paramitens' => array (
@@ -618,7 +620,7 @@ class Parse extends Base
                 //.'($page->usuario->estaLogadoMilitarizado()===true) ? $page->parser->start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.pbl");',
                 'output' => '<?php (<#P:pele#>) ? $tmpDir = "/html/skin/".<#P:pele#> : $tmpDir = "/html/template"; '."\n"
                     .'$extensao=(file_exists($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".php"))?"php":"pbl";'."\n"
-                    .'($page->usuario->estaLogadoMilitarizado()===true) ? $page->parser->start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $page->parser->start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.php"); ?>',
+                    .'($this->container["usuario"]->estaLogadoMilitarizado()===true) ? $this->container["parse"]->start($_SERVER["DOCUMENT_ROOT"].$tmpDir."/view_".<#P:view#>.".".$extensao) : $this->container["parse"]->start($_SERVER["DOCUMENT_ROOT"]."/html/template/view_protegido.php"); ?>',
                 'parameters'=> 1,
                 'helptext' => 'O comando <strong>protegido</strong> deve ser escrito assim: <strong>&lt;@protegido view=[{nome_de_arquivo}] pele=[{prefixo_pele}]@&gt;</strong>',
                 'paramitens' => array (
@@ -732,7 +734,7 @@ class Parse extends Base
             "temfilho" => array (
                 'opentag'=>'temfilho',
                 'regex' => '|(.*)|',
-                'output' => '<?php if (<#P:cod_objeto#>!="") $_tmp_=$page->adminobjeto->pegarNumFilhos(<#P:cod_objeto#>);'."\n"
+                'output' => '<?php if (<#P:cod_objeto#>!="") $_tmp_=$this->container["adminobjeto"]->pegarNumFilhos(<#P:cod_objeto#>);'."\n"
                     .'if ($_tmp_ > 0) {'."\n"
                     .'?>'."\n",
                 'parameters'=> 1,
@@ -775,57 +777,68 @@ class Parse extends Base
                     $buffer = file_get_contents($file);
                     if (!$buffer) return false;
 		}
-		else $buffer=$file;
+        else $buffer=$file;
+        
+        try 
+        {
+            $out='';
+            $this->errorMessage='';
+            $this->showcode=0;
+            if (preg_match('|(.*?)<@debug_on@>(.*)|is',$buffer,$item))
+            {
+                $this->showcode=1;
+                $buffer=$item[1].$item[2];
+            }
 
-		$out='';
-		$this->errorMessage='';
-		$this->showcode=0;
-		if (preg_match('|(.*?)<@debug_on@>(.*)|is',$buffer,$item))
-		{
-			$this->showcode=1;
-			$buffer=$item[1].$item[2];
-		}
+            $bufferlines=explode("\n",$buffer);
+            foreach ($bufferlines as $key=>$line)
+            {
+                $this->line=$line;
+                $this->key=$key;
+                while (preg_match('$(.*?)\<@\s*(.*?)(?:\s+(.*?)|)@\>(.*)$is',$line,$cmd))
+                {
+    //				print_r($cmd);
+    //				echo '<br>';
+                    if ($this->debug)
+                    {
+                        echo "<pre><BR>line: $line<BR>";
+                        echo "<BR>com: $cmd[2]<BR>";
+                        var_dump($cmd);
 
-		$bufferlines=explode("\n",$buffer);
-		foreach ($bufferlines as $key=>$line)
-		{
-			$this->line=$line;
-			$this->key=$key;
-			while (preg_match('$(.*?)\<@\s*(.*?)(?:\s+(.*?)|)@\>(.*)$is',$line,$cmd))
-			{
-//				print_r($cmd);
-//				echo '<br>';
-				if ($this->debug)
-				{
-					echo "<pre><BR>line: $line<BR>";
-					echo "<BR>com: $cmd[2]<BR>";
-					var_dump($cmd);
-
-					echo '<BR><HR><P></pre>';
-				}
-				$line = trim($cmd[1]).$this->parseCommand($cmd[2],$cmd[3]).trim($cmd[4]);
-			}
-			$out .="\n".$line;
-		}
-		$this->checkTags();
-		if ($this->showcode)
-		{
-			echo '<P>';
-			$str = $this->InitCmd.$out;
-			$dbg=explode("\n",$str);
-			foreach ($dbg as $key=>$line)
-			{
-				echo ($key+1).':&nbsp;';
-				echo htmlspecialchars($line);
-				echo '<br>';
-			}
-		}
-	/*	echo "?>".$this->InitCmd.$out;
-exit;*/
-		/*eval ("?>");*/
-//                ob_flush();
-//                flush();
-		eval ("?>".$this->InitCmd.$out);
+                        echo '<BR><HR><P></pre>';
+                    }
+                    $line = trim($cmd[1]).$this->parseCommand($cmd[2],$cmd[3]).trim($cmd[4]);
+                }
+                $out .="\n".$line;
+            }
+            $this->checkTags();
+            if ($this->showcode)
+            {
+                echo '<P>';
+                $str = $this->InitCmd.$out;
+                $dbg=explode("\n",$str);
+                foreach ($dbg as $key=>$line)
+                {
+                    echo ($key+1).':&nbsp;';
+                    echo htmlspecialchars($line);
+                    echo '<br>';
+                }
+            }
+        /*	echo "?>".$this->InitCmd.$out;
+    exit;*/
+            /*eval ("?>");*/
+    //                ob_flush();
+    //                flush();
+            eval ("?>".$this->InitCmd.$out);
+        }
+        catch (Exception $e)
+        {
+            if ($type==0)
+            {
+                throw new Exception("Erro ao renderizar arquivo: ".$file." - ".$e->getMessage());
+            }
+            throw $e;
+        }
 //                ob_flush();
 //                flush();
 		//return $this->InitCmd.$out;
@@ -833,7 +846,7 @@ exit;*/
 
 	function checkTags()
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::checkTags");
         // }
@@ -857,7 +870,7 @@ exit;*/
 
 	function error($msg,$showhelp=true)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::error");
         // }
@@ -872,7 +885,7 @@ exit;*/
 
 	function parseCommand($cmd,$buffer)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::parseCommand cmd=".$cmd." buffer=".$buffer);
         // }
@@ -970,7 +983,7 @@ exit;*/
 
 	function parseParams($buffer)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::parseParams buffer=".$buffer);
         // }
@@ -1012,7 +1025,7 @@ exit;*/
 
 	function addDefaultParams($array)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::addDefaultParams");
         // }
@@ -1049,7 +1062,7 @@ exit;*/
 
 	function parseValue($pos,$value)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::parseValue pos=".$pos." value=".$value);
         // }
@@ -1071,7 +1084,7 @@ exit;*/
 
 	function evaluate($expression,$type=false)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::evaluate expression=".$expression);
         // }
@@ -1105,7 +1118,6 @@ exit;*/
 								break;
 						}
                     }
-                    xd($out);
 					$out .=$passo1[1];
 
 					if (isset($passo1[3]))
@@ -1152,7 +1164,7 @@ exit;*/
 
 	function parseObjectData($data)
 	{
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+        // if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         // {
         //     x("parse::parseObjectData");
         // }

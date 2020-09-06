@@ -100,34 +100,34 @@ class Usuario extends Base
 	 */
 	function listarUsuarios($busca="", $ordem="", $dir="", $start=-1, $limit=-1, $oculta_root=1)
 	{
-            $sql = "SELECT ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                    . " ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap, "
-                    . " t2.".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome_chefia "
-                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." ".$this->page->db->tabelas["usuario"]["nick"]." "
-                    . " LEFT JOIN ".$this->page->db->tabelas["usuario"]["nome"]." t2 "
-                        . " ON ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." = t2.".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." "
-                    . " WHERE ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 ";
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap, "
+                    . " t2.".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome_chefia "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"]." "
+                    . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." t2 "
+                        . " ON ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." = t2.".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 ";
             if ($busca != "")
             {
-                $sql .= " AND (".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." like '%".$busca."%'"
-                        . " OR ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["login"]." like '%".$busca."%' "
-                        . " OR ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["email"]." like '%".$busca."%' "
-                        . " OR ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." like '%".$busca."%' "
-                        . " OR ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." like '%".$busca."%' "
+                $sql .= " AND (".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." like '%".$busca."%'"
+                        . " OR ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." like '%".$busca."%' "
+                        . " OR ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." like '%".$busca."%' "
+                        . " OR ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." like '%".$busca."%' "
+                        . " OR ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." like '%".$busca."%' "
                         . ") ";
             }
-            $sql .= ($oculta_root==1?" AND ".$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." > 1 ":"");
-            $sql .=" ORDER BY ".($ordem!=""?$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"][$ordem]:$this->page->db->tabelas["usuario"]["nick"].".".$this->page->db->tabelas["usuario"]["colunas"]["login"])." ".$dir;
+            $sql .= ($oculta_root==1?" AND ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." > 1 ":"");
+            $sql .=" ORDER BY ".($ordem!=""?$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"][$ordem]:$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"])." ".$dir;
             
-            $rs = $this->page->db->ExecSQL($sql, $start, $limit);
+            $rs = $this->container["db"]->execSQL($sql, $start, $limit);
             return $rs->getRows();
 	}
 		
@@ -173,45 +173,45 @@ class Usuario extends Base
             $sql = "";
             $bind = array();
 
-            if ($this->page->db->config["bd"]["tipo"]=="oracle11")
+            if ($this->container["config"]->bd["tipo"]=="oracle11")
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
-                        . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                        . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." = :login");
+                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap "
+                        . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                        . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." = :login");
                 $bind = array("login" => $usuario);
             }
             else
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
-                        . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                        . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." = ?");
+                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap "
+                        . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                        . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." = ?");
                 $bind = array(1 => $usuario);
             }
             
 //            xd($sql);
 
             
-            $rs = $this->page->db->ExecSQL(array($sql, $bind));
+            $rs = $this->container["db"]->execSQL(array($sql, $bind));
             
             // encontrou usuário com o login
             if ($rs->_numOfRows>0)
@@ -240,45 +240,45 @@ class Usuario extends Base
                         
                         $sql2 = "";
                         $bind2 = array();
-                        if ($this->page->db->config["bd"]["tipo"]=="oracle11")
+                        if ($this->container["config"]->bd["tipo"]=="oracle11")
                         {
-                            $sql2 = $this->page->db->getCon()->prepare("SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
-                                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = :login "
-                                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["senha"]." = :senha");
+                            $sql2 = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap "
+                                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = :login "
+                                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["senha"]." = :senha");
                         
                             $bind2 = array("login" => $rs->fields['cod_usuario'], "senha" => md5($senha));
                         }
                         else
                         {
-                            $sql2 = $this->page->db->getCon()->prepare("SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
-                                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ? "
-                                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["senha"]." = ?");
+                            $sql2 = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap "
+                                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ? "
+                                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["senha"]." = ?");
                         
                             $bind2 = array(1 => $rs->fields['cod_usuario'], 2 => md5($senha));
                         }
-                        $rs2 = $this->page->db->ExecSQL(array($sql2, $bind2));
+                        $rs2 = $this->container["db"]->execSQL(array($sql2, $bind2));
                         if ($rs2->_numOfRows == 0) return false;
                     }
                     
@@ -290,10 +290,10 @@ class Usuario extends Base
 //                    xd($rs->fields);
                     // atualiza data validade do usuario
                     $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
-                    $sql = "UPDATE ".$this->page->db->tabelas["usuario"]["nome"]." "
-                            . " SET ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
-                            . "WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
-                    $rs2 = $this->page->db->ExecSQL($sql);
+                    $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                            . " SET ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
+                            . "WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
+                    $rs2 = $this->container["db"]->execSQL($sql);
                     
                     // carrega permissões do usuario
                     $this->carregar();
@@ -313,42 +313,42 @@ class Usuario extends Base
             $sql = "";
             $bind = array();
 
-            if ($this->page->db->config["bd"]["tipo"]=="oracle11")
+            if ($this->container["config"]->bd["tipo"]=="oracle11")
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
-                        . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                        . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." = :login");
+                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap "
+                        . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                        . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." = :login");
                 $bind = array("login" => $usuario);
             }
             else
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                        . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap "
-                        . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                        . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                        . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." = ?");
+                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                        . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap "
+                        . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                        . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                        . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." = ?");
                 $bind = array(1 => $usuario);
             }
             
-            $rs = $this->page->db->ExecSQL(array($sql, $bind));
+            $rs = $this->container["db"]->execSQL(array($sql, $bind));
             
             // encontrou usuário com o login
             if ($rs->_numOfRows>0)
@@ -358,10 +358,10 @@ class Usuario extends Base
                 
                 // atualiza data validade do usuario
                 $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
-                $sql = "UPDATE ".$this->page->db->tabelas["usuario"]["nome"]." "
-                        . " SET ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
-                        . "WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
-                $rs2 = $this->page->db->ExecSQL($sql);
+                $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                        . " SET ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
+                        . "WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
+                $rs2 = $this->container["db"]->execSQL($sql);
 
                 // carrega permissões do usuario
                 $this->carregar();
@@ -375,7 +375,7 @@ class Usuario extends Base
 	function logout()
 	{
 //            xd();
-            $cod_objeto = $this->page->config["portal"]["objroot"];
+            $cod_objeto = $this->container["config"]->portal["objroot"];
             $_SESSION['usuario'] = "";
             $_SESSION['perfil'] = "";
             
@@ -391,33 +391,6 @@ class Usuario extends Base
             $this->pegarPerfil();
 	}
 
-//	function CarregarDireitos(&$page)
-//	{
-//		$sql = "select cod_objeto, 
-//		cod_perfil 
-//		from 
-//		usuarioxobjetoxperfil 
-//		where 
-//		cod_usuario=".$_SESSION['usuario']['cod_usuario'];
-//		$rs = $this->page->db->ExecSQL($sql);
-//		while ($row = $rs->FetchRow()) {
-//			$_SESSION['usuario']['direitos'][$row['cod_objeto']] = $row['cod_perfil'];
-//		}
-//                
-//                $sql = "select cod_objeto, 
-//                cod_perfil 
-//                from usuarioxobjetoxperfil 
-//                where cod_usuario=$interCod_Usuario";
-//                $rs = $this->page->db->ExecSQL($sql);
-//                if ($rs->_numOfRows>0){
-//                    while (!$rs->EOF){
-//                        $out[$rs->fields['cod_objeto']]=$rs->fields['cod_perfil'];
-//                        $rs->MoveNext();
-//                    }
-//                }
-//                return $out;
-//                
-//	}
 
 	function carregarInfoPerfis()
 	{
@@ -448,7 +421,7 @@ class Usuario extends Base
 		
 	function pegarPerfil($cod_objeto=0)
 	{
-        xd($this->page->objeto->valor('cod_objeto'));
+        // xd($this->page->objeto->valor('cod_objeto'));
             if ($cod_objeto==0 && !$this->page->objeto->valor('cod_objeto')) return false;
             if ($cod_objeto==0) $cod_objeto = $this->page->objeto->valor('cod_objeto');
             $caminho[] = $cod_objeto;
@@ -532,8 +505,8 @@ class Usuario extends Base
 	{
             //$sql = 'select count(*) as contador from pendencia where cod_usuario='.$_SESSION['usuario']["cod_usuario"];
             $sql = "SELECT COUNT(*) AS contador "
-                    . " FROM ".$this->page->db->tabelas["pendencia"]["nome"];
-            $rs = $this->page->db->ExecSQL($sql);
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["pendencia"]["nome"];
+            $rs = $this->container["db"]->execSQL($sql);
             $row = $rs->fields;
             return $row['contador'];
 	}
@@ -541,11 +514,11 @@ class Usuario extends Base
 	function contarRejeitados()
 	{
             $sql = "SELECT COUNT(*) AS contador "
-                    . " FROM ".$this->page->db->tabelas["objeto"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']["cod_usuario"]." "
-                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["cod_status"]." = "._STATUS_REJEITADO." "
-                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["apagado"]." = 0";
-            $rs = $this->page->db->ExecSQL($sql);
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']["cod_usuario"]." "
+                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_status"]." = "._STATUS_REJEITADO." "
+                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["apagado"]." = 0";
+            $rs = $this->container["db"]->execSQL($sql);
             $row = $rs->fields;
             return $row['contador'];
 	}
@@ -607,7 +580,7 @@ class Usuario extends Base
 						$out[]=$item;
 					break;	
 				case '/do/delete':
-					if (($this->page->objeto->valor("cod_objeto")!=$this->page->config["portal"]["objroot"]) && (!$this->page->objeto->valor("apagado")))
+					if (($this->page->objeto->valor("cod_objeto")!=$this->container["config"]->portal["objroot"]) && (!$this->page->objeto->valor("apagado")))
 						$out[]=$item;
 					break;
 				case '/do/new':
@@ -619,7 +592,7 @@ class Usuario extends Base
 						$out[]=$item;
 					break;
 				case '/do/rejeitar':
-					if ($this->page->objeto->valor('cod_objeto')!=$this->page->config["portal"]["objroot"])
+					if ($this->page->objeto->valor('cod_objeto')!=$this->container["config"]->portal["objroot"])
 					{
 					 	if (($this->page->objeto->valor("cod_status")==_STATUS_SUBMETIDO) || ($this->page->objeto->valor("cod_status")==_STATUS_PUBLICADO))
 							$out[]=$item;
@@ -692,22 +665,22 @@ class Usuario extends Base
      */
     function atualizarUsuario($dados)
     {
-        $sql = "UPDATE ".$this->page->db->tabelas["usuario"]["nome"]." "
-                . " SET ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." = '" . $dados['nome'] . "', "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." = '" . $dados['email'] . "', "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." = '" . $dados["secao"] . "', "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." = '" . $dados['ramal'] . "', "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." = '" . $dados['login'] . "', "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." = " . $dados['altera_senha'] . ", "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." = " . $dados['ldap'] . ", "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($dados['data_atualizacao'], 16).", ";
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                . " SET ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." = '" . $dados['nome'] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." = '" . $dados['email'] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." = '" . $dados["secao"] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." = '" . $dados['ramal'] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." = '" . $dados['login'] . "', "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." = " . $dados['altera_senha'] . ", "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." = " . $dados['ldap'] . ", "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($dados['data_atualizacao'], 16).", ";
         if ($dados['senha']!="") 
         {
-            $sql .= " ".$this->page->db->tabelas["usuario"]["colunas"]["senha"]." = '" . md5($dados['senha']) . "', ";
+            $sql .= " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["senha"]." = '" . md5($dados['senha']) . "', ";
         }
-        $sql .= " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." = " . $dados['chefia'] . " "
-                . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = " . $dados['cod_usuario'];
-        $this->page->db->ExecSQL($sql);
+        $sql .= " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." = " . $dados['chefia'] . " "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = " . $dados['cod_usuario'];
+        $this->container["db"]->execSQL($sql);
     }
     
     /**
@@ -719,16 +692,16 @@ class Usuario extends Base
      */
     function alterarPerfilUsuarioObjeto($cod_usuario, $cod_objeto, $perfil, $inserir=true)
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                . " AND ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = ".$cod_usuario;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                . " AND ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = ".$cod_usuario;
+        $this->container["db"]->execSQL($sql);
         if ($inserir)
         {
-            $sql = "INSERT INTO ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
-				."(".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"].", ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"].", ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"].") "
+            $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["nome"]." "
+				."(".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"].", ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"].", ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"].") "
 				."values(".$cod_usuario.", ".$cod_objeto.", ".$perfil.")";
-            $this->page->db->ExecSQL($sql);
+            $this->container["db"]->execSQL($sql);
         }
     }
     
@@ -740,11 +713,11 @@ class Usuario extends Base
      */
     function existeOutroUsuario($login, $cod_usuario=false)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario "
-			."FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-			."WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." = '".$login."' AND ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." <> 0";
-        if ($cod_usuario) $sql .=" AND ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." <> ".$cod_usuario." ";
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario "
+			."FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+			."WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." = '".$login."' AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." <> 0";
+        if ($cod_usuario) $sql .=" AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." <> ".$cod_usuario." ";
+        $rs = $this->container["db"]->execSQL($sql);
         return !$rs->EOF;
     }
     
@@ -757,26 +730,26 @@ class Usuario extends Base
     {
         if (!$secao && $secao==null)
         {
-            $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS texto, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS intchefia "
-                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                    . " ORDER BY ".$this->page->db->tabelas["usuario"]["colunas"]["nome"].", "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"];
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS texto, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS intchefia "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                    . " ORDER BY ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"].", "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"];
         }
         else
         {
-            $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS texto, "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS intchefia "
-                    . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                    . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 1 "
-                    . " AND ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." = '".$secao."' "
-                    . " ORDER BY ".$this->page->db->tabelas["usuario"]["colunas"]["nome"].", "
-                    . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"];
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS codigo, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS texto, "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS intchefia "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 1 "
+                    . " AND ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." = '".$secao."' "
+                    . " ORDER BY ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"].", "
+                    . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"];
         }
-        $rs = $this->page->db->ExecSQL($sql);
+        $rs = $this->container["db"]->execSQL($sql);
         return $rs->GetRows();
     }
     
@@ -786,9 +759,9 @@ class Usuario extends Base
      */
     function limparPerfisUsuario($cod_usuario)
     {
-        $sql = "DELETE FROM ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = " . $cod_usuario;
-        $this->page->db->ExecSQL($sql);
+        $sql = "DELETE FROM ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = " . $cod_usuario;
+        $this->container["db"]->execSQL($sql);
     }
     
     /**
@@ -798,19 +771,19 @@ class Usuario extends Base
      */
     function pegarInformacoesUsuario($cod_usuario)
     {
-        $sql = "SELECT ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["nome"]." AS nome, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["email"]." AS email, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["login"]." AS login, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["chefia"]." AS chefia, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["secao"]." AS secao, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["ramal"]." AS ramal, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["ldap"]." AS ldap, "
-                . " ".$this->page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao "
-                . " FROM ".$this->page->db->tabelas["usuario"]["nome"]." "
-                . " WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = ".$cod_usuario;
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]." AS login, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]." AS secao, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]." AS ramal, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]." AS altera_senha, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]." AS ldap, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." AS data_atualizacao "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                . " WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$cod_usuario;
+        $rs = $this->container["db"]->execSQL($sql);
         return $rs->fields;
     }
     
@@ -822,12 +795,12 @@ class Usuario extends Base
     function pegarDireitosUsuario($interCod_Usuario)
     {
         $out = array();
-        $sql = "SELECT ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                . " ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." AS cod_perfil "
-                . " FROM ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["nome"]." "
-                . "WHERE ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = ".$interCod_Usuario." "
-                . "ORDER BY ".$this->page->db->tabelas["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"];
-        $rs = $this->page->db->ExecSQL($sql);
+        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"]." AS cod_objeto, "
+                . " ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_perfil"]." AS cod_perfil "
+                . " FROM ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["nome"]." "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_usuario"]." = ".$interCod_Usuario." "
+                . "ORDER BY ".$this->container["config"]->bd["tabelas"]["usuarioxobjetoxperfil"]["colunas"]["cod_objeto"];
+        $rs = $this->container["db"]->execSQL($sql);
         if ($rs->_numOfRows>0){
             while ($row = $rs->FetchRow()){
                 $out[$row['cod_objeto']] = $row['cod_perfil'];
@@ -842,10 +815,10 @@ class Usuario extends Base
      */
     function bloquearUsuario($cod)
     {
-        $sql = "UPDATE ".$this->page->db->tabelas["usuario"]["nome"]." "
-                . "SET ".$this->page->db->tabelas["usuario"]["colunas"]["valido"]." = 0 "
-                . "WHERE ".$this->page->db->tabelas["usuario"]["colunas"]["cod_usuario"]." = " . $cod;
-        $this->page->db->ExecSQL($sql);
+        $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
+                . "SET ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]." = 0 "
+                . "WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = " . $cod;
+        $this->container["db"]->execSQL($sql);
     }
 		
 }

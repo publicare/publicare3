@@ -39,8 +39,9 @@ class Banco extends Base
     private $sqlObj = null;
     private $sqlObjSel = null;
     private $sqlObjFrom = null;
+    private $metadados = null;
 
-    private function iniciaSqls()
+    private function iniciar()
     {
         $tblClasse = $this->container["config"]->bd["tabelas"]["classe"];
         $tblObjeto = $this->container["config"]->bd["tabelas"]["objeto"];
@@ -81,12 +82,37 @@ class Banco extends Base
                     . "ON ".$tblStatus["nick"].".".$tblStatus["colunas"]["cod_status"]." = ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["cod_status"]." ";
 
         $this->sqlObj = "SELECT ".$this->sqlObjSel." ".$this->sqlObjFrom;
+
+        // definindo campos que sao metadados do objeto
+        $this->metadados = array('cod_objeto', 'cod_pai', 'cod_usuario', 'cod_classe', 
+            'classe', 'temfilhos', 'prefixoclasse', 'cod_pele', 'pele', 'prefixopele', 'cod_status', 
+            'status', 'titulo', 'descricao', 'data_publicacao', 'data_validade', 'script_exibir', 
+            'apagado', 'objetosistema', 'url', 'peso', 'tags', 'url_amigavel', 'versao',
+            'versao_publicada'
+        );
+    }
+
+    public function getMetadados()
+    {
+        return $this->metadados;
     }
 
     public function getSqlObj()
     {
-        if ($this->sqlObj === null) $this->iniciaSqls();
+        if ($this->sqlObj === null) $this->iniciar();
         return $this->sqlObj;
+    }
+
+    public function getSqlObjSel()
+    {
+        if ($this->sqlObjSel === null) $this->iniciar();
+        return $this->sqlObjSel;
+    }
+
+    public function getSqlObjFrom()
+    {
+        if ($this->sqlObjFrom === null) $this->iniciar();
+        return $this->sqlObjFrom;
     }
 
     public function execSQL($sql, $start=-1, $limit=-1)
@@ -145,6 +171,89 @@ class Banco extends Base
             if (is_array($sql)) return $this->con->CacheExecute($tempo, $sql[0], $sql[1]);
             else return $this->con->CacheExecute($tempo, $sql);
         }
+    }
+
+     /**
+     * Cria condição WHERE pra consultas
+     * @param string $field - Coluna da tabela
+     * @param array $ar_values - Valores
+     * @return string
+     */
+    function criarTeste($field, $ar_values)	
+    {
+        $sql = '';
+        //x($ar_values);
+        //x($field);
+        foreach ($ar_values as $value)
+        {
+
+            if ($value != '')
+            {
+                if ($sql !='') $sql .= ' or ';
+                if (is_numeric($value)) $sql .= "$field=$value";
+                else $sql .="LOWER($field)='$value'";
+            }
+        }
+        if ($sql!='') $sql = '('.$sql.')';
+        else return " 1=1 ";
+        return $sql;
+    }
+
+    /**
+     * Executa insert no banco de dados
+     * @param string $table - nome da tabela
+     * @param array $fields - Campos e valores a serem inseridos
+     * @return int - Codigo do registro inserido
+     */
+    function insert($table, $fields)
+    {
+        $values = array();
+        foreach ($fields as $value)
+        {
+            if (is_int($value)) $values[]=$value;
+            else $values[]="'".$this->EscapeString($value)."'";		
+        }
+
+        $sql = sprintf("INSERT INTO %s (%s) VALUES(%s)",$table, implode(',',array_keys($fields)), implode(',',$values));
+
+        if ($this->query($sql)) return $this->insertId($table);
+        else return false;
+    }
+
+    /**
+     * Executa SQL
+     * @param string $sql
+     * @return ResultSet
+     */
+    function query($sql)
+    {
+        $res = $this->getCon()->Execute($sql);
+        return $res;
+    }
+
+    /**
+     * Retorna ID do registro inserido
+     * @param string $table - nome da tabela
+     * @return int - Codigo
+     */
+    function insertId($table)
+    {
+        foreach ($this->tabelas as $id => $tab)
+        {
+            if ($tab["nome"]==$table)
+            {
+                $id2 = $id;
+                if (substr($id, 0, 4)=="tbl_")
+                {
+                    $id2 = substr($id, 4);
+                }
+                $sql = "SELECT MAX(".$tab["colunas"]["cod_".$id2].") as cod FROM ".$table;
+                $this->getCon()->SetFetchMode(ADODB_FETCH_ASSOC);
+                $rs = $this->getCon()->Execute($sql);
+                return $rs->fields["cod"];
+            }
+        }
+        return false;
     }
 
 }

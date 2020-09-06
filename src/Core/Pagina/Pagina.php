@@ -120,7 +120,7 @@ class Pagina extends Base
      */
     function getmicrotime()
     {
-        if (isset($this->config["portal"]["debug"]) && $this->config["portal"]["debug"] === true)
+        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         {
             x("page::getmicrotime");
         }
@@ -134,7 +134,7 @@ class Pagina extends Base
      */
     function incluirAdmin()
     {
-        if (isset($this->config["portal"]["debug"]) && $this->config["portal"]["debug"] === true)
+        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         {
             x("page::incluirAdmin");
         }
@@ -157,10 +157,14 @@ class Pagina extends Base
         {
             $this->action = $acao;
         }
+        else
+        {
+            $acao = $this->action;
+        }
         $acaoCompleta = "";
         // quebrando string de acao pelas barras "/"
         $vacao = preg_split("[\/]", $acao);
-        
+
         // array para montagem da pagina
         $incluir = array();
         // define o header
@@ -226,7 +230,7 @@ class Pagina extends Base
                 // Mover objeto
                 elseif ($acao=='/do/paste')
                 {
-                    if ($this->objeto->podeTerFilhos())
+                    if ($this->container["objeto"]->podeTerFilhos())
                     {
                         $this->administracao->moverObjeto(-1, $cod_objeto);
                         $acao = '/content/view';
@@ -236,7 +240,7 @@ class Pagina extends Base
                 // Colar como copia
                 elseif ($acao=='/do/pastecopy')
                 {
-                    if ($this->objeto->podeTerFilhos())
+                    if ($this->container["objeto"]->podeTerFilhos())
                     {
                         $this->administracao->duplicarObjeto(-1, $cod_objeto);
                         $acao = '/content/view';
@@ -304,16 +308,17 @@ class Pagina extends Base
         // Ver pagina
         elseif ($acao == "/content/view")
         {
+            
             if ($this->usuario->podeExecutar($acao))
             {
-                if ($this->objeto->valor('apagado') && $_SESSION["usuario"]["perfil"] > _PERFIL_EDITOR)
+                if ($this->container["objeto"]->valor('apagado') && $_SESSION["usuario"]["perfil"] > _PERFIL_EDITOR)
                 {
                     $this->exibirMensagemProibido($acao);
                     return false;
                 }
                 
                 // caso tenha view definida manualmente pega o arquivo
-                $tmpScriptAtual = $this->objeto->metadados['script_exibir'];
+                $tmpScriptAtual = $this->container["objeto"]->metadados['script_exibir'];
                 
                 // caso o objeto nao esteja protegido
                 if ($this->adminobjeto->estaSobAreaProtegida())
@@ -322,9 +327,9 @@ class Pagina extends Base
                     if ((isset($_GET['execview'])) && (!preg_match("/_protegido.*/", $tmpScriptAtual)))
                     {
                         // verifica existencia da view dentro da pasta da pele
-                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->valor('prefixopele')."/view_".$_GET['execview'].".php"))
+                        if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->valor('prefixopele')."/view_".$_GET['execview'].".php"))
                         {
-                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/view_".$_GET['execview'].".php";
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/view_".$_GET['execview'].".php";
                             $incluir["view"]["parse"] = true;
                         }
                         // verifica existencia da view dentro da pasta template
@@ -339,33 +344,33 @@ class Pagina extends Base
                     // caso tenha view definida manualmente e ainda nao tenha selecionado view
                     if ($tmpScriptAtual && $tmpScriptAtual != "" && $incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT'].$tmpScriptAtual))
                     {
-                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT'].$this->objeto->metadados['script_exibir'];
+                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT'].$this->container["objeto"]->metadados['script_exibir'];
                         $incluir["view"]["parse"] = true;
                     }
                     
                     // caso nao tenha view selecionada, verifica se tem na PELE
-                    if ($this->objeto->metadados['cod_pele'] > 0)
+                    if ($this->container["objeto"]->metadados['cod_pele'] > 0)
                     {
                         // uma view para a classe do objeto
-                        if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/view_".$this->objeto->metadados['prefixoclasse'].".php"))
+                        if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/view_".$this->container["objeto"]->metadados['prefixoclasse'].".php"))
                         {
-                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/view_".$this->objeto->metadados['prefixoclasse'].".php";
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/view_".$this->container["objeto"]->metadados['prefixoclasse'].".php";
                             $incluir["view"]["parse"] = true;
                         }
                         
                         // verifica se tem view padrao na pele
-                        if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/view_basic.php"))
+                        if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/view_basic.php"))
                         {
-                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/view_basic.php";
+                            $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/view_basic.php";
                             $incluir["view"]["parse"] = true;
                         }
                     }
                     
                     
                     // caso nao tenha view definida ainda, busca na pasta template pelo prefixo da classe
-                    if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->objeto->metadados['prefixoclasse'].".php"))
+                    if ($incluir["view"]["arquivo"] == "" && file_exists($_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->container["objeto"]->metadados['prefixoclasse'].".php"))
                     {
-                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->objeto->metadados['prefixoclasse'].".php";
+                        $incluir["view"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/template/view_".$this->container["objeto"]->metadados['prefixoclasse'].".php";
                         $incluir["view"]["parse"] = true;
                     }
                     // caso nao tenha view definida ainda, busca na pasta template pela view default
@@ -390,19 +395,19 @@ class Pagina extends Base
                 
                 // Definindo header e footer que serao exibidos
                 // caso tenha pele busca header e footer dentro da pele
-                if ($this->objeto->metadados['cod_pele'] > 0)
+                if ($this->container["objeto"]->metadados['cod_pele'] > 0)
                 {
                     // verificando header dentro da pele
-                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/header.php"))
+                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/header.php"))
                     {
-                        $incluir["header"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/header.php";
+                        $incluir["header"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/header.php";
                         $incluir["header"]["parse"] = true;
                     }
                     
                     //verificando footer dentro da pele
-                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/footer.php"))
+                    if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/footer.php"))
                     {
-                        $incluir["footer"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/footer.php";
+                        $incluir["footer"]["arquivo"] = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/footer.php";
                         $incluir["footer"]["parse"] = true;
                     }
                 }
@@ -420,8 +425,6 @@ class Pagina extends Base
         {
             if ($incluir["header"]["parse"])
             {
-                //                $this->parser->start($buffer, 1);
-                //                $buffer .= file_get_contents($incluir["header"]["arquivo"]);
                 $this->container["parse"]->start($incluir["header"]["arquivo"]);
             }
             else
@@ -429,7 +432,7 @@ class Pagina extends Base
                 include($incluir["header"]["arquivo"]);
             }
         }
-        
+
         if ($incluir["view"]["parse"])
         {
 //            $buffer .= "\n<!-- ".substr($incluir[0], strrpos($incluir[0], '/'))." -->";
@@ -470,7 +473,7 @@ class Pagina extends Base
 
 	function adicionarAviso($txt,$fatal=false)
 	{
-        if (isset($this->config["portal"]["debug"]) && $this->config["portal"]["debug"] === true)
+        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         {
             x("page::adicionarAviso");
         }
@@ -492,7 +495,7 @@ class Pagina extends Base
      */
     function exibirMensagemProibido($acao)
     {
-        if (isset($this->config["portal"]["debug"]) && $this->config["portal"]["debug"] === true)
+        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
         {
             x("page::exibirMensagemProibido");
         }
@@ -502,15 +505,15 @@ class Pagina extends Base
         $pagina = "";
         $parse = true;
         
-        if ($this->objeto->metadados['cod_pele'] > 0)
+        if ($this->container["objeto"]->metadados['cod_pele'] > 0)
         {
-            if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/header.php"))
+            if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/header.php"))
             {
-                $header = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/header.php";
+                $header = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/header.php";
             }
-            if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/footer.php"))
+            if (file_exists($_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/footer.php"))
             {
-                $footer = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->objeto->metadados['prefixopele']."/footer.php";
+                $footer = $_SERVER['DOCUMENT_ROOT']."/html/skin/".$this->container["objeto"]->metadados['prefixopele']."/footer.php";
             }
         }
         
@@ -525,9 +528,9 @@ class Pagina extends Base
             $pagina = $_SERVER['DOCUMENT_ROOT']."/html/template/error404.php";
             $parse = true;
         }
-        elseif (file_exists($this->config["portal"]["pblpath"]."/includes/error404.php"))
+        elseif (file_exists($this->container["config"]->portal["pblpath"]."/includes/error404.php"))
         {
-            $pagina = $this->config["portal"]["pblpath"]."/includes/error404.php";
+            $pagina = $this->container["config"]->portal["pblpath"]."/includes/error404.php";
             $parse = false;
         }
         else

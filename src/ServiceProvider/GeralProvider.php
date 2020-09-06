@@ -33,18 +33,33 @@ namespace Pbl\ServiceProvider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
+use Pbl\Core\Administracao\Administracao;
 use Pbl\Core\AdminObjeto\AdminObjeto;
+use Pbl\Core\Blob\Blob;
+use Pbl\Core\Log\Log;
+use Pbl\Core\Objeto\Objeto;
 use Pbl\Core\Pagina\Pagina;
 use Pbl\Core\Parse\Parse;
-use Pbl\Core\Objeto\Objeto;
 use Pbl\Core\Usuario\Usuario;
 
 class GeralProvider implements ServiceProviderInterface
 {
     public function register(Container $container)
     {
+        $container['administracao'] = function ($container) {
+            return new Administracao($container);
+        };
+        
         $container['adminobjeto'] = function ($container) {
             return new AdminObjeto($container);
+        };
+
+        $container['blob'] = function ($container) {
+            return new Blob($container);
+        };
+
+        $container['log'] = function ($container) {
+            return new Log($container);
         };
         
         $container['objeto'] = function ($container) {
