@@ -28,26 +28,15 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core;
+namespace Pbl\Core\AdminObjeto;
+
+use Pbl\Core\Base;
 
 /**
  * Classe adminobjeto, responsável por gerenciar parte usuários de objetos
  */
-class AdminObjeto
+class AdminObjeto extends Base
 {
-    public $index;
-    public $page;
-    
-    function __construct(&$page) {
-        $this->page = $page;
-
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("adminobjeto::construct");
-        }
-
-    }
-	
     /**
      * Gera SQL para verificar se objeto está publicado
      * @return string
@@ -200,16 +189,15 @@ class AdminObjeto
      */
     function pegarTags($cod_objeto)
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("adminobjeto::pegarTags cod_objeto=".$cod_objeto);
-        }
+        $tblTag = $this->container["config"]->bd["tabelas"]["tag"];
+        $tblTagx = $this->container["config"]->bd["tabelas"]["tagxobjeto"];
+
         $tags = "";
-        $sql = "SELECT ".$this->page->db->tabelas["tag"]["nick"].".".$this->page->db->tabelas["tag"]["colunas"]["nome_tag"]." AS nome_tag "
-                . "FROM ".$this->page->db->tabelas["tag"]["nome"]." ".$this->page->db->tabelas["tag"]["nick"]." "
-                . "INNER JOIN ".$this->page->db->tabelas["tagxobjeto"]["nome"]." ".$this->page->db->tabelas["tagxobjeto"]["nick"]." "
-                    . "ON ".$this->page->db->tabelas["tag"]["nick"].".".$this->page->db->tabelas["tag"]["colunas"]["cod_tag"]." = ".$this->page->db->tabelas["tagxobjeto"]["nick"].".".$this->page->db->tabelas["tagxobjeto"]["colunas"]["cod_tag"]." "
-                . "WHERE ".$this->page->db->tabelas["tagxobjeto"]["nick"].".".$this->page->db->tabelas["tagxobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
+        $sql = "SELECT ".$tblTag["nick"].".".$tblTag["colunas"]["nome_tag"]." AS nome_tag "
+                . "FROM ".$tblTag["nome"]." ".$tblTag["nick"]." "
+                . "INNER JOIN ".$tblTagx["nome"]." ".$tblTagx["nick"]." "
+                    . "ON ".$tblTag["nick"].".".$tblTag["colunas"]["cod_tag"]." = ".$tblTagx["nick"].".".$tblTagx["colunas"]["cod_tag"]." "
+                . "WHERE ".$tblTagx["nick"].".".$tblTagx["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $rs = $this->page->db->ExecSQL($sql);
         if ($rs->_numOfRows>0)
         {
@@ -250,15 +238,12 @@ class AdminObjeto
      */
     function pegarDadosObjetoId($cod_objeto)
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("adminobjeto::pegarDadosObjetoId cod_objeto=".$cod_objeto);
-        }
-
         if (is_numeric($cod_objeto))
         {
-            $sql = $this->page->db->sqlobj." WHERE ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-            $rs = $this->page->db->ExecSQL($sql);
+            $tblObjeto = $this->container["config"]->bd["tabelas"]["objeto"];
+            $sql = $this->container["db"]->getSqlObj()." "
+                ." WHERE ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["cod_objeto"]." = ".$cod_objeto;
+            $rs = $this->container["db"]->execSQL($sql);
             $dados = $rs->fields;
             return $dados;
         }
@@ -288,11 +273,6 @@ class AdminObjeto
      */
     function pegarCaminhoObjeto($cod_objeto)
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("adminobjeto::pegarCaminhoObjeto cod_objeto=".$cod_objeto);
-        }
-        
         return $this->recursivaCaminhoObjeto($cod_objeto);
     }
 
@@ -303,24 +283,22 @@ class AdminObjeto
      */
     function recursivaCaminhoObjeto($cod_objeto)
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("adminobjeto::recursivaCaminhoObjeto cod_objeto=".$cod_objeto);
-        }
-        
         $result = array();
 
-        if ($cod_objeto != $this->page->config["portal"]["objroot"])
+        if ($cod_objeto != $this->container["config"]->portal["objroot"])
         {
-            $sql = "SELECT ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." AS cod_pai, "
-                    ." ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["titulo"]." AS titulo, "
-                    ." ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["script_exibir"]." AS script_exibir, "
-                    ." ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["url_amigavel"]." AS url_amigavel "
-                    ." FROM ".$this->page->db->tabelas["parentesco"]["nome"]." ".$this->page->db->tabelas["parentesco"]["nick"]." "
-                    ." LEFT JOIN ".$this->page->db->tabelas["objeto"]["nome"]." ".$this->page->db->tabelas["objeto"]["nick"]." "
-                        ." ON ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_pai"]." = ".$this->page->db->tabelas["objeto"]["nick"].".".$this->page->db->tabelas["objeto"]["colunas"]["cod_objeto"]." "
-                    ." WHERE ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-                    . " ORDER BY ".$this->page->db->tabelas["parentesco"]["nick"].".".$this->page->db->tabelas["parentesco"]["colunas"]["ordem"]." DESC";
+            $tblObjeto = $this->container["config"]->bd["tabelas"]["objeto"];
+            $tblParentesco = $this->container["config"]->bd["tabelas"]["parentesco"];
+
+            $sql = "SELECT ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_pai"]." AS cod_pai, "
+                    ." ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["titulo"]." AS titulo, "
+                    ." ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["script_exibir"]." AS script_exibir, "
+                    ." ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["url_amigavel"]." AS url_amigavel "
+                    ." FROM ".$tblParentesco["nome"]." ".$tblParentesco["nick"]." "
+                    ." LEFT JOIN ".$tblObjeto["nome"]." ".$tblObjeto["nick"]." "
+                        ." ON ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_pai"]." = ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["cod_objeto"]." "
+                    ." WHERE ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_objeto"]." = ".$cod_objeto." "
+                    . " ORDER BY ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["ordem"]." DESC";
             $rs = $this->page->db->ExecSQL($sql);
     
             if ($rs->_numOfRows>0)
@@ -335,7 +313,6 @@ class AdminObjeto
                     );
                     $rs->MoveNext();
                 }
-                // xd($result);
             } 
         }
         return $result;
@@ -1079,118 +1056,7 @@ class AdminObjeto
 			
         return $result;
     }
-    
-    function localizarObjetosTabelaTemporariaOld ($classes, $array_qry, $array_ordem, $default_where, $pai_join)
-    {
-        
-        $tbl = $this->page->db->GetTempTable();
-		
-        // Variavel para controlar a criacao dos campos na tabela temporaria //
-        $primeiro_loop=true;
-        $campo_incluido=array();
-        $campo_incluido_natabela=array();
-        $ordem_temporaria=array();
-		
-        $sqls_insert = array();
-		
-        foreach ($classes as $cod_classe)
-        {
-            
-            $temp_campos=array();
-            $temp_from=array();
-            $temp_where=array();
-            $campo_incluido=array();
-			
-            //Constroi SQL para casos em que existem propriedades na ordem
-            foreach ($array_ordem as $item)
-            {
-                if (!isset($item['orientacao'])) $item['orientacao'] = "ASC";
-                
-                if (!$this->ehMetadado($item['campo']))
-                {
-                    $info = $this->criarSQLPropriedade($item['campo'], $item['orientacao'], $cod_classe);
-                    
-                    if ($info["tabela"]=="tbl_objref") $item['campo'] .= "_ref";
-                    
-                    if (!in_array($info['field'],$campo_incluido_natabela))
-                    {
-                        $tbl["colunas"][] = $this->page->db->AddFieldToTempTable($tbl,$info);
-                        $campo_incluido_natabela[]=$info['field'];
-                    }
-                    
-                    if (!in_array($info['field'],$campo_incluido))
-                    {
-                        $temp_campos[]=$info['field'];
-                        $temp_from[]=$info['from'];
-                        $temp_where[]=$info['where'];
-                        $campo_incluido[]=$info['field'];
-                    }
-                }
-                
-                $string_temp = $item['campo'].' '.$item['orientacao'];
-                if (!in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[]=$item['campo'].' '.$item['orientacao'];
-            }
 
-            //Constroi SQL para casos em que existem propriedades na condicao
-            foreach ($array_qry as $condicao)
-            {
-                if (!is_array($condicao))
-                {
-                    $out['where'] .= ' '.$condicao;
-                } 
-                else 
-                {
-                    if ($this->ehMetadado($condicao[0]))
-                    {
-                        if (preg_match('/floor/',$condicao[0])) {
-                            $condicao[0]=str_replace('objeto.','',$condicao[0]);
-                        }
-                        $temp_where[]=' ('.$condicao[0]." ".$condicao[1]." '".$condicao[2]."')";
-                    }
-                    else
-                    {
-                        $info = $this->criarSQLPropriedade($condicao[0],"", $cod_classe);
-                        if (!in_array($info['field'], $campo_incluido_natabela))
-                        {
-                            $tbl["colunas"][] = $this->page->db->AddFieldToTempTable($tbl, $info);
-                            $campo_incluido_natabela[]=$info['field'];
-                        }
-                        if (!in_array($info['field'],$campo_incluido))
-                        {
-                            $temp_campos[]=$info['field'];
-                            $temp_from[]=$info['from'];
-                            $temp_where[]=$info['where'];
-                            $campo_incluido[]=$info['field'];
-                        }
-			
-                        $temp_where[]= ' ('.$info['field']." ".$condicao[1]." ".$info['delimitador'].$condicao[2].$info['delimitador'].')';                   
-                    }
-                }
-            }
-			//fim
-            $campos=','.implode(',', $temp_campos);
-            $from = implode(' ', $temp_from);
-            $where = implode(' AND ', $temp_where);
-			
-            $sqls_insert[] = 'INSERT INTO '.$tbl["nome"].
-                    " SELECT ".$this->page->db->sqlobjsel.$campos.$this->page->db->sqlobjfrom.$pai_join.$from.' WHERE (1=1) AND '.$where.$default_where;
-			//$this->page->db->ExecSQL($sql);
-
-        }
-		
-        $sqlCreate = $this->page->db->tipodados["temp"]." ".$this->page->db->tipodados["temp2"].$tbl["nome"]." (".implode(", ", $tbl["colunas"]).")";
-        $this->page->db->ExecSQL($sqlCreate);
-		
-        foreach($sqls_insert as $sqls)
-        {
-            $this->page->db->ExecSQL($sqls);
-        }
-
-        $result['tbl'] = $tbl["nome"];
-        $result['ordem']=' ORDER BY '.implode(',', $ordem_temporaria);
-			
-        return $result;
-    }
     
     /**
      * Localizar objetos sem utilização de tabela temporária

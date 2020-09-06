@@ -32,22 +32,20 @@ namespace Pbl\ServiceProvider;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Pbl\Core\Sessao\SessaoManager;
 
-/**
- * Sessao Provider
- *
- * @package Pbl\ServiceProvider
- */
-class SessaoProvider implements ServiceProviderInterface
+use Pbl\Core\Config\Config;
+use Pbl\Core\Config\Padrao;
+
+class ConfigProvider implements ServiceProviderInterface
 {
-
     public function register(Container $container)
     {
-        $container['sessao'] = function($container) {
-            $sessaoo = new SessaoManager($container);
-            if (!SessaoManager::isOpen()) $sessaoo->iniciar();
-            return $sessaoo;
+        $container['config'] = function ($container) {
+            return new Config($container);
+        };
+
+        $container['config_padrao'] = function ($container) {
+            return new Padrao($container);
         };
 
         return $container;

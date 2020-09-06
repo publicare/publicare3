@@ -1,9 +1,10 @@
 <?php
 /**
  * Publicare - O CMS Público Brasileiro
- * @description Arquivo
+ * @file
+ * @description 
  * @copyright MIT © 2020
- * @package Pbl/SeviceManager
+ * @package Pbl\Core\Banco
  *
  * Este arquivo é parte do programa Publicare
  * 
@@ -28,28 +29,46 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\ServiceProvider;
+namespace Pbl\Core\Banco;
 
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
-use Pbl\Core\Sessao\SessaoManager;
+use Exception;
 
-/**
- * Sessao Provider
- *
- * @package Pbl\ServiceProvider
- */
-class SessaoProvider implements ServiceProviderInterface
+use Pbl\Core\Base;
+
+class Schema extends Base
 {
 
-    public function register(Container $container)
+    public function verifica()
     {
-        $container['sessao'] = function($container) {
-            $sessaoo = new SessaoManager($container);
-            if (!SessaoManager::isOpen()) $sessaoo->iniciar();
-            return $sessaoo;
-        };
-
-        return $container;
+        try {
+            $tblClasse = $this->container["config"]->bd["tabelas"]["classe"];
+            $sql = "SELECT count(*) FROM ".$tblClasse["nome"];
+            if (!$rs = $this->container["db"]->execute($sql))
+            {
+                $this->criaBanco();
+            }
+        }
+        catch(Exception $e)
+        {
+            xd("Erro ao iniciar banco de dados. ".$e->getMessage());
+        }
+        
     }
+
+    private function criaBanco()
+    {
+        throw new \Exception("Tabelas não encontradas");
+
+        $schema = $this->container["config"]->bd["tabelas"];
+        foreach ($schema as $tbl)
+        {
+            x($tbl);
+        }
+    }
+
+    public function criaTabela()
+    {
+        xd($this->container["config"]->getDados());
+    }
+
 }

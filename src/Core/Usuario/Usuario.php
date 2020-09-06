@@ -29,12 +29,14 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl;
+namespace Pbl\Core\Usuario;
+
+use Pbl\Core\Base;
 
 /**
  * Classe responsável por gerenciar usuários e permissões
  */
-class Usuario
+class Usuario extends Base
 {
 	public $perfil = array (
 			_PERFIL_ADMINISTRADOR => 'Administrador',
@@ -52,34 +54,39 @@ class Usuario
 	public $action;
 	public $inicio_secao;
         
-        public $page;
-        
-	/**
-	 * Metodo construtor da classe usuario
-	 * @param Page $page - Referencia objeto page
-	 */
-	function __construct(&$page)
-	{
-            $this->page = $page;
+	// /**
+	//  * Metodo construtor da classe usuario
+	//  * @param Page $page - Referencia objeto page
+	//  */
+	// function __construct(&$page)
+	// {
+    //         $this->page = $page;
             
-            if (!isset($_SESSION['perfil']) || !is_array($_SESSION['perfil']) 
-                    || count($_SESSION['perfil'])<1) 
-            {
-                $this->carregarInfoPerfis();
-            }
-            
-            
-            if (isset($_SESSION['usuario']['cod_usuario'])) 
-            {
-                $this->pegarPerfil();
-            }
-            else
-            {
-                $this->cod_perfil = _PERFIL_DEFAULT;
-                if (!isset($_SESSION['usuario']) || !is_array($_SESSION['usuario'])) $_SESSION['usuario'] = array();
-                $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
-            }
-	}
+    //  
+    // }
+    
+    /**
+     * Inicializa objeto, definindo sessions necessarias a utilizacao
+     */
+    public function iniciar()
+    {
+        if (!isset($_SESSION['perfil']) || !is_array($_SESSION['perfil']) 
+            || count($_SESSION['perfil'])<1) 
+        {
+            $this->carregarInfoPerfis();
+        }
+                
+        if (isset($_SESSION['usuario']['cod_usuario'])) 
+        {
+            $this->pegarPerfil();
+        }
+        else
+        {
+            $this->cod_perfil = _PERFIL_DEFAULT;
+            if (!isset($_SESSION['usuario']) || !is_array($_SESSION['usuario'])) $_SESSION['usuario'] = array();
+            $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
+        }
+    }
         
         function pegarNomePerfil($cod)
         {
@@ -414,21 +421,21 @@ class Usuario
 
 	function carregarInfoPerfis()
 	{
-		$sql = "SELECT ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["cod_perfil"]." AS cod_perfil, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["acao"]." AS acao, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["script"]." AS script, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["donooupublicado"]." AS donooupublicado, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["sopublicado"]." AS sopublicado, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["sodono"]." AS sodono, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["naomenu"]." AS naomenu, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["ordem"]." AS ordem, "
-                        . " ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["icone"]." AS icone "
-                        . " FROM ".$this->page->db->tabelas["infoperfil"]["nome"]." ".$this->page->db->tabelas["infoperfil"]["nick"]." "
-                        . " ORDER BY ".$this->page->db->tabelas["infoperfil"]["nick"].".".$this->page->db->tabelas["infoperfil"]["colunas"]["ordem"];
+        $tblInfo = $this->container["config"]->bd["tabelas"]["infoperfil"];
+		$sql = "SELECT ".$tblInfo["nick"].".".$tblInfo["colunas"]["cod_perfil"]." AS cod_perfil, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["acao"]." AS acao, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["script"]." AS script, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["donooupublicado"]." AS donooupublicado, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["sopublicado"]." AS sopublicado, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["sodono"]." AS sodono, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["naomenu"]." AS naomenu, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["ordem"]." AS ordem, "
+            . " ".$tblInfo["nick"].".".$tblInfo["colunas"]["icone"]." AS icone "
+            . " FROM ".$tblInfo["nome"]." ".$tblInfo["nick"]." "
+            . " ORDER BY ".$tblInfo["nick"].".".$tblInfo["colunas"]["ordem"];
 
-		$_SESSION['perfil']=array();
-
-		$rs = $this->page->db->ExecSQL($sql);
+		$_SESSION['perfil'] = array();
+		$rs = $this->container["db"]->execSQL($sql);
 		while ($row = $rs->FetchRow()){
 			$_SESSION['perfil'][$row["cod_perfil"]][] = $row;
 		}
@@ -437,15 +444,11 @@ class Usuario
 		{
 			$_SESSION['perfil'][$f] = array_merge($_SESSION['perfil'][$f], $_SESSION['perfil'][_PERFIL_DEFAULT]);
 		}
-                
-//                echo "<!-- ";
-//                x($_SESSION);
-//                echo " -->";
-		
 	}
 		
 	function pegarPerfil($cod_objeto=0)
 	{
+        xd($this->page->objeto->valor('cod_objeto'));
             if ($cod_objeto==0 && !$this->page->objeto->valor('cod_objeto')) return false;
             if ($cod_objeto==0) $cod_objeto = $this->page->objeto->valor('cod_objeto');
             $caminho[] = $cod_objeto;

@@ -29,42 +29,30 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl;
+namespace Pbl\Core\Objeto;
 
-class Objeto
+use Pbl\Core\Base;
+
+class Objeto extends Base
 {
     public $ponteiro=0;
     public $quantidade=0;
     public $caminhoObjeto = array();
     public $metadados;
     public $propriedades;
+    // public $ArrayMetadados;
     
-    private $page;
-
-    /**
-     * Método construtor da classe objeto
-     * @param Pagina $page - Referencia do objeto page
-     * @param mixed $cod_objeto - Pode ser string ou inteiro
-     * @return boolean
-     */
-    function __construct($page, $cod_objeto=-1)
+    public function iniciar($cod_objeto=-1)
     {
-        $this->page = $page;
-
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("objeto::construct cod_objeto=".$cod_objeto);
-        }
-        
         if ($cod_objeto!=-1)
         {
             if (is_numeric($cod_objeto))
             {
-                $dados = $this->page->adminobjeto->pegarDadosObjetoId($cod_objeto);
+                $dados = $this->container["adminobjeto"]->pegarDadosObjetoId($cod_objeto);
             }
             else
             {
-                $dados = $this->page->adminobjeto->pegarDadosObjetoTitulo($cod_objeto);
+                $dados = $this->container["adminobjeto"]->pegarDadosObjetoTitulo($cod_objeto);
             }
 
             if (is_array($dados) && sizeof($dados)>2)
@@ -73,9 +61,6 @@ class Objeto
                 $this->caminhoObjeto = $this->pegarCaminho();
                 return true;
             }
-
-            //xd($this);
-
         }
 
         //Nao conseguiu selecionar o objeto
@@ -83,21 +68,59 @@ class Objeto
     }
 
     /**
+     * Método construtor da classe objeto
+     * @param Pagina $page - Referencia do objeto page
+     * @param mixed $cod_objeto - Pode ser string ou inteiro
+     * @return boolean
+     */
+    // function __construct($page, $cod_objeto=-1)
+    // {
+    //     $this->page = $page;
+
+    //     if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+    //     {
+    //         x("objeto::construct cod_objeto=".$cod_objeto);
+    //     }
+        
+    //     $this->ArrayMetadados = $this->page->db->metadados;
+    //     if ($cod_objeto!=-1)
+    //     {
+    //         if (is_numeric($cod_objeto))
+    //         {
+    //             $dados = $this->page->adminobjeto->pegarDadosObjetoId($cod_objeto);
+    //         }
+    //         else
+    //         {
+    //             $dados = $this->page->adminobjeto->pegarDadosObjetoTitulo($cod_objeto);
+    //         }
+
+    //         if (is_array($dados) && sizeof($dados)>2)
+    //         {
+    //             $this->povoar($dados);
+    //             $this->caminhoObjeto = $this->pegarCaminho();
+    //             return true;
+    //         }
+
+    //         //xd($this);
+
+    //     }
+
+    //     //Nao conseguiu selecionar o objeto
+    //     return false;
+    // }
+
+    /**
      * Povoa objeto do tipo Objeto com os metadados, datas de publicação e validade, url amigavel e tags
      * @param array $dados - Array com os metadados
      */
     function povoar($dados)
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("objeto::povoar");
-        }
         $this->metadados = $dados;
         $this->metadados['data_publicacao'] = ConverteData($this->metadados['data_publicacao'],1);
         $this->metadados['data_validade'] = ConverteData($this->metadados['data_validade'],1);
         //INCLUIDO O TITULO DO OBJETO NA URL
         if ($this->metadados['url_amigavel'] 
-                && $this->metadados['url_amigavel']!="") 
+                && $this->metadados['url_amigavel']!="")  
         {
             $this->metadados['url'] = "/".$this->metadados['url_amigavel'];
         }
@@ -114,11 +137,7 @@ class Objeto
      */
     function pegarCaminho()
     {
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("objeto::pegarCaminho");
-        }
-        return $this->page->adminobjeto->pegarCaminhoObjeto($this->metadados['cod_objeto']);
+        return $this->container["adminobjeto"]->pegarCaminhoObjeto($this->metadados['cod_objeto']);
     }
 
     /**

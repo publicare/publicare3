@@ -32,22 +32,35 @@ namespace Pbl\ServiceProvider;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Pbl\Core\Sessao\SessaoManager;
 
-/**
- * Sessao Provider
- *
- * @package Pbl\ServiceProvider
- */
-class SessaoProvider implements ServiceProviderInterface
+use Pbl\Core\AdminObjeto\AdminObjeto;
+use Pbl\Core\Pagina\Pagina;
+use Pbl\Core\Parse\Parse;
+use Pbl\Core\Objeto\Objeto;
+use Pbl\Core\Usuario\Usuario;
+
+class GeralProvider implements ServiceProviderInterface
 {
-
     public function register(Container $container)
     {
-        $container['sessao'] = function($container) {
-            $sessaoo = new SessaoManager($container);
-            if (!SessaoManager::isOpen()) $sessaoo->iniciar();
-            return $sessaoo;
+        $container['adminobjeto'] = function ($container) {
+            return new AdminObjeto($container);
+        };
+        
+        $container['objeto'] = function ($container) {
+            return new Objeto($container);
+        };
+
+        $container['page'] = function ($container) {
+            return new Pagina($container);
+        };
+
+        $container['parse'] = function ($container) {
+            return new Parse($container);
+        };
+
+        $container['usuario'] = function ($container) {
+            return new Usuario($container);
         };
 
         return $container;

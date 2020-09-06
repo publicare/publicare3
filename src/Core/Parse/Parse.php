@@ -29,9 +29,11 @@
  * THE SOFTWARE.
 */
     
-namespace Pbl\Core;
+namespace Pbl\Core\Parse;
 
-class Parse
+use Pbl\Core\Base;
+
+class Parse extends Base
 {
 
     public $InitCmd;
@@ -42,38 +44,43 @@ class Parse
     public $macros;
     public $types;
     public $cmdArray;
-    public $page;
-	
-    function __construct(&$page)
-    {
-        $this->page = $page;
+    
+    
 
-        // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        // {
-        //     x("parse::construct");
-        // }
+    // function __construct(&$page)
+    // {
+    //     $this->page = $page;
 
-        if (!defined ("_PARSEINITIALIZED"))
-        {
-            define ("_PARSEINITIALIZED", 1);
-            $this->initialize();
-        }
+    //     // if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
+    //     // {
+    //     //     x("parse::construct");
+    //     // }
 
-    }
+    //     if (!defined ("_PARSEINITIALIZED"))
+    //     {
+    //         define ("_PARSEINITIALIZED", 1);
+    //         $this->initialize();
+    //     }
+
+    // }
 
     function initialize()
     {
+
+        if (defined ("_PARSEINITIALIZED")) return false;
+        define ("_PARSEINITIALIZED", 1);
+
 		// if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
         // {
         //     x("parse::initialize");
         // }
 
         $this->InitCmd = '<?php'."\n"
-                            .'global $page;'."\n"
+                            .'global $container;'."\n"
                             .'$_PAGINATIONSTACK_=array();'."\n"
                             .'$_SEQ_PAGINATION_=array();'."\n"
                             .'$_STACK_=array();'."\n"
-                            .'$_OBJ_=&$page->objeto;'."\n"
+                            .'$_OBJ_=&$container["objeto"];'."\n"
                             .'$_LOOPSTACK_ = array();'."\n"
                             .'$_IMAGESTACK_ = array();'."\n"
                             .'$_IMAGESOURCESTACK_ = array();'."\n"
@@ -124,8 +131,8 @@ class Parse
             'ANO' => 'date("Y")',
             'DATA'=> 'date("d/m/Y")',
             'ROOT'=> '$page->config["portal"]["objroot"]',
-            'PERFIL' => '$page->usuario->cod_perfil',
-            'CONFIG' => '$page->config',
+            'PERFIL' => '$this->container["usuario"]->cod_perfil',
+            'CONFIG' => '$this->container["config"]->',
             'USUARIO' => '$_SESSION["usuario"]',
             'INDICE' => '$_LOOP_["count"]',
             'FIM' => '$_LOOP_["max"]',
@@ -749,10 +756,7 @@ class Parse
 
 	function start($file,$type=0)
 	{
-        if (isset($this->page->config["portal"]["debug"]) && $this->page->config["portal"]["debug"] === true)
-        {
-            x("parse::start file: ".($type==0?$file:""));
-        }
+        $this->initialize();
 
 		$this->tags=array();
 		$buffer = "";
@@ -1100,7 +1104,8 @@ exit;*/
 								$out .= $this->parseMacro("%".$passo2[3]);
 								break;
 						}
-					}
+                    }
+                    xd($out);
 					$out .=$passo1[1];
 
 					if (isset($passo1[3]))
@@ -1169,6 +1174,7 @@ exit;*/
 
 	function parseMacro ($data)
 	{
+        // xd($data);
 		return $this->macros[substr($data,1)];
 	}
 }

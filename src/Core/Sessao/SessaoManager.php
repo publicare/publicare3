@@ -29,22 +29,29 @@ class SessaoManager extends Base
         return session_id() !== '';
     }
 
-    /**
-     * Create a new session
-     *
-     * @access public
-     */
-    public function open()
+    public function iniciar()
     {
-        session_set_save_handler(new SessionHandler($this->db), true);
-
-        $this->configure();
-
+        // session_set_save_handler(new SessionHandler($this->db), true);
         if (ini_get('session.auto_start') == 1) {
             session_destroy();
         }
 
-        session_name('KB_SID');
+        // nome da sessao
+        session_name('PBL_SID');
+        // utilizando cookies
+        ini_set("session.use_cookies", true);
+        // apenas cookies
+        ini_set("session.use_only_cookies", true);
+        // nao transmitir sid pela url
+        ini_set('session.use_trans_sid', false);
+        // permite apenas sessoes inicializadas por aqui
+        ini_set("session.use_strict_mode", true);
+        // bloqueia acesso ao cookie de sessao por scripts
+        ini_set("session.cookie_httponly", true);
+
+        ini_set('session.hash_function', '1'); // 'sha512' is not compatible with FreeBSD, only MD5 '0' and SHA-1 '1' seems to work
+        ini_set('session.hash_bits_per_character', 6);
+        
         session_start();
     }
 
@@ -55,8 +62,6 @@ class SessaoManager extends Base
      */
     public function close()
     {
-        $this->dispatcher->dispatch(self::EVENT_DESTROY);
-
         // Destroy the session cookie
         $params = session_get_cookie_params();
 
@@ -74,35 +79,4 @@ class SessaoManager extends Base
         session_destroy();
     }
 
-    /**
-     * Define session settings
-     *
-     * @access private
-     */
-    private function configure()
-    {
-        // Session cookie: HttpOnly and secure flags
-        session_set_cookie_params(
-            SESSION_DURATION,
-            $this->helper->url->dir() ?: '/',
-            null,
-            $this->request->isHTTPS(),
-            true
-        );
-
-        // Avoid session id in the URL
-        ini_set('session.use_only_cookies', '1');
-        ini_set('session.use_trans_sid', '0');
-
-        // Enable strict mode
-        ini_set('session.use_strict_mode', '1');
-
-        // Better session hash
-        ini_set('session.hash_function', '1'); // 'sha512' is not compatible with FreeBSD, only MD5 '0' and SHA-1 '1' seems to work
-        ini_set('session.hash_bits_per_character', 6);
-
-        // Set an additional entropy
-        ini_set('session.entropy_file', '/dev/urandom');
-        ini_set('session.entropy_length', '256');
-    }
 }

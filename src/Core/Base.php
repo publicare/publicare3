@@ -8,7 +8,10 @@ use Pimple\Container;
  *
  * @package Pbl\Core
  *
- * @property \JsonRPC\Server                                         $api
+ * @property \Pbl\Core\Banco\Conecta           $db_con
+ * @property \Pbl\Core\Banco\Schema            $db_schema
+ * @property \Pbl\Core\Banco\Sql               $db
+ * @property \Pbl\Core\Config\Configuracao     $config
  */
 abstract class Base
 {

@@ -1,17 +1,16 @@
 <?php
 namespace Pbl\ServiceProvider;
 
-use Kanboard\Core\Mail\Client as EmailClient;
+use Pbl\Core\Email\Client as EmailClient;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
 /**
  * Mail Provider
  *
- * @package Kanboard\ServiceProvider
- * @author  Frederic Guillot
+ * @package Pbl\ServiceProvider
  */
-class MailProvider implements ServiceProviderInterface
+class EmailProvider implements ServiceProviderInterface
 {
     /**
      * Registers services on the given container.
@@ -22,9 +21,9 @@ class MailProvider implements ServiceProviderInterface
     {
         $container['emailClient'] = function ($container) {
             $mailer = new EmailClient($container);
-            $mailer->setTransport('smtp', '\Kanboard\Core\Mail\Transport\Smtp');
-            $mailer->setTransport('sendmail', '\Kanboard\Core\Mail\Transport\Sendmail');
-            $mailer->setTransport('mail', '\Kanboard\Core\Mail\Transport\Mail');
+            $mailer->setTransport('smtp', '\Pbl\Core\Email\Transport\Smtp');
+            $mailer->setTransport('sendmail', '\Pbl\Core\Email\Transport\Sendmail');
+            $mailer->setTransport('mail', '\Pbl\Core\Email\Transport\Mail');
             return $mailer;
         };
 
