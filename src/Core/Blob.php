@@ -28,9 +28,10 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Blob;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
+use Pbl\Core\Objeto;
 
 /**
  * blob.class.php
@@ -44,154 +45,152 @@ class Blob extends Base
     public $tipos_baixar;
     public $tipos_classe;
     public $pasta_classes;
-    
-    public $page;
 	
     /**
      * Método construtor, inicia as variaveis comuns para a classe
      */
-    // function __construct(&$page)
-    // {
-    //     $this->page = $page;
+    function __construct($container)
+    {
+        $this->pasta_classes = $container["config"]->portal["uploadpath"] . "classes/";
         
-    //     $this->pasta_classes = $page->config["portal"]["uploadpath"] . "classes/";
+        $this->tipos_classe = array("gif" => "image/gif",
+            "png" => "image/png",
+            "svg" => "image/svg+xml");
         
-    //     $this->tipos_classe = array("gif" => "image/gif",
-    //         "png" => "image/png",
-    //         "svg" => "image/svg+xml");
+        // Extensoes dos arquivos que podem ser visualizados
+        $this->tipos_ver = array(
+            "jpg" => array("image/jpeg", true), 
+            "jpeg" => array("image/jpeg", true),
+            "png" => array("image/png", true), 
+            "gif" => array("image/gif", true), 
+            "svg" => array("image/svg+xml", false), 
+            "svgz" => array("image/svg+xml", false), 
+            "mp4" => array("video/mp4", false));
         
-    //     // Extensoes dos arquivos que podem ser visualizados
-    //     $this->tipos_ver = array(
-    //         "jpg" => array("image/jpeg", true), 
-    //         "jpeg" => array("image/jpeg", true),
-    //         "png" => array("image/png", true), 
-    //         "gif" => array("image/gif", true), 
-    //         "svg" => array("image/svg+xml", false), 
-    //         "svgz" => array("image/svg+xml", false), 
-    //         "mp4" => array("video/mp4", false));
-        
-    //     // extensoes dos arquivos que podem ser baixados
-    //     $this->tipos_baixar = array(
-    //         "3gp" => "video/3gpp",
-    //         "3g2" => "video/3gpp2",
-    //         "7z" => "application/x-7z-compressed",
-    //         "aac" => "audio/aac",
-    //         "abw" => "application/x-abiword",
-    //         "ai" => "application/postscript",
-    //         "aif" => "audio/x-aiff",
-    //         "aifc" => "audio/x-aiff",
-    //         "aiff" => "audio/x-aiff",
-    //         "arc" => "application/octet-stream",
-    //         "asc" => "text/plain",
-    //         "au" => "audio/basic",
-    //         "avi" => "video/x-msvideo",
-    //         "azw" => "application/vnd.amazon.ebook",
-    //         "bin" => "application/octet-stream",
-    //         "bmp" => "image/bmp",
-    //         "bz" => "application/x-bzip",
-    //         "bz2" => "application/x-bzip2",
-    //         "cdr" => "application/cdr",
-    //         "css" => "text/css",
-    //         "csv" => "text/csv",
-    //         "doc" => "application/msword",
-    //         "dot" => "application/msword",
-    //         "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    //         "dotx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-    //         "docm" => "application/vnd.ms-word.document.macroEnabled.12",
-    //         "dotm" => "application/vnd.ms-word.template.macroEnabled.12",
-    //         "eot" => "application/vnd.ms-fontobject", 
-    //         "eps" => "application/postscript",
-    //         "epub" => "application/epub+zip",
-    //         "gif" => "image/gif",
-    //         "htm" => "text/html",
-    //         "html" => "text/html",
-    //         "ico" => "image/x-icon",
-    //         "ics" => "text/calendar",
-    //         "ief" => "image/ief",
-    //         "jar" => "application/java-archive",
-    //         "jpe" => "image/jpeg",
-    //         "jpg" => "image/jpeg",
-    //         "jpeg" => "image/jpeg",
-    //         "js" => "application/javascript",
-    //         "json" => "application/json",
-    //         "kar" => "audio/midi",
-    //         "m3u" => "audio/x-mpegurl",
-    //         "mdb" => "application/vnd.ms-access",
-    //         "mid" => "audio/midi",
-    //         "midi" => "audio/midi",
-    //         "mov" => "video/quicktime",
-    //         "mp2" => "audio/mpeg",
-    //         "mp3" => "audio/mpeg",
-    //         "mpe" => "video/mpeg",
-    //         "mpeg" => "video/mpeg",
-    //         "mpg" => "video/mpeg",
-    //         "mpga" => "audio/mpeg",
-    //         "mpkg" => "application/vnd.apple.installer+xml",
-    //         "odp" => "application/vnd.oasis.opendocument.presentation",
-    //         "ods" => "application/vnd.oasis.opendocument.spreadsheet",
-    //         "odt" => "application/vnd.oasis.opendocument.text",
-    //         "oga" => "audio/ogg",
-    //         "ogv" => "video/ogg",
-    //         "ogx" => "application/ogg",
-    //         "otf" => "font/otf",
-    //         "png" => "image/png",
-    //         "pdf" => "application/pdf",
-    //         "pot" => "application/vnd.ms-powerpoint",
-    //         "potm" => "application/vnd.ms-powerpoint.template.macroEnabled.12",
-    //         "potx" => "application/vnd.openxmlformats-officedocument.presentationml.template",
-    //         "ppa" => "application/vnd.ms-powerpoint",
-    //         "ppam" => "application/vnd.ms-powerpoint.addin.macroEnabled.12",
-    //         "pps" => "application/vnd.ms-powerpoint",
-    //         "ppsm" => "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
-    //         "ppsx" => "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-    //         "ppt" => "application/vnd.ms-powerpoint",
-    //         "pptm" => "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
-    //         "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    //         "ps" => "application/postscript",
-    //         "qt" => "video/quicktime",
-    //         "ra" => "audio/x-realaudio",
-    //         "ram" => "audio/x-pn-realaudio",
-    //         "rar" => "application/x-rar-compressed",
-    //         "rm" => "audio/x-pn-realaudio",
-    //         "rpm" => "audio/x-pn-realaudio-plugin",
-    //         "rtf" => "application/rtf",
-    //         "rtx" => "text/richtext",
-    //         "sh" => "application/x-sh",
-    //         "snd" => "audio/basic",
-    //         "svg" => "image/svg+xml",
-    //         "swf" => "application/x-shockwave-flash",
-    //         "tar" => "application/x-tar",
-    //         "tif" => "image/tiff",
-    //         "tiff" => "image/tiff",
-    //         "ts" => "application/typescript",
-    //         "ttf" => "font/ttf",
-    //         "txt" => "text/plain",
-    //         "vsd" => "application/vnd.visio",
-    //         "wav" => "audio/x-wav",
-    //         "wbmp" => "image/vnd.wap.wbmp",
-    //         "wbxml" => "application/vnd.wap.wbxml",
-    //         "weba" => "audio/webm",
-    //         "webm" => "video/webm",
-    //         "webp" => "image/webp",
-    //         "wmlc" => "application/vnd.wap.wmlc",
-    //         "wmlsc" => "application/vnd.wap.wmlscriptc",
-    //         "woff" => "font/woff",
-    //         "woff2" => "font/woff2",
-    //         "xhtml" => "application/xhtml+xml",
-    //         "xht" => "application/xhtml+xml",
-    //         "xla" => "application/vnd.ms-excel",
-    //         "xlam" => "application/vnd.ms-excel.addin.macroEnabled.12",
-    //         "xls" => "application/vnd.ms-excel",
-    //         "xlt" => "application/vnd.ms-excel",
-    //         "xlsb" => "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
-    //         "xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
-    //         "xltm" => "application/vnd.ms-excel.template.macroEnabled.12",
-    //         "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    //         "xltx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-    //         "xml" => "application/xml",
-    //         "xul" => "application/vnd.mozilla.xul+xml",
-    //         "zip" => "application/zip");
-    // }
+        // extensoes dos arquivos que podem ser baixados
+        $this->tipos_baixar = array(
+            "3gp" => "video/3gpp",
+            "3g2" => "video/3gpp2",
+            "7z" => "application/x-7z-compressed",
+            "aac" => "audio/aac",
+            "abw" => "application/x-abiword",
+            "ai" => "application/postscript",
+            "aif" => "audio/x-aiff",
+            "aifc" => "audio/x-aiff",
+            "aiff" => "audio/x-aiff",
+            "arc" => "application/octet-stream",
+            "asc" => "text/plain",
+            "au" => "audio/basic",
+            "avi" => "video/x-msvideo",
+            "azw" => "application/vnd.amazon.ebook",
+            "bin" => "application/octet-stream",
+            "bmp" => "image/bmp",
+            "bz" => "application/x-bzip",
+            "bz2" => "application/x-bzip2",
+            "cdr" => "application/cdr",
+            "css" => "text/css",
+            "csv" => "text/csv",
+            "doc" => "application/msword",
+            "dot" => "application/msword",
+            "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "dotx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+            "docm" => "application/vnd.ms-word.document.macroEnabled.12",
+            "dotm" => "application/vnd.ms-word.template.macroEnabled.12",
+            "eot" => "application/vnd.ms-fontobject", 
+            "eps" => "application/postscript",
+            "epub" => "application/epub+zip",
+            "gif" => "image/gif",
+            "htm" => "text/html",
+            "html" => "text/html",
+            "ico" => "image/x-icon",
+            "ics" => "text/calendar",
+            "ief" => "image/ief",
+            "jar" => "application/java-archive",
+            "jpe" => "image/jpeg",
+            "jpg" => "image/jpeg",
+            "jpeg" => "image/jpeg",
+            "js" => "application/javascript",
+            "json" => "application/json",
+            "kar" => "audio/midi",
+            "m3u" => "audio/x-mpegurl",
+            "mdb" => "application/vnd.ms-access",
+            "mid" => "audio/midi",
+            "midi" => "audio/midi",
+            "mov" => "video/quicktime",
+            "mp2" => "audio/mpeg",
+            "mp3" => "audio/mpeg",
+            "mpe" => "video/mpeg",
+            "mpeg" => "video/mpeg",
+            "mpg" => "video/mpeg",
+            "mpga" => "audio/mpeg",
+            "mpkg" => "application/vnd.apple.installer+xml",
+            "odp" => "application/vnd.oasis.opendocument.presentation",
+            "ods" => "application/vnd.oasis.opendocument.spreadsheet",
+            "odt" => "application/vnd.oasis.opendocument.text",
+            "oga" => "audio/ogg",
+            "ogv" => "video/ogg",
+            "ogx" => "application/ogg",
+            "otf" => "font/otf",
+            "png" => "image/png",
+            "pdf" => "application/pdf",
+            "pot" => "application/vnd.ms-powerpoint",
+            "potm" => "application/vnd.ms-powerpoint.template.macroEnabled.12",
+            "potx" => "application/vnd.openxmlformats-officedocument.presentationml.template",
+            "ppa" => "application/vnd.ms-powerpoint",
+            "ppam" => "application/vnd.ms-powerpoint.addin.macroEnabled.12",
+            "pps" => "application/vnd.ms-powerpoint",
+            "ppsm" => "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
+            "ppsx" => "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+            "ppt" => "application/vnd.ms-powerpoint",
+            "pptm" => "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+            "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "ps" => "application/postscript",
+            "qt" => "video/quicktime",
+            "ra" => "audio/x-realaudio",
+            "ram" => "audio/x-pn-realaudio",
+            "rar" => "application/x-rar-compressed",
+            "rm" => "audio/x-pn-realaudio",
+            "rpm" => "audio/x-pn-realaudio-plugin",
+            "rtf" => "application/rtf",
+            "rtx" => "text/richtext",
+            "sh" => "application/x-sh",
+            "snd" => "audio/basic",
+            "svg" => "image/svg+xml",
+            "swf" => "application/x-shockwave-flash",
+            "tar" => "application/x-tar",
+            "tif" => "image/tiff",
+            "tiff" => "image/tiff",
+            "ts" => "application/typescript",
+            "ttf" => "font/ttf",
+            "txt" => "text/plain",
+            "vsd" => "application/vnd.visio",
+            "wav" => "audio/x-wav",
+            "wbmp" => "image/vnd.wap.wbmp",
+            "wbxml" => "application/vnd.wap.wbxml",
+            "weba" => "audio/webm",
+            "webm" => "video/webm",
+            "webp" => "image/webp",
+            "wmlc" => "application/vnd.wap.wmlc",
+            "wmlsc" => "application/vnd.wap.wmlscriptc",
+            "woff" => "font/woff",
+            "woff2" => "font/woff2",
+            "xhtml" => "application/xhtml+xml",
+            "xht" => "application/xhtml+xml",
+            "xla" => "application/vnd.ms-excel",
+            "xlam" => "application/vnd.ms-excel.addin.macroEnabled.12",
+            "xls" => "application/vnd.ms-excel",
+            "xlt" => "application/vnd.ms-excel",
+            "xlsb" => "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+            "xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
+            "xltm" => "application/vnd.ms-excel.template.macroEnabled.12",
+            "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "xltx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+            "xml" => "application/xml",
+            "xul" => "application/vnd.mozilla.xul+xml",
+            "zip" => "application/zip");
+
+        parent::__construct($container);
+    }
     
     /**
      * Exibe blobs imagens internos do PBL
@@ -260,7 +259,7 @@ class Blob extends Base
         foreach ($this->tipos_ver as $ext=>$type)
         {
 //        xd($this->container["config"]->portal["uploadpath"]);
-            if (file_exists($this->container["config"]->portal["uploadpath"] . '/' . Blob::identificaPasta($this->container["page"], $cod_blob) . '/' . $cod_blob . '.' . $ext))
+            if (file_exists($this->container["config"]->portal["uploadpath"] . '/' . Blob::identificaPasta($this->container, $cod_blob) . '/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
                 break;
@@ -311,7 +310,7 @@ class Blob extends Base
      */
     function BaixarBlob($cod_blob)
     {
-        $subpasta = Blob::identificaPasta($this->page, $cod_blob);
+        $subpasta = Blob::identificaPasta($this->container, $cod_blob);
         
         $dados_objeto = $this->CodigoObjeto($cod_blob);
 	$filename = $dados_objeto["nome"];
@@ -390,14 +389,14 @@ class Blob extends Base
      */
     function VerificaCache($cod_blob, $ext, $largura, $altura)
     {
-        $endereco = $this->container["config"]->portal["uploadpath"] . "/" . Blob::identificaPasta($this->page, $cod_blob) . "/" . $cod_blob . "." . $ext;
+        $endereco = $this->container["config"]->portal["uploadpath"] . "/" . Blob::identificaPasta($this->container, $cod_blob) . "/" . $cod_blob . "." . $ext;
         
         if ($largura != "0" || $altura != "0")
         {
             if ($this->tipos_ver[$ext][1])
             {
                 $endereco_original = $endereco;
-                $pasta = $this->container["config"]->portal["uploadpath"] . '/cache/' . Blob::identificaPasta($this->page, $cod_blob) . '/';
+                $pasta = $this->container["config"]->portal["uploadpath"] . '/cache/' . Blob::identificaPasta($this->container, $cod_blob) . '/';
                 $pasta = preg_replace("[\/\/]", "/", $pasta);
                 $endereco = $pasta . $cod_blob . "_" . $largura . "_" . $altura . "." . $ext;
                 if (!file_exists($pasta)) mkdir($pasta, 0770, true);
@@ -477,7 +476,7 @@ class Blob extends Base
      * @param integer $codigo_blob
      * @return string - Nome da pasta
      */
-    static function identificaPasta(&$page, $codigo_blob)
+    static function identificaPasta($container, $codigo_blob)
     {
         $ret = false;
         $tamanho = strlen($codigo_blob);
@@ -495,9 +494,9 @@ class Blob extends Base
         }
         // cria a pasta caso não exista
 //        xd($this->container["config"]->portal["uploadpath"].$ret);
-        if (!is_dir($page->config["portal"]["uploadpath"].$ret))
+        if (!is_dir($container["config"]->portal["uploadpath"].$ret))
         {
-            mkdir($page->config["portal"]["uploadpath"].$ret, 0755);
+            mkdir($container["config"]->portal["uploadpath"].$ret, 0755);
         }
         return $ret;
     }
@@ -510,7 +509,7 @@ class Blob extends Base
      */
     function gravarBlob($file, $cod_blob)
     {
-        $pasta = $this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/";
+        $pasta = $this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->container, $cod_blob)."/";
         $nome_original = $file["name"];
         $nome_temp = $file["tmp_name"];
         $extensao = Blob::PegaExtensaoArquivo($nome_original);
@@ -549,9 +548,9 @@ class Blob extends Base
     function apagaBlob($cod_blob, $arquivo)
     {
         $file_ext = Blob::PegaExtensaoArquivo($arquivo);
-        if (file_exists($this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext))
+        if (file_exists($this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->container, $cod_blob)."/".$cod_blob.'.'.$file_ext))
         {
-            $checkDelete = unlink($this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->page, $cod_blob)."/".$cod_blob.'.'.$file_ext);
+            $checkDelete = unlink($this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->container, $cod_blob)."/".$cod_blob.'.'.$file_ext);
         }
     }
     
@@ -870,11 +869,11 @@ class Blob extends Base
     * @param type $prop_capa
     * @return boolean
     */
-   static function geraImagemCapaPDF(&$page, $cod_objeto, $prop_pdf, $prop_capa)
+   static function geraImagemCapaPDF($container, $cod_objeto, $prop_pdf, $prop_capa)
    {
    //    error_log("Gerando imagem - Objeto: " . $cod_objeto . " - PDF: " . $prop_pdf . " - IMG: " . $prop_capa);
        // carregando objeto
-       $objeto = new Objeto($page, $cod_objeto);
+       $objeto = new Objeto($container, $cod_objeto);
        
        // carregando propriedades
        $objeto->valor($prop_pdf);
@@ -885,7 +884,7 @@ class Blob extends Base
        $nome_original_capa = "capa_".$vnome[0].".jpg";
        $arquivo_temp = "temp_" . $objeto->propriedades[$prop_pdf]["cod_blob"] . ".jpg";
    //    Blob::identificaPasta($codigo_blob)
-       $path_arquivo = $page->config["portal"]["uploadpath"] . Blob::identificaPasta($page, $objeto->propriedades[$prop_pdf]["cod_blob"]) . "/";
+       $path_arquivo = $container["config"]->portal["uploadpath"] . Blob::identificaPasta($container, $objeto->propriedades[$prop_pdf]["cod_blob"]) . "/";
        $cod_classe = $objeto->valor("cod_classe");
        // usando gosthScript para gerar JPG da parimeira página do PDF
        $comando = "gs -sDEVICE=jpeg -dJPEGQ=75 -quiet -dSAFER -dBATCH -dNOPAUSE -dFirstPage=1 -dLastPage=1 -sOutputFile=".$path_arquivo.$arquivo_temp." ".$path_arquivo.$arquivo;
@@ -896,7 +895,7 @@ class Blob extends Base
            return false;
        }
        // pega infos da propriedade
-       $info = $page->adminobjeto->pegarInfoPropriedade($cod_classe, $prop_capa);
+       $info = $container["adminobjeto"]->pegarInfoPropriedade($cod_classe, $prop_capa);
        
 
        if ($info && is_array($info))
@@ -904,45 +903,45 @@ class Blob extends Base
 
            if (!is_null($objeto->propriedades[$prop_capa]["cod_blob"]))
            {
-               @unlink($page->config["portal"]["uploadpath"] . Blob::identificaPasta($page, $objeto->propriedades[$prop_capa]["cod_blob"]) . "/" . $objeto->propriedades[$prop_capa]["cod_blob"] . "." . $objeto->propriedades[$prop_capa]["tipo_blob"]);
-               $sql = "DELETE FROM ".$page->db->tabelas["tbl_blob"]["nome"]." "
-                       . " WHERE ".$page->db->tabelas["tbl_blob"]["colunas"]["cod_blob"]." = ".$objeto->propriedades[$prop_capa]["cod_blob"];
-               $page->db->ExecSQL($sql);
+               @unlink($container["config"]->portal["uploadpath"] . Blob::identificaPasta($container, $objeto->propriedades[$prop_capa]["cod_blob"]) . "/" . $objeto->propriedades[$prop_capa]["cod_blob"] . "." . $objeto->propriedades[$prop_capa]["tipo_blob"]);
+               $sql = "DELETE FROM ".$container["config"]->bd["tabelas"]["tbl_blob"]["nome"]." "
+                       . " WHERE ".$container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]["cod_blob"]." = ".$objeto->propriedades[$prop_capa]["cod_blob"];
+               $container["db"]->execSQL($sql);
    //            xd($objeto->propriedades[$prop_capa]["tipo_blob"]);
            }
 
            $campos = array();
-           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_propriedade']] = (int)$info['cod_propriedade'];
-           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->valor("cod_objeto");
-           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['arquivo']] = $nome_original_capa;
-           $campos[$page->db->tabelas["tbl_blob"]["colunas"]['tamanho']] = filesize($path_arquivo . $arquivo_temp);
-           $name = $page->db->Insert($page->db->tabelas[$info['tabela']]["nome"], $campos);
+           $campos[$container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]['cod_propriedade']] = (int)$info['cod_propriedade'];
+           $campos[$container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]['cod_objeto']] = (int)$objeto->valor("cod_objeto");
+           $campos[$container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]['arquivo']] = $nome_original_capa;
+           $campos[$container["config"]->bd["tabelas"]["tbl_blob"]["colunas"]['tamanho']] = filesize($path_arquivo . $arquivo_temp);
+           $name = $container["db"]->insert($container["config"]->bd["tabelas"][$info['tabela']]["nome"], $campos);
            $filetype = Blob::PegaExtensaoArquivo($arquivo_temp);
            
 
-           $subpasta = Blob::identificaPasta($page, $name);  //Pega o nome da subpasta
-           if (!$resultado = is_dir($page->config["portal"]["uploadpath"] . "/" . $subpasta . "/"))
+           $subpasta = Blob::identificaPasta($container, $name);  //Pega o nome da subpasta
+           if (!$resultado = is_dir($container["config"]->portal["uploadpath"] . "/" . $subpasta . "/"))
            {
-               mkdir($page->config["portal"]["uploadpath"] . "/" . $subpasta, 0755); //cria a pasta
+               mkdir($container["config"]->portal["uploadpath"] . "/" . $subpasta, 0755); //cria a pasta
            }
 
-           copy($path_arquivo . $arquivo_temp, $page->config["portal"]["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
+           copy($path_arquivo . $arquivo_temp, $container["config"]->portal["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
 
-           $im = imagecreatefromjpeg($page->config["portal"]["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
+           $im = imagecreatefromjpeg($container["config"]->portal["uploadpath"] . "/" . $subpasta . "/" . $name . "." . $filetype);
            $x = ImageSX($im);
            $y = ImageSY($im);
-           $width = $page->config["portal"]["largurathumb"];
+           $width = $container["config"]->portal["largurathumb"];
            $height = ceil($width * $y / $x);
            $newim = ImageCreateTrueColor($width, $height);
            ImageCopyResized($newim, $im, 0, 0, 0, 0, $width, $height, $x, $y);
            $im = $newim;
-           ImageJpeg($im, $page->config["portal"]["uploadpath"]."/cache/".$name.'.'.$filetype, 100);
+           ImageJpeg($im, $container["config"]->portal["uploadpath"]."/cache/".$name.'.'.$filetype, 100);
        }
 
        unlink($path_arquivo.$arquivo_temp);
 //           xd($campos);
 
-       $page->administracao->cacheFlush();
+       $container["administracao"]->cacheFlush();
    }
    
 }

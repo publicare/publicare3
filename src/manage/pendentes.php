@@ -37,7 +37,7 @@ inner join objeto t2 on t1.cod_objeto=t2.cod_objeto
 inner join parentesco t3 on t1.cod_objeto=t3.cod_objeto 
 where t3.cod_pai=".$cod_objeto." 
 and t2.apagado=0"; 
-$rs = $page->db->ExecSQL($sql);
+$rs = $page->db->execSQL($sql);
 
 $total = $rs->fields["total"];
 
@@ -83,8 +83,8 @@ $(document).ready(function(){
 <!-- === Objetos aguardando aprovação === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objetos aguardando aprovação</b></h3></div>
-		<form action="/do/list_content_post/<?=$page->objeto->valor("cod_objeto")?>.html" name="pendentes" id="pendentes" method="POST">
-		<input type="hidden" name="return_obj" value="<?php echo $page->objeto->valor("cod_objeto")?>">
+		<form action="/do/list_content_post/<?=$this->container["objeto"]->valor("cod_objeto")?>.html" name="pendentes" id="pendentes" method="POST">
+		<input type="hidden" name="return_obj" value="<?php echo $this->container["objeto"]->valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
 		<div class="panel-footer">
@@ -115,14 +115,14 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 			<div class="panel panel-info modelo_propriedade">
 				<div class="panel-heading">
 					<div class="row">
-						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><? echo $page->objeto->valor($page, "titulo")?></h3></div>
+						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><? echo $this->container["objeto"]->valor($page, "titulo")?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
-                            <a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a href="<?php echo($this->container["config"]->portal["url"]); ?><?php echo($this->container["objeto"]->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
+if ($this->container["objeto"]->valor("cod_objeto") != $this->container["config"]->portal["objroot"])
 { 
 ?>
-                            <a href="/do/list_content/<?php echo($page->objeto->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="/do/list_content/<?php echo($this->container["objeto"]->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>
@@ -143,7 +143,7 @@ if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
                         <tbody>
 						
 <?php
-	$objetos = $page->adminobjeto->localizarPendentes($cod_objeto, $_SESSION["usuario"]["cod_usuario"], $ord1, $ord2, $inicio);
+	$objetos = $this->container["adminobjeto"]->localizarPendentes($cod_objeto, $_SESSION["usuario"]["cod_usuario"], $ord1, $ord2, $inicio);
 	$cont = $inicio;
 	foreach ($objetos as $obj)
 	{
@@ -156,7 +156,7 @@ if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
 				$show=false;
 		}
 		$cont++;
-		$loglist=$page->log->PegaLogWorkflow($obj["cod_objeto"]);
+		$loglist=$this->container["log"]->pegarLogWorkflow($obj["cod_objeto"]);
 ?>
 							<tr>
 								<td><?php if ($show){ ?><input type="checkbox" id="objlist[]" name="objlist[]" value="<?=$obj["cod_objeto"]?>" class="chkObj"><?php } ?></td>

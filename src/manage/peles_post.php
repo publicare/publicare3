@@ -49,21 +49,21 @@ function ChecaValidade(&$page, $nome, $prefixo, $cod_pele_atual)
         }
         else
         {
-            $sql = "SELECT ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
-                    . " FROM ".$page->db->tabelas["pele"]["nome"]." "
-                    . " WHERE ".$page->db->tabelas["pele"]["colunas"]["nome"]." = '".$nome."'";
-            if ($cod_pele_atual) $sql .= " AND ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
-            $rs = $page->db->ExecSQL($sql);
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"]." = '".$nome."'";
+            if ($cod_pele_atual) $sql .= " AND ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
+            $rs = $page->db->execSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Nome de pele j&aacute; existente. Escolha outro nome.';
             }
             
-            $sql = "SELECT ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." AS cod_pele "
-                    . " FROM ".$page->db->tabelas["pele"]["nome"]." "
-                    . " WHERE ".$page->db->tabelas["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
-            if ($cod_pele_atual) $sql .= " AND ".$page->db->tabelas["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
-            $rs = $page->db->ExecSQL($sql);
+            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
+                    . " WHERE ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
+            if ($cod_pele_atual) $sql .= " AND ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
+            $rs = $page->db->execSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Prefixo j&aacute; existente. Escolha outro prefixo.';
@@ -85,7 +85,7 @@ $msg = ChecaValidade($page, $nome, $prefixo, $cod_pele);
 // se tiver codigo da pele e for clicado o botao de excluir
 if ($cod_pele > 0 && isset($_POST['delete']))
 {
-    $cod_pele = $page->administracao->apagarPele($cod_pele);
+    $cod_pele = $this->container["administracao"]->apagarPele($cod_pele);
 }
 else
 {
@@ -95,20 +95,20 @@ else
         // Atualiza
         if ($cod_pele > 0 && isset($_POST['update']))
         {
-            $page->administracao->atualizarPele($cod_pele, $nome, $prefixo, $publica);
+            $this->container["administracao"]->atualizarPele($cod_pele, $nome, $prefixo, $publica);
         }
         // cria
         elseif ($_POST['new'])
         {
-            $cod_pele = $page->administracao->criarPele($nome, $prefixo, $publica);
+            $cod_pele = $this->container["administracao"]->criarPele($nome, $prefixo, $publica);
         }
     }
     else
     {
-        header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
+        header("Location:".$this->container["config"]->portal["url"]."/do/peles/".$this->container["objeto"]->valor("cod_objeto").".html?erro=".urlencode($msg)."&cod_pele=".$cod_pele."&nome=".urlencode($nome)."&prefixo=".urlencode($prefixo)."&publica=".$publica);
         exit();
     }
 }
 
-header("Location:".$page->config["portal"]["url"]."/do/peles/".$page->objeto->valor("cod_objeto").".html?cod_pele=".$cod_pele);
+header("Location:".$this->container["config"]->portal["url"]."/do/peles/".$this->container["objeto"]->valor("cod_objeto").".html?cod_pele=".$cod_pele);
 exit();

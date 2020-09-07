@@ -34,7 +34,7 @@ use Pimple\ServiceProviderInterface;
 
 use Pbl\Core\Banco\Conecta;
 use Pbl\Core\Banco\Schema;
-use Pbl\Core\Banco\Banco;
+use Pbl\Core\Banco;
 
 /**
  * Class DatabaseProvider

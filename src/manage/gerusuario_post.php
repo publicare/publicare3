@@ -48,7 +48,7 @@ $perfil = isset($_POST['perfil'])?(int)htmlspecialchars($_POST["perfil"], ENT_QU
 
 //xd($_POST);
 
-$perfil_chefia = $page->usuario->pegarListaUsuarios();
+$perfil_chefia = $this->container["usuario"]->pegarListaUsuarios();
 
 $msg = "";
 $msge = "";
@@ -73,7 +73,7 @@ if ($_SESSION['usuario']['perfil'] == 1)
     if ($_POST && isset($_POST["btnGravar"]) && $_POST["btnGravar"] == "Gravar") 
     {
 
-        if ($page->usuario->existeOutroUsuario($login, $cod_usuario))
+        if ($this->container["usuario"]->existeOutroUsuario($login, $cod_usuario))
         {
             $msge = "Login '".$login."' já existe. Por favor escolha outro.";
             $gets = "&nome=".urlencode($nome)."&secao=".urlencode($secao)."&"
@@ -103,14 +103,14 @@ if ($_SESSION['usuario']['perfil'] == 1)
                 if ($dados["cod_usuario"] > 0)
                 {
                     // atualiza dados do usuario no banco
-                    $page->usuario->atualizarUsuario($dados);
+                    $this->container["usuario"]->atualizarUsuario($dados);
 
                     // apaga perfis selecionados
                     if (isset($_POST['checkadmperfil']) && is_array($_POST['checkadmperfil']))
                     {
                         foreach ($_POST['checkadmperfil'] as $tmpObjQuadro) 
                         {
-                            $page->usuario->alterarPerfilUsuarioObjeto($dados["cod_usuario"], $tmpObjQuadro, _PERFIL_DEFAULT, false);
+                            $this->container["usuario"]->alterarPerfilUsuarioObjeto($dados["cod_usuario"], $tmpObjQuadro, _PERFIL_DEFAULT, false);
                         }
                     }
                     // grava perfil do usuario no objeto atual
@@ -118,13 +118,13 @@ if ($_SESSION['usuario']['perfil'] == 1)
                     {
                         if ($perfil != _PERFIL_ADMINISTRADOR)
                         {
-                            $page->usuario->alterarPerfilUsuarioObjeto($cod_usuario, $page->objeto->valor('cod_objeto'), $perfil);
+                            $this->container["usuario"]->alterarPerfilUsuarioObjeto($cod_usuario, $this->container["objeto"]->valor('cod_objeto'), $perfil);
                         }
                         // caso seja admin, atribui perfil no objeto root e apaga todas as outras entradas
                         else
                         {
-                            $page->usuario->limparPerfisUsuario($cod_usuario);
-                            $page->usuario->alterarPerfilUsuarioObjeto($_POST['cod_usuario'], $page->config["portal"]["objroot"], _PERFIL_ADMINISTRADOR);
+                            $this->container["usuario"]->limparPerfisUsuario($cod_usuario);
+                            $this->container["usuario"]->alterarPerfilUsuarioObjeto($_POST['cod_usuario'], $this->container["config"]->portal["objroot"], _PERFIL_ADMINISTRADOR);
                         }
                     }
                     $msg = "Usuário atualizado com êxito.";
@@ -132,17 +132,17 @@ if ($_SESSION['usuario']['perfil'] == 1)
                 else
                 {
                     $dadosinsert = array();
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["nome"]] = $dados["nome"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["secao"]] = $dados["secao"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["login"]] = $dados["login"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["email"]] = $dados["email"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["ramal"]] = $dados["ramal"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["senha"]] = md5($dados["senha"]);
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["chefia"]] = $dados["chefia"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["altera_senha"]] = $dados["altera_senha"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["ldap"]] = $dados["ldap"];
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["data_atualizacao"]] = ConverteData($dados['data_atualizacao'], 16);
-                    $dadosinsert[$page->db->tabelas["usuario"]["colunas"]["valido"]] = 1;
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]] = $dados["nome"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["secao"]] = $dados["secao"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["login"]] = $dados["login"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]] = $dados["email"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ramal"]] = $dados["ramal"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["senha"]] = md5($dados["senha"]);
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]] = $dados["chefia"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["altera_senha"]] = $dados["altera_senha"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["ldap"]] = $dados["ldap"];
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]] = ConverteData($dados['data_atualizacao'], 16);
+                    $dadosinsert[$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["valido"]] = 1;
 //                    $dadosinsert["valido"] = 1;
 //                    $dadosinsert["data_atualizacao"] = ConverteData($dadosinsert['data_atualizacao'], 16);
 //                    $dadosinsert["senha"] = md5($dadosinsert["senha"]);
@@ -151,19 +151,19 @@ if ($_SESSION['usuario']['perfil'] == 1)
 //                    unset($dadosinsert["confsenha"]);
 //                    unset($dadosinsert["perfil"]);
 
-                    $cod_usuario = $page->db->Insert($page->db->tabelas["usuario"]["nome"], $dadosinsert);
+                    $cod_usuario = $page->db->Insert($this->container["config"]->bd["tabelas"]["usuario"]["nome"], $dadosinsert);
 
                     // Se não tiver nenhum perfil selecionado, coloca o perfil default
                     if (strlen($perfil) > 0) {
                         // DEFINE PERFIL SO_LOGADO PARA OBJETO ROOT NO SITE -- CASO N�O SEJA O OBJETO ROOT QUE ESTEJA SENDO DEFINIDO
-                        if ($page->objeto->valor('cod_objeto') != $page->config["portal"]["objroot"]) {
-                            $page->usuario->alterarPerfilUsuarioObjeto($cod_usuario, $page->config["portal"]["objroot"], _PERFIL_RESTRITO);
-                            $page->usuario->alterarPerfilUsuarioObjeto($cod_usuario, $page->objeto->valor('cod_objeto'), $perfil);
+                        if ($this->container["objeto"]->valor('cod_objeto') != $this->container["config"]->portal["objroot"]) {
+                            $this->container["usuario"]->alterarPerfilUsuarioObjeto($cod_usuario, $this->container["config"]->portal["objroot"], _PERFIL_RESTRITO);
+                            $this->container["usuario"]->alterarPerfilUsuarioObjeto($cod_usuario, $this->container["objeto"]->valor('cod_objeto'), $perfil);
                         } else {
-                            $page->usuario->alterarPerfilUsuarioObjeto($cod_usuario, $page->config["portal"]["objroot"], $perfil);
+                            $this->container["usuario"]->alterarPerfilUsuarioObjeto($cod_usuario, $this->container["config"]->portal["objroot"], $perfil);
                         }
                     } else {
-                        $page->usuario->alterarPerfilUsuarioObjeto($cod_usuario, $page->config["portal"]["objroot"], _PERFIL_DEFAULT);
+                        $this->container["usuario"]->alterarPerfilUsuarioObjeto($cod_usuario, $this->container["config"]->portal["objroot"], _PERFIL_DEFAULT);
                     }
                     $msg = "Usuário criado com êxito.";
                 }
@@ -175,14 +175,14 @@ if ($_SESSION['usuario']['perfil'] == 1)
     } 
     elseif ($_POST && isset($_POST["btnApagar"]) && $_POST["btnApagar"]=="Apagar" && $cod_usuario > 0) 
     {
-        $page->usuario->bloquearUsuario($cod_usuario);
-        $page->usuario->alterarPerfilUsuarioObjeto($cod_usuario, $page->objeto->valor('cod_objeto'), _PERFIL_DEFAULT);
+        $this->container["usuario"]->bloquearUsuario($cod_usuario);
+        $this->container["usuario"]->alterarPerfilUsuarioObjeto($cod_usuario, $this->container["objeto"]->valor('cod_objeto'), _PERFIL_DEFAULT);
     }
 } else {
     $msge = "Acesso negado a edição deste usuário.";
 }
 
-$url = "Location:".$page->config["portal"]["url"]."/do/gerusuario/" . $page->objeto->valor('cod_objeto') . ".html?acao=".$acao.$gets;
+$url = "Location:".$this->container["config"]->portal["url"]."/do/gerusuario/" . $this->container["objeto"]->valor('cod_objeto') . ".html?acao=".$acao.$gets;
 
 if ($msg!="") $url .= "&msg=" . urlencode($msg);
 if ($msge!="") $url .= "&msge=" . urlencode($msge);

@@ -29,7 +29,7 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Banco;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
 
@@ -40,6 +40,12 @@ class Banco extends Base
     private $sqlObjSel = null;
     private $sqlObjFrom = null;
     private $metadados = null;
+
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->iniciar();
+    }
 
     private function iniciar()
     {
@@ -130,12 +136,12 @@ class Banco extends Base
         if ($limit != -1)
         {
             if ($start == -1) $start = 0;
-            if (is_array($sql)) return $this->getCon()->SelectLimit($sql[0], $limit, $start, $sql[1]);
+            if (is_array($sql)) return $this->container["db_con"]->getCon()->SelectLimit($sql[0], $limit, $start, $sql[1]);
             else return $this->container["db_con"]->getCon()->SelectLimit($sql, $limit, $start);
         }
         else
         {
-            if (is_array($sql)) return $this->getCon()->Execute($sql[0], $sql[1]);
+            if (is_array($sql)) return $this->container["db_con"]->getCon()->Execute($sql[0], $sql[1]);
             else return $this->container["db_con"]->getCon()->Execute($sql);
         }
     }
@@ -211,7 +217,7 @@ class Banco extends Base
         foreach ($fields as $value)
         {
             if (is_int($value)) $values[]=$value;
-            else $values[]="'".$this->EscapeString($value)."'";		
+            else $values[]="'".$this->escapeString($value)."'";		
         }
 
         $sql = sprintf("INSERT INTO %s (%s) VALUES(%s)",$table, implode(',',array_keys($fields)), implode(',',$values));
@@ -221,14 +227,37 @@ class Banco extends Base
     }
 
     /**
+     * Adiciona "\" antes de aspas
+     * @param string $str
+     * @return string
+     */
+    function slashes($str)
+    {
+        $str = stripslashes($str);
+        if ($this->container["config"]->bd["tipo"] == "mysql") return addslashes($str);
+        if ($this->container["config"]->bd["tipo"] == "mysqli") return addslashes($str);
+        return str_replace("'", "''", $str);
+    }
+
+    /**
      * Executa SQL
      * @param string $sql
      * @return ResultSet
      */
     function query($sql)
     {
-        $res = $this->getCon()->Execute($sql);
+        $res = $this->container["db_con"]->getCon()->Execute($sql);
         return $res;
+    }
+
+    /**
+     * Escapa strings
+     * @param string $value
+     * @return string
+     */
+    function escapeString($value)
+    {
+        return $this->slashes($value);
     }
 
     /**
@@ -238,7 +267,7 @@ class Banco extends Base
      */
     function insertId($table)
     {
-        foreach ($this->tabelas as $id => $tab)
+        foreach ($this->container["config"]->bd["tabelas"] as $id => $tab)
         {
             if ($tab["nome"]==$table)
             {
@@ -248,12 +277,21 @@ class Banco extends Base
                     $id2 = substr($id, 4);
                 }
                 $sql = "SELECT MAX(".$tab["colunas"]["cod_".$id2].") as cod FROM ".$table;
-                $this->getCon()->SetFetchMode(ADODB_FETCH_ASSOC);
-                $rs = $this->getCon()->Execute($sql);
+                // $this->container["db_con"]->getCon()->SetFetchMode(ADODB_FETCH_ASSOC);
+                $rs = $this->container["db_con"]->getCon()->Execute($sql);
                 return $rs->fields["cod"];
             }
         }
         return false;
+    }
+
+    /**
+     * Retorna TimeStamp publicare (YmdHis) atual
+     * @return int
+     */
+    function timeStamp()
+    {
+        return date("YmdHis");
     }
 
 }

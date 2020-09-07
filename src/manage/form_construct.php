@@ -27,7 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
 
 // Variaveis de definicao para estrutura de formulario
 // data atual
@@ -37,39 +36,39 @@ $horaAtual = date("H:i");
 // data de validade do objeto
 $dataValidade = date("d/m/Y", time() + (60*60*24*365*20));
 // lista de peles disponiveis
-$peles = $page->administracao->pegarListaPeles();
+$peles = $this->container["administracao"]->pegarListaPeles();
 // lista de views disponiveis
-$views = $page->administracao->pegarListaViews();
+$views = $this->container["administracao"]->pegarListaViews();
 $dadosPai = array();
 $edit = false;
 
-// xd($page->acao);
+// xd($this->container["page"]->action);
 // Pegando dados da classe conforme ação.. criação ou edição
 // Criação de objeto
-if (strpos($page->acao,"edit") === false)
+if (strpos($this->container["page"]->action, "edit") === false)
 {
-    $classname = substr($page->acao,strpos($page->acao,'_')+1);
+    $classname = substr($this->container["page"]->action, strpos($this->container["page"]->action,'_')+1);
 //    xd($action);
-    $classe = $page->administracao->pegarInfoDaClasse($page->administracao->codigoClasse($classname));
+    $classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["administracao"]->codigoClasse($classname));
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
-    $dadosPai = $page->adminobjeto->pegarDadosObjetoId($page->objeto->valor("cod_objeto"));
+    $dadosPai = $this->container["adminobjeto"]->pegarDadosObjetoId($this->container["objeto"]->valor("cod_objeto"));
 }
 // Edição de objeto
 else
 {
-    $classname = $page->objeto->valor("prefixoclasse");
-    $classe = $page->administracao->pegarInfoDaClasse($page->objeto->valor("cod_classe"));
+    $classname = $this->container["objeto"]->valor("prefixoclasse");
+    $classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));
     $edit = true;
     $titulo = "Editar";
 }
 
-$objeto = clone $page->objeto;
+$objeto = clone $this->container["objeto"];
 
 $versao = isset($_GET['v'])?(int)htmlspecialchars($_GET["v"], ENT_QUOTES, "UTF-8"):0;
 if ($versao > 0)
 {
-    $objtmp = $page->administracao->pegarVersao($versao);
+    $objtmp = $this->container["administracao"]->pegarVersao($versao);
     if (is_array($objtmp) && count($objtmp)>0)
     {
         $conteudo = json_decode($objtmp[0]["conteudo"], true);
@@ -84,13 +83,13 @@ if ($versao > 0)
 }
 
 // view atual
-$scriptAtual = ($edit)?$page->objeto->metadados['script_exibir']:"";
+$scriptAtual = ($edit)?$this->container["objeto"]->metadados['script_exibir']:"";
 // codigo do usuario dono do objeto
-$cod_usuario = ($edit)?$page->objeto->valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
+$cod_usuario = ($edit)?$this->container["objeto"]->valor("cod_usuario"):$_SESSION['usuario']['cod_usuario'];
 // peso do objeto
 $peso = ($edit)?$objeto->valor("peso"):0;
 // codigo do objeto pai
-$cod_pai = ($edit)?$page->objeto->valor("cod_pai"):$page->objeto->valor("cod_objeto");
+$cod_pai = ($edit)?$this->container["objeto"]->valor("cod_pai"):$this->container["objeto"]->valor("cod_objeto");
 // código da pele
 $cod_pele = ($edit)?$objeto->valor("cod_pele"):(int)$dadosPai["cod_pele"];
 
@@ -98,7 +97,7 @@ $cod_pele = ($edit)?$objeto->valor("cod_pele"):(int)$dadosPai["cod_pele"];
 // independentemente do nivel do usuario, sejam sempre DESPUBLICADOS
 $new_status = 0;
 // o unico objeto que não pode ser despublicado é a página inicial, objeto _ROOT
-if ($page->objeto->valor("cod_objeto") == $page->config["portal"]["objroot"]) $new_status = _STATUS_PUBLICADO;
+if ($this->container["objeto"]->valor("cod_objeto") == $this->container["config"]->portal["objroot"]) $new_status = _STATUS_PUBLICADO;
 else $new_status = _STATUS_PRIVADO;
 
 
@@ -106,11 +105,11 @@ else $new_status = _STATUS_PRIVADO;
 <script src="include/javascript_datepicker" type="text/javascript"></script>
 <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
 
-<form enctype="multipart/form-data" action="do/obj_post/<?=$page->objeto->valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
+<form enctype="multipart/form-data" action="do/obj_post/<?=$this->container["objeto"]->valor("cod_objeto")?>.html" method="post" name="formobj" id="formobj">
     <input type="hidden" name="op" value="<?php echo($edit===true?"edit":"create"); ?>">
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">
-    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$page->objeto->valor("cod_objeto"):0); ?>">
+    <input type="hidden" name="cod_objeto" value="<?php echo($edit?$this->container["objeto"]->valor("cod_objeto"):0); ?>">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3><strong><?php echo($titulo); ?> objeto</strong></h3>
@@ -119,7 +118,7 @@ else $new_status = _STATUS_PRIVADO;
     if ($edit)
     {
 ?>
-                <strong>Editando</strong>: <?php echo($objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+                <strong>Editando</strong>: <?php echo($objeto->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
             
                 
 <?php
@@ -127,7 +126,7 @@ else $new_status = _STATUS_PRIVADO;
     else
     {
 ?>
-                <strong>Criando em</strong>: <?php echo($page->objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>),  <?php echo($page->objeto->valor("classe")) ?> (<?php echo($page->objeto->valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
+                <strong>Criando em</strong>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>),  <?php echo($this->container["objeto"]->valor("classe")) ?> (<?php echo($this->container["objeto"]->valor("cod_classe")) ?>) - <strong>Usando a classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] 
 <?php
     }
 ?>
@@ -141,7 +140,7 @@ else $new_status = _STATUS_PRIVADO;
 <?php
 if ($edit === true)
 {
-    $versoes = $page->administracao->pegarVersoes($page->objeto->valor("cod_objeto"));
+    $versoes = $this->container["administracao"]->pegarVersoes($this->container["objeto"]->valor("cod_objeto"));
     usort($versoes, function($a, $b){ return $a["versao"]<$b["versao"]; });
 ?>
                         <strong>Vers&atilde;o</strong>: <?php echo($objeto->valor("versao")) ?> 
@@ -158,7 +157,7 @@ if ($edit === true)
                         </select>
                         <input type="button" class="btn btn-default" value="Carregar" id="btnAlteraVersao">
 <?php
-    if ($page->objeto->valor("versao") != $objeto->valor("versao"))
+    if ($this->container["objeto"]->valor("versao") != $objeto->valor("versao"))
     {
 ?>
                         <br />
@@ -186,10 +185,10 @@ else
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
 <?php
-if ($edit === true && $page->usuario->cod_perfil <= _PERFIL_EDITOR)
+if ($edit === true && $this->container["usuario"]->cod_perfil <= _PERFIL_EDITOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($page->objeto->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
 <?php                
 }
 ?>
@@ -262,7 +261,7 @@ foreach ($classe["prop"] as $prop)
         case 1:
             if ($valor != "") 
             {
-                echo "<strong>Arquivo:</strong> ".$valor." - <strong>cod_blob:</strong> ".$page->objeto->propriedades[$prop["nome"]]["cod_blob"];
+                echo "<strong>Arquivo:</strong> ".$valor." - <strong>cod_blob:</strong> ".$this->container["objeto"]->propriedades[$prop["nome"]]["cod_blob"];
                 echo " | <label><input type='checkbox' id='property___".$prop['nome']."' name='property___".$prop['nome']."^delete' value='1'> Apagar arquivo</label>";
                 $obrigatorio = "";
             }
@@ -298,7 +297,7 @@ foreach ($classe["prop"] as $prop)
             break;
         // ref objeto
         case 6:
-            $objs = $page->administracao->pegarListaObjetos($prop["cod_referencia_classe"], $prop["campo_ref"]);
+            $objs = $this->container["administracao"]->pegarListaObjetos($prop["cod_referencia_classe"], $prop["campo_ref"]);
 ?>
                             <select class="form-control <?php echo($obrigatorio); ?>" name="property___<?php echo($prop["nome"]); ?>" id="property___<?php echo($prop["nome"]); ?>">
                                 <option value="">. selecione .</option>
@@ -432,7 +431,7 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                                 <label class="col-md-4 col-form-label" for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto <small><small><br />(#cod_usuario)</small></small></label>
                                 <div class="col-md-8">
         <?php
-        $usuarios = $page->administracao->pegarListaDependentes($cod_usuario);
+        $usuarios = $this->container["administracao"]->pegarListaDependentes($cod_usuario);
         if ($usuarios === false)
         {
         ?>
@@ -489,10 +488,10 @@ else
 ?>
                 <input type="submit" value="Gravar e Inserir Outro" name="gravaroutro" class="btn btn-warning btnAcao">
 <?php
-if ($edit === true && $page->usuario->cod_perfil == _PERFIL_ADMINISTRADOR)
+if ($edit === true && $this->container["usuario"]->cod_perfil == _PERFIL_ADMINISTRADOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($page->objeto->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
 <?php                
 }
 ?>

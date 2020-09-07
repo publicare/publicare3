@@ -28,14 +28,13 @@
  * THE SOFTWARE.
  */
 namespace Pbl\Core;
-global $page;
 
 if (isset($_POST['objlist']))
 {
     foreach($_POST['objlist'] as $obj)
     {
-        $page->administracao->apagarObjeto($obj, true);
+        $this->container["administracao"]->apagarObjeto($obj, true);
     }
 }
-header ("Location:" . $page->config["portal"]["url"] . "/do/apagar_definitivo/".$page->objeto->valor('cod_objeto').'.html');
+header ("Location:" . $this->container["config"]->portal["url"] . "/do/apagar_definitivo/".$this->container["objeto"]->valor('cod_objeto').'.html');
 

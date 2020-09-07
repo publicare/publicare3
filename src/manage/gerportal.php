@@ -32,10 +32,10 @@ global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
 ?>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-          <li class="active"><a href="do/indexportal/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-          <li><a href="do/gerusuario/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-          <li><a href="do/classes/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-          <li><a href="do/peles/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+          <li class="active"><a href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+          <li><a href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+          <li><a href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+          <li><a href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -49,7 +49,7 @@ global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
                 <li>
                     <div class="row">
                         <div class="col-md-3 col-sm-4"><strong>Nome do Site:</strong></div>
-                        <div class="col-md-9 col-sm-8"><?php echo $page->config["portal"]["nome"] . " [<i>" . $page->config["portal"]["linguagem"] . "</i>]"; ?></div>
+                        <div class="col-md-9 col-sm-8"><?php echo $this->container["config"]->portal["nome"] . " [<i>" . $this->container["config"]->portal["linguagem"] . "</i>]"; ?></div>
                     </div>
                 </li>
                 <li>
@@ -61,7 +61,7 @@ global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
                 <li>
                     <div class="row">
                         <div class="col-md-3 col-sm-4"><strong>URL Principal:</strong></div>
-                        <div class="col-md-9 col-sm-8"><?php echo $page->config["portal"]["url"]; ?></div>
+                        <div class="col-md-9 col-sm-8"><?php echo $this->container["config"]->portal["url"]; ?></div>
                     </div>
                 </li>
                 <li>
@@ -73,19 +73,19 @@ global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
                 <li>
                     <div class="row">
                         <div class="col-md-3 col-sm-4"><strong>Diretório de Blob:</strong></div>
-                        <div class="col-md-9 col-sm-8"><?php echo $page->config["portal"]["uploadpath"]; ?></div>
+                        <div class="col-md-9 col-sm-8"><?php echo $this->container["config"]->portal["uploadpath"]; ?></div>
                     </div>
                 </li>
                 <li>
                     <div class="row">
                         <div class="col-md-3 col-sm-4"><strong>Tipo de Banco de Dados:</strong></div>
-                        <div class="col-md-9 col-sm-8"><?php echo($page->db->config["bd"]["tipo"]); ?></div>
+                        <div class="col-md-9 col-sm-8"><?php echo($this->container["config"]->bd["tipo"]); ?></div>
                     </div>
                 </li>
                 <li>
                     <div class="row">
                         <div class="col-md-3 col-sm-4"><strong>Banco utilizado & Porta:</strong></div>
-                        <div class="col-md-9 col-sm-8"><?php echo $page->db->config["bd"]["host"] . ":" . $page->db->config["bd"]["porta"] . " [<i>" . $page->db->config["bd"]["nome"] . "</i>]"; ?></div>
+                        <div class="col-md-9 col-sm-8"><?php echo $this->container["config"]->bd["host"] . ":" . $this->container["config"]->bd["porta"] . " [<i>" . $this->container["config"]->bd["nome"] . "</i>]"; ?></div>
                     </div>
                 </li>
             </ul>

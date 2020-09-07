@@ -27,12 +27,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-
-global $page;
 
 $prefixo = isset($_REQUEST['prefixo'])?htmlspecialchars($_REQUEST['prefixo'], ENT_QUOTES, "UTF-8"):"";
-$cod_objeto = isset($_REQUEST['cod_objeto'])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$page->config["portal"]["objroot"];
-if ($cod_objeto==0) $cod_objeto = $page->config["portal"]["objroot"];
+$cod_objeto = isset($_REQUEST['cod_objeto'])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$this->container["config"]->portal["objroot"];
+if ($cod_objeto==0) $cod_objeto = $this->container["config"]->portal["objroot"];
 
-header("Location:".$page->config["portal"]["url"].'/do/new_'.$prefixo.'/'.$cod_objeto.'.html');
+header("Location:".$this->container["config"]->portal["url"].'/do/new_'.$prefixo.'/'.$cod_objeto.'.html');

@@ -31,6 +31,6 @@
 namespace Pbl;
 global $page;
 
-	$page->administracao->submeterObjeto($_POST['message'], $page->objeto->valor('cod_objeto'));
-	header("Location:".$page->objeto->valor('url')."?PortalMessage=Status+Alterado");
+	$this->container["administracao"]->submeterObjeto($_POST['message'], $this->container["objeto"]->valor('cod_objeto'));
+	header("Location:".$this->container["objeto"]->valor('url')."?PortalMessage=Status+Alterado");
 ?>

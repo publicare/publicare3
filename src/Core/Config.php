@@ -29,7 +29,7 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Config;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
 use Exception;

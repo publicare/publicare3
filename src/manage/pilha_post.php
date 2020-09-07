@@ -31,12 +31,12 @@ namespace Pbl;
 
 global $page;
 
-$cod_objeto = $page->objeto->valor("cod_objeto");
+$cod_objeto = $this->container["objeto"]->valor("cod_objeto");
 
-if (isset($_POST['copy'])) $page->administracao->copiarObjeto($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
-elseif (isset($_POST['pastelink'])) $page->administracao->colarComoLink($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
-elseif (isset($_POST['move'])) $page->administracao->moverObjeto($_POST['cod_objmanage'], $page->objeto->valor("cod_objeto"));
-elseif (isset($_POST['clear'])) $page->administracao->limparPilha();
+if (isset($_POST['copy'])) $this->container["administracao"]->copiarObjeto($_POST['cod_objmanage'], $this->container["objeto"]->valor("cod_objeto"));
+elseif (isset($_POST['pastelink'])) $this->container["administracao"]->colarComoLink($_POST['cod_objmanage'], $this->container["objeto"]->valor("cod_objeto"));
+elseif (isset($_POST['move'])) $this->container["administracao"]->moverObjeto($_POST['cod_objmanage'], $this->container["objeto"]->valor("cod_objeto"));
+elseif (isset($_POST['clear'])) $this->container["administracao"]->limparPilha();
 		
-header ("Location:".$page->config["portal"]["url"].'/do/list_content/'.$cod_objeto.'.html');
+header ("Location:".$this->container["config"]->portal["url"].'/do/list_content/'.$cod_objeto.'.html');
 ?>

@@ -30,8 +30,8 @@
 namespace Pbl\Core;
 
 global $page;
-$page->usuario->logout();
+$this->container["usuario"]->logout();
 ?>
 <script>
-    window.location.href="<?php echo($page->config["portal"]["url"].$page->objeto->valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
+    window.location.href="<?php echo($this->container["config"]->portal["url"].$this->container["objeto"]->valor("url")); ?>?LoginMessage=Logout+efetuado+com+sucesso";
 </script>

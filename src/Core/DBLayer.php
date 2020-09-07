@@ -251,7 +251,7 @@ class DBLayer
      * @param int $limit - numero de registros, usado para paginação
      * @return ResultSet
      */
-    function ExecSQL($sql, $start=-1, $limit=-1)
+    function execSQL($sql, $start=-1, $limit=-1)
     {
         GLOBAL $ADODB_CACHE_DIR;
         
@@ -312,7 +312,7 @@ class DBLayer
      * Retorna TimeStamp publicare (YmdHis) atual
      * @return int
      */
-    function TimeStamp()
+    function timeStamp()
     {
         return date("YmdHis");
     }

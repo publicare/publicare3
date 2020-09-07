@@ -29,7 +29,7 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Objeto;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
 
@@ -45,6 +45,7 @@ class Objeto extends Base
     public function __construct($container, $cod_objeto=-1)
     {
         parent::__construct($container);
+        // xd($cod_objeto);
         $this->iniciar($cod_objeto);
     }
     

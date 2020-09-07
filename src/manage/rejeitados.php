@@ -43,11 +43,11 @@ global $page;
 	</TR>
 <tr><td>
 <?
-	$objetos = $page->adminobjeto->LocalizarRejeitados($page);
+	$objetos = $this->container["adminobjeto"]->LocalizarRejeitados($page);
 
 	foreach ($objetos as $obj)
 	{
-		$loglist=$page->log->PegaLogWorkflow($page, $obj["cod_objeto"]);
+		$loglist=$this->container["log"]->pegarLogWorkflow($page, $obj["cod_objeto"]);
 		if (count ($loglist))
 		{
 ?>

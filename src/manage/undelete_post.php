@@ -30,6 +30,6 @@
 namespace Pbl;
 	include_once ("iniciar.php");
 	$page->objManage->Undelete($objlist);
-	header("Location:".$page->config["portal"]["url"].$return_path);
+	header("Location:".$this->container["config"]->portal["url"].$return_path);
 
 ?>

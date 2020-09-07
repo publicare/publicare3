@@ -33,14 +33,15 @@ namespace Pbl\ServiceProvider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-use Pbl\Core\Administracao\Administracao;
-use Pbl\Core\AdminObjeto\AdminObjeto;
-use Pbl\Core\Blob\Blob;
-use Pbl\Core\Log\Log;
-use Pbl\Core\Objeto\Objeto;
-use Pbl\Core\Pagina\Pagina;
-use Pbl\Core\Parse\Parse;
-use Pbl\Core\Usuario\Usuario;
+use Pbl\Core\Administracao;
+use Pbl\Core\AdminObjeto;
+use Pbl\Core\Blob;
+use Pbl\Core\Includes;
+use Pbl\Core\Log;
+use Pbl\Core\Objeto;
+use Pbl\Core\Pagina;
+use Pbl\Core\Parse;
+use Pbl\Core\Usuario;
 
 class GeralProvider implements ServiceProviderInterface
 {
@@ -56,6 +57,10 @@ class GeralProvider implements ServiceProviderInterface
 
         $container['blob'] = function ($container) {
             return new Blob($container);
+        };
+
+        $container['includes'] = function ($container) {
+            return new Includes($container);
         };
 
         $container['log'] = function ($container) {

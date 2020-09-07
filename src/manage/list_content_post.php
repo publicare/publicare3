@@ -37,34 +37,34 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']))
     {
         if (isset($_POST['delete'])) 
         {
-            $page->administracao->apagarObjeto($obj);
+            $this->container["administracao"]->apagarObjeto($obj);
         }
         if (isset($_POST['duplicate']))
         {
-            $page->administracao->duplicarObjeto($obj);
+            $this->container["administracao"]->duplicarObjeto($obj);
         }
         if (isset($_POST['copy']))
         {
-            $page->administracao->copiarObjetoParaPilha($obj);
+            $this->container["administracao"]->copiarObjetoParaPilha($obj);
         }
         if (isset($_POST['publicar']))
         {
-            $page->administracao->publicarObjeto('Objeto publicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
+            $this->container["administracao"]->publicarObjeto('Objeto publicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
         }
         if (isset($_POST['publicar_pendentes']))
         {
             $netRedirect = "pendentes";
-            $page->administracao->publicarObjeto('Objeto publicado atrav&eacute;s da lista de objetos pendentes.',$obj);
+            $this->container["administracao"]->publicarObjeto('Objeto publicado atrav&eacute;s da lista de objetos pendentes.',$obj);
         }		
         if (isset($_POST['despublicar']))
         {
-            $page->administracao->despublicarObjeto('Objeto despublicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
+            $this->container["administracao"]->despublicarObjeto('Objeto despublicado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
         }
         if (isset($_POST['solicitar']))
         {
-            $page->administracao->submeterObjeto('Objeto solicitado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
+            $this->container["administracao"]->submeterObjeto('Objeto solicitado atrav&eacute;s da a&ccedil;&atilde;o listar conte&uacute;do',$obj);
         }
     }
 }
-header ("Location:".$page->config["portal"]["url"].'/do/'.$netRedirect.'/'.$_POST['return_obj'].'.html');
+header ("Location:".$this->container["config"]->portal["url"].'/do/'.$netRedirect.'/'.$_POST['return_obj'].'.html');
 ?>

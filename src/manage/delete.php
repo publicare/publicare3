@@ -38,7 +38,7 @@ global $page, $info, $num_filhos;
 		
 		<!-- === Atenção === -->
 		<?php 
-			$num_filhos = $page->adminobjeto->pegarNumFilhos($page->objeto->valor("cod_objeto"));
+			$num_filhos = $this->container["adminobjeto"]->pegarNumFilhos($this->container["objeto"]->valor("cod_objeto"));
 			//Alertar o usuario que o objeto a ser apagado contem filhos
 			if ($num_filhos>0) {
 
@@ -58,9 +58,9 @@ global $page, $info, $num_filhos;
 			<div class="panel-body">
 				
 			<?php
-				$info = $page->log->InfoObjeto($page->objeto->valor("cod_objeto"));
+				$info = $this->container["log"]->infoObjeto($this->container["objeto"]->valor("cod_objeto"));
                                 
-				echo "<h3 class='padding-bottom20 font-size24'><strong>".$page->objeto->valor("titulo")."</strong></h3>";
+				echo "<h3 class='padding-bottom20 font-size24'><strong>".$this->container["objeto"]->valor("titulo")."</strong></h3>";
                                 if(count($info) > 0)
                                 {
                                     echo('<div id="list-conter-classe">'
@@ -82,9 +82,9 @@ global $page, $info, $num_filhos;
 		<!-- === Final === Dados do Objeto === -->
 		
     </div>
-	<form action="do/delete_post/<?php echo($page->objeto->valor("cod_objeto")); ?>.html" method="post" name="delete_post" id="delete_post">
+	<form action="do/delete_post/<?php echo($this->container["objeto"]->valor("cod_objeto")); ?>.html" method="post" name="delete_post" id="delete_post">
 	<div class="panel-footer" style="text-align: right">
-		<input type="hidden" name="cod_pai" value="<?php echo($page->objeto->valor("cod_pai")); ?>">
+		<input type="hidden" name="cod_pai" value="<?php echo($this->container["objeto"]->valor("cod_pai")); ?>">
 		<input type="submit" name="submit" value="Remover Objeto" class="btn btn-danger">
 	</div>
 	</form>

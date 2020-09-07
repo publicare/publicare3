@@ -28,7 +28,7 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Log;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
 
@@ -52,7 +52,7 @@ class Log extends Base
      * @param int $cod_objeto - Codigo do objeto para gravar log
      * @param int $cod_status - Codigo do status a ser gravado no log
      */
-    function RegistraLogWorkflow($mensagem, $cod_objeto, $cod_status)
+    function registrarLogWorkflow($mensagem, $cod_objeto, $cod_status)
     {
         $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nome"]." ("
                 . "".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["cod_objeto"].", "
@@ -65,7 +65,7 @@ class Log extends Base
                 . "".$_SESSION['usuario']['cod_usuario'].","
                 . "'".$mensagem."',"
                 . "".$cod_status.","
-                . "".$this->page->db->TimeStamp().')';
+                . "".$this->container["db"]->timeStamp().')';
         $this->container["db"]->execSQL($sql);
     }
 
@@ -74,7 +74,7 @@ class Log extends Base
      * @param int $cod_objeto - Codigo do objeto a pegar o log
      * @return array - Entradas do log
      */
-    function PegaLogWorkflow($cod_objeto)
+    function pegarLogWorkflow($cod_objeto)
     {
         $result = array();
         $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS usuario, "
@@ -109,11 +109,11 @@ class Log extends Base
      * @param int $cod_objeto - Codigo do objeto
      * @return array - dados do objeto
      */
-    function InfoObjeto($cod_objeto)
+    function infoObjeto($cod_objeto)
     {
         $result = array();
         
-        $log = $this->PegaLogWorkflow($cod_objeto);
+        $log = $this->pegarLogWorkflow($cod_objeto);
 //        xd($log);
         
         if (count($log) > 0)
@@ -122,32 +122,6 @@ class Log extends Base
             $result['estampa'] = ConverteData($result['estampa'], 1);
         }
         
-//        $sql = "select usuario.nome as usuario, mensagem, 
-//                        status.nome as status, estampa from logworkflow 
-//                        left join usuario on usuario.cod_usuario=logworkflow.cod_usuario
-//                        left join status on status.cod_status=logworkflow.cod_status
-//                        where cod_objeto=$cod_objeto order by estampa desc";
-//        
-//        $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS usuario, "
-//                . " ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"].".".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["mensagem"]." AS mensagem, "
-//                . " ".$this->container["config"]->bd["tabelas"]["status"]["nick"].".".$this->container["config"]->bd["tabelas"]["status"]["colunas"]["nome"]." AS status, "
-//                . " ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"].".".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["estampa"]." AS estampa "
-//                . " FROM ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nome"]." AS ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"]." "
-//                . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." AS ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"]." "
-//                    . " ON ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"].".".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["cod_usuario"].""
-//                . " LEFT JOIN ".$this->container["config"]->bd["tabelas"]["status"]["nome"]." AS ".$this->container["config"]->bd["tabelas"]["status"]["nick"]." "
-//                    . " ON ".$this->container["config"]->bd["tabelas"]["status"]["nick"].".".$this->container["config"]->bd["tabelas"]["status"]["colunas"]["cod_status"]." = ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"].".".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["cod_status"]." "
-//                . " WHERE ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"].".".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
-//                . " ORDER BY ".$this->container["config"]->bd["tabelas"]["logworkflow"]["nick"].".".$this->container["config"]->bd["tabelas"]["logworkflow"]["colunas"]["estampa"]." DESC";
-//        
-//        
-//        $res = $this->page->db->ExecSQL($sql,0,1);
-//        $row = $res->GetRows();
-//        for ($i=0; $i<sizeof($row); $i++)
-//        {
-//            $result = $row[$i];
-//        }
-//        $result['estampa'] = ConverteData($result['estampa'],1);
         return $result;
     }
 	
@@ -156,7 +130,7 @@ class Log extends Base
      * @param int $cod_objeto - Codigo do objeto
      * @param int $operacao - Operação realizada a ser gravada
      */
-    function IncluirLogObjeto($cod_objeto, $operacao)
+    function incluirLogObjeto($cod_objeto, $operacao)
     {
         $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["logobjeto"]["nome"]." ("
                 . " ".$this->container["config"]->bd["tabelas"]["logobjeto"]["colunas"]["cod_objeto"].", "
@@ -167,8 +141,8 @@ class Log extends Base
                 . " ".$cod_objeto.", "
                 . " ".$_SESSION['usuario']['cod_usuario'].", "
                 . " ".$operacao.", "
-                . " ".$this->page->db->TimeStamp().')';
-        $this->page->db->ExecSQL($sql);
+                . " ".$this->container["db"]->timeStamp().')';
+        $this->container["db"]->execSQL($sql);
         
         if ($operacao == _OPERACAO_OBJETO_REMOVER || $operacao == _OPERACAO_OBJETO_RECUPERAR)
         {
@@ -180,10 +154,10 @@ class Log extends Base
                     . " SELECT ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"].", "
                     . " ".$_SESSION['usuario']['cod_usuario'].", "
                     . " ".$operacao.", "
-                    . " ".$this->page->db->TimeStamp().''
+                    . " ".$this->container["db"]->timeStamp().''
                     . " FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
                     . " WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto;
-            $this->page->db->ExecSQL($sql);
+            $this->container["db"]->execSQL($sql);
         }
     }
 		
@@ -205,7 +179,7 @@ class Log extends Base
                     . " ON ".$this->container["config"]->bd["tabelas"]["usuario"]["nick"].".".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$this->container["config"]->bd["tabelas"]["logobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["logobjeto"]["colunas"]["cod_usuario"]." "
                 . " WHERE ".$this->container["config"]->bd["tabelas"]["logobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["logobjeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto." "
                 . " ORDER BY ".$this->container["config"]->bd["tabelas"]["logobjeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["logobjeto"]["colunas"]["estampa"]." DESC";
-        $res = $this->page->db->ExecSQL($sql);
+        $res = $this->container["db"]->execSQL($sql);
         $row = $res->GetRows();
 
         for ($i=0; $i<sizeof($row); $i++)

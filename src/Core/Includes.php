@@ -31,7 +31,9 @@
 
 namespace Pbl\Core;
 
-class Includes
+use Pbl\Core\Base;
+
+class Includes extends Base
 {
     
     private $_scripts = array();
@@ -41,23 +43,20 @@ class Includes
     private $_ext;
     private $_nome;
     
-    // function __construct($scripts = array(), $tipo="js", $ext="")
-    // {
-    //     $this->_tipo = $tipo;
-    //     $this->_ext = $ext;
-    //     $this->adicionarArquivos($scripts);
-    //     // xd($this->_arquivos);
-    // }
+    function __construct($container, $scripts = array(), $tipo="js", $ext="")
+    {
+        $this->_tipo = $tipo;
+        $this->_ext = $ext;
+        $this->adicionarArquivos($scripts);
+
+        parent::__construct($container);
+    }
     
     public function adicionarArquivos($scripts = array())
     {
-        global $PBLCONFIG;
-        
-//        xd( $PBLCONFIG["portal"]["pblpath"]);
-        
         $this->_scripts = $scripts;
-        $pathorigem = __DIR__."/../assets/";
-        // xd(__DIR__);
+
+        $pathorigem = __DIR__."/../../assets/";
         if (count($this->_scripts) > 0)
         {
             foreach ($this->_scripts as $script)
@@ -68,6 +67,7 @@ class Includes
                 if ($this->_tipo == "font") $path .= "fonts";
                 $path .= "/".$script;
                 $this->_nome = $script;
+                // xd($path);
                 if (file_exists($path) && is_readable($path))
                 {
 //                    $this->_conteudo .= "\n\n/*".$script."*/\n".file_get_contents($path);

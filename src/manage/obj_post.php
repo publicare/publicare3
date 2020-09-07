@@ -27,9 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page;
-// xd($page);
 
 // força o código do status para despublicado
 $_POST['cod_status'] = 1;
@@ -40,7 +37,7 @@ $_POST['script_exibir'] = isset($_POST['script_exibir'])?preg_replace("[\/+]", "
 $palavra = "criação";
 
 $cod = 0;
-$local = $page->config["portal"]["url"];
+$local = $this->container["config"]->portal["url"];
 $acaoobj = filter_input(INPUT_POST, 'op', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $publicar = 0;
 
@@ -54,13 +51,13 @@ elseif (isset($_POST["gravarepublicar"]))
 }
 
 
-$obj = $page->administracao->gravarObjeto($_POST, $acaoobj, $publicar, $cod);
+$obj = $this->container["administracao"]->gravarObjeto($_POST, $acaoobj, $publicar, $cod);
 $local .= $obj["obj"]->valor("url");
 // xd("parou");
 
 if (isset($_POST["gravaroutro"]))
 {
-    $local = $page->config["portal"]["url"]."/do/new_".$obj["obj"]->valor('prefixoclasse')."/".$obj["obj"]->valor('cod_pai').".html";
+    $local = $this->container["config"]->portal["url"]."/do/new_".$obj["obj"]->valor('prefixoclasse')."/".$obj["obj"]->valor('cod_pai').".html";
 }
 
 header("Location: ".$local);

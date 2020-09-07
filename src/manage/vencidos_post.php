@@ -33,9 +33,9 @@ global $page;
 
 foreach($_POST['objlist'] as $obj)
 {
-    if ($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) $page->administracao->apagarEmDefinitivo($obj);
-    elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $page->administracao->apagarObjeto($obj); 
+    if ($_SESSION['usuario']['perfil']==_PERFIL_ADMINISTRADOR) $this->container["administracao"]->apagarEmDefinitivo($obj);
+    elseif ($_SESSION['usuario']['perfil']==_PERFIL_EDITOR) $this->container["administracao"]->apagarObjeto($obj); 
 }
 	
-header("Location:" . $page->config["portal"]["url"] . "/do/vencidos/".$page->objeto->valor('cod_objeto').'.html');
+header("Location:" . $this->container["config"]->portal["url"] . "/do/vencidos/".$this->container["objeto"]->valor('cod_objeto').'.html');
 

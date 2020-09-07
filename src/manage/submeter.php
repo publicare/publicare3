@@ -32,17 +32,17 @@ namespace Pbl;
 global $page;
 ?>
 
-<form action="do/submeter_post/<? echo $page->objeto->valor($page, "cod_objeto");?>.html" method="post">
+<form action="do/submeter_post/<? echo $this->container["objeto"]->valor($page, "cod_objeto");?>.html" method="post">
 	<div class="pblAlinhamentoTabelas">
 	<TABLE WIDTH=500 BORDER=0 CELLPADDING=0 CELLSPACING=8 class="pblTabelaGeral">
 	<TR>
 		<TD>
 			<img border=0 src="html/imagens/portalimages/peca3.gif" ALT="" align="left"><font class="pblTituloBox">Solicitar publica&ccedil;&atilde;o</font><br>
-			<font class="pblTextoForm"><? echo $page->objeto->valor($page, "titulo")?></font>
+			<font class="pblTextoForm"><? echo $this->container["objeto"]->valor($page, "titulo")?></font>
 		</td>
 
 		<TD width="120" class="pblAlinhamentoBotoes">
-					<a class="ABranco" href="index.php/content/view/<? echo $page->objeto->valor($page, "cod_objeto")?>.html"><img border=0 src="/html/imagens/portalimages/exibir.png" ALT="Exibir Objeto" hspace="2"></a>
+					<a class="ABranco" href="index.php/content/view/<? echo $this->container["objeto"]->valor($page, "cod_objeto")?>.html"><img border=0 src="/html/imagens/portalimages/exibir.png" ALT="Exibir Objeto" hspace="2"></a>
 					<a href="#" onclick="history.back()"><img border=0 src="html/imagens/portalimages/voltar2.gif" ALT="Voltar"></a>
 				</TD>
 	</TR>

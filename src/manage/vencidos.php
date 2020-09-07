@@ -31,9 +31,9 @@ namespace Pbl;
 
 global $page;
 
-$cod_objeto = $page->objeto->valor("cod_objeto");
+$cod_objeto = $this->container["objeto"]->valor("cod_objeto");
 //
-//$total = $page->administracao->PegaTotalDeVencidos($page, $cod_objeto);
+//$total = $this->container["administracao"]->PegaTotalDeVencidos($page, $cod_objeto);
 //$inicio = !isset($inicio)?0:$inicio;
 ?>
 <script src="include/javascript_datatable" type="text/javascript"></script>
@@ -72,8 +72,8 @@ $(document).ready(function(){
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Objeto Vencidos</b></h3></div>
 	
-		<form action="do/vencidos_post/<?=$page->objeto->valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
-		<input type="hidden" name="return_obj" value="<?php echo $page->objeto->valor("cod_objeto")?>">
+		<form action="do/vencidos_post/<?=$this->container["objeto"]->valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
+		<input type="hidden" name="return_obj" value="<?php echo $this->container["objeto"]->valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
 		<div class="panel-footer">
@@ -107,14 +107,14 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 			<div class="panel panel-info modelo_propriedade">
 				<div class="panel-heading">
 					<div class="row">
-						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo $page->objeto->valor("titulo")?></h3></div>
+						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo $this->container["objeto"]->valor("titulo")?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
-                            <a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+                            <a href="<?php echo($this->container["config"]->portal["url"]); ?><?php echo($this->container["objeto"]->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 <?php 
-if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
+if ($this->container["objeto"]->valor("cod_objeto") != $this->container["config"]->portal["objroot"])
 { 
 ?>
-                            <a href="do/vencidos/<?php echo($page->objeto->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
+                            <a href="do/vencidos/<?php echo($this->container["objeto"]->valor("cod_pai"));?>.html" rel="tooltip" data-color-class = "primary" data-animate=" animated fadeIn" data-toggle="tooltip" data-original-title="Voltar para o pai" data-placement="left" title="Voltar para o pai"><i class='fapbl fapbl-ellipsis-h'></i></a>
 <?php
 }
 ?>
@@ -135,7 +135,7 @@ if ($page->objeto->valor("cod_objeto") != $page->config["portal"]["objroot"])
                         </thead>
                         <tbody>
 <?php
-$arrListaObjetoVencidos = $page->administracao->pegarListaVencidos();
+$arrListaObjetoVencidos = $this->container["administracao"]->pegarListaVencidos();
 foreach ($arrListaObjetoVencidos as $ListaChave => $ListaTexto)
 {
 	$show = true;

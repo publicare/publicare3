@@ -33,7 +33,7 @@ namespace Pbl\ServiceProvider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-use Pbl\Core\Config\Config;
+use Pbl\Core\Config;
 use Pbl\Core\Config\Padrao;
 
 class ConfigProvider implements ServiceProviderInterface

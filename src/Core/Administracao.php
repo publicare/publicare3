@@ -28,9 +28,12 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Administracao;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
+use Pbl\Core\Objeto;
+
+
 
 /**
  * Classe que contém métodos para manipulação de objetos
@@ -175,7 +178,7 @@ class Administracao extends Base
 			
         if ($log)
         {
-            $this->container["log"]->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_EDITAR);
+            $this->container["log"]->incluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_EDITAR);
         }
         
         return $cod_objeto;
@@ -612,7 +615,7 @@ class Administracao extends Base
                                         . " ".$cod_objeto.", "
                                         . " :valor "
                                         . ")";
-                                $bind = array("valor" => $this->page->db->Slashes($valor));
+                                $bind = array("valor" => $this->container["db"]->slashes($valor));
                             }
                             else
                             {
@@ -624,11 +627,11 @@ class Administracao extends Base
                                         . "".$info['cod_propriedade'].", "
                                         . "".$cod_objeto.", "
                                         . " ? "
-//                                        . "".$info['delimitador'].$this->page->db->Slashes($valor).$info['delimitador'].""
+//                                        . "".$info['delimitador'].$this->container["db"]->slashes($valor).$info['delimitador'].""
                                         . ")";
-                                $bind = array(1 => $this->page->db->Slashes($valor));
+                                $bind = array(1 => $this->container["db"]->slashes($valor));
                             }
-                            $sql = $this->container["db"]->getCon()->prepare($sql);
+                            $sql = $this->container["db_con"]->getCon()->prepare($sql);
                             $rs = $this->container["db"]->execSQL(array($sql, $bind));
                         }
                     }
@@ -703,7 +706,7 @@ class Administracao extends Base
                                 . ") values ("
                                 . "".$info['cod_propriedade'].", "
                                 . "".$cod_objeto.", "
-                                . "".$info['delimitador'].$this->page->db->BlobSlashes($data).$info['delimitador'].", "
+                                . "".$info['delimitador'].$this->container["db"]->BlobSlashes($data).$info['delimitador'].", "
                                 . "'".$valor['name']."', "
                                 . "".filesize($valor['tmp_name']).")";
                         $this->container["db"]->execSQL($sql);
@@ -801,6 +804,8 @@ class Administracao extends Base
         
         if ($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]]==0) { unset($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]]); }
         
+// xd($this->container["config"]->bd);
+
         $cod_objeto = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]["objeto"]["nome"], $campos);
         
         
@@ -813,7 +818,7 @@ class Administracao extends Base
         $this->gravarTags($cod_objeto, $tagslist);
         
         // grava o log
-        if ($log) $this->container["log"]->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
+        if ($log) $this->container["log"]->incluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
         
         return $cod_objeto;
     }
@@ -882,7 +887,7 @@ class Administracao extends Base
     
     function gravarVersao($cod_objeto)
     {
-        $obj = new Objeto($this->page, $cod_objeto);
+        $obj = new Objeto($this->container, $cod_objeto);
         $obj->pegarListaPropriedades();
         $classe = $this->pegarInfoDaClasse($obj->valor("cod_classe"));
         $versao = $obj->valor("versao");
@@ -949,11 +954,11 @@ class Administracao extends Base
                 6 => $ip);
         }
         
-        $sql = $this->container["db"]->getCon()->prepare($sql);
+        $sql = $this->container["db_con"]->getCon()->prepare($sql);
         $rs = $this->container["db"]->execSQL(array($sql, $bind));
         // xd("aqui");
 
-        $this->container["log"]->RegistraLogWorkFlow("Criada versão ".$versao, $cod_objeto, 1);
+        $this->container["log"]->registrarLogWorkflow("Criada versão ".$versao, $cod_objeto, 1);
     }
     
     function cacheFlush()
@@ -963,7 +968,7 @@ class Administracao extends Base
         if ($this->container["config"]->bd["cache"] === true) 
         {
             if (defined("_DBCACHEPATH")) $ADODB_CACHE_DIR = _DBCACHEPATH;
-            $this->container["db"]->getCon()->CacheFlush();
+            $this->container["db_con"]->getCon()->CacheFlush();
         }
     }
 
@@ -1146,7 +1151,7 @@ class Administracao extends Base
                         . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
                 $this->container["db"]->execSQL($sql);
                 
-                $this->container["log"]->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_REMOVER);
+                $this->container["log"]->incluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_REMOVER);
             
                 if ($row["cod_objeto"] != $cod_objeto)
                 {
@@ -1209,7 +1214,7 @@ class Administracao extends Base
 
             if (defined("_avisoPublicacao") && _avisoPublicacao==true)
             {
-                $objetoPublicado = new Objeto($this->page, $cod_objeto);
+                $objetoPublicado = new Objeto($this->container, $cod_objeto);
                 $array_objeto = null;
                 $array_objeto[] = array($objetoPublicado->metadados["cod_objeto"], $objetoPublicado->metadados["titulo"]);
                 $caminhoObjeto = $this->container["adminobjeto"]->pegarParentescoCompleto($cod_objeto, 100, array(0), array(), false);
@@ -1309,7 +1314,7 @@ class Administracao extends Base
             $this->container["db"]->execSQL("UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
                     . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_status"]." = ".$cod_status." "
                     . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
-            $this->container["log"]->RegistraLogWorkFlow($mensagem, $cod_objeto, $cod_status);
+            $this->container["log"]->registrarLogWorkflow($mensagem, $cod_objeto, $cod_status);
             $this->cacheFlush();
         }
     }
@@ -1398,7 +1403,7 @@ class Administracao extends Base
         $this->apagarParentesco($cod_objeto);
         $this->criarParentesco($cod_objeto, $cod_pai);
         
-        $this->container["log"]->RegistraLogWorkflow("Objeto movido para ".$cod_pai, $cod_objeto, _OPERACAO_OBJETO_MOVER);
+        $this->container["log"]->registrarLogWorkflow("Objeto movido para ".$cod_pai, $cod_objeto, _OPERACAO_OBJETO_MOVER);
 
         $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pai"]." AS cod_pai, "
                 . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." AS cod_objeto "
@@ -1443,8 +1448,8 @@ class Administracao extends Base
         $campos['cod_classe'] = $cod_classe_interlink;
         $campos['cod_usuario'] = $dados['cod_usuario'];
         $campos['cod_status'] = $dados['cod_status'];
-        $campos['titulo'] = $this->page->db->Slashes($dados['titulo']);
-        $campos['descricao'] = $this->page->db->Slashes($dados['descricao']);
+        $campos['titulo'] = $this->container["db"]->slashes($dados['titulo']);
+        $campos['descricao'] = $this->container["db"]->slashes($dados['descricao']);
         $campos['data_publicacao'] = ConverteData($dados['data_publicacao'],27);
         $campos['data_validade'] = ConverteData($dados['data_validade'],27);
 
@@ -1496,8 +1501,8 @@ class Administracao extends Base
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_usuario"]] = $dados['cod_usuario'];
         if (!is_null($dados['cod_pele'])) $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_pele"]] = $dados['cod_pele'];
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["cod_status"]] = $dados['cod_status'];
-        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["titulo"]] = $this->page->db->Slashes($dados['titulo']);
-        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["descricao"]] = $this->page->db->Slashes($dados['descricao']);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["titulo"]] = $this->container["db"]->slashes($dados['titulo']);
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["descricao"]] = $this->container["db"]->slashes($dados['descricao']);
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["data_publicacao"]] = ConverteData($dados['data_publicacao'],27);
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["data_validade"]] = ConverteData($dados['data_validade'],27);
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["url_amigavel"]] = $this->verificarExistenciaUrlAmigavel($dados['url_amigavel']);
@@ -1515,7 +1520,7 @@ class Administracao extends Base
             }
         }
 
-        $this->container["log"]->IncluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
+        $this->container["log"]->incluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_CRIAR);
         
         $this->cacheFlush();
         
@@ -2063,9 +2068,9 @@ class Administracao extends Base
                 while ($row2 = $rs2->FetchRow())
                 {
                     $file_ext = Blob::PegaExtensaoArquivo($row2['arquivo']);
-                    if (file_exists($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext))
+                    if (file_exists($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->container, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext))
                     {
-                        $checkDelete = unlink($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->page, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext);
+                        $checkDelete = unlink($this->container["config"]->portal["uploadpath"]."/".Blob::identificaPasta($this->container, $row2['cod_blob'])."/".$row2['cod_blob'].'.'.$file_ext);
                     }
                 }
             }
@@ -2330,7 +2335,7 @@ $str .= "*  <hr /> \r\n"
                     . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
             $this->container["db"]->execSQL($sql);
 
-            $this->container["log"]->IncluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_RECUPERAR);
+            $this->container["log"]->incluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_RECUPERAR);
 
             if ($row["cod_objeto"] != $cod_objeto)
             {
@@ -2390,7 +2395,7 @@ $str .= "*  <hr /> \r\n"
         if ($executa === true)
         {
             
-            $obj = new Objeto($this->page, $cod);
+            $obj = new Objeto($this->container, $cod);
             $this->gravarVersao($cod);
             // xd("aha");
             $retorno["obj"] = $obj;

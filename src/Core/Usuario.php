@@ -29,9 +29,10 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Usuario;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
+use Pbl\Core\Objeto;
 
 /**
  * Classe responsável por gerenciar usuários e permissões
@@ -167,15 +168,13 @@ class Usuario extends Base
          */
 	function login($usuario, $senha)
 	{
-//            $usuario = htmlspecialchars($usuario, ENT_QUOTES, "UTF-8");
-//            $senha = htmlspecialchars($senha, ENT_QUOTES, "UTF-8");
             
             $sql = "";
             $bind = array();
 
             if ($this->container["config"]->bd["tipo"]=="oracle11")
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                $sql = $this->container["db_con"]->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
@@ -192,7 +191,7 @@ class Usuario extends Base
             }
             else
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                $sql = $this->container["db_con"]->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
@@ -208,9 +207,6 @@ class Usuario extends Base
                 $bind = array(1 => $usuario);
             }
             
-//            xd($sql);
-
-            
             $rs = $this->container["db"]->execSQL(array($sql, $bind));
             
             // encontrou usuário com o login
@@ -224,25 +220,23 @@ class Usuario extends Base
                 // login é válido
                 else
                 {
-            
                     // verifica se é login no ldap
                     // caso seja ldap, verifica senha com base ad/ldap
-                    if ((isset($this->page->config["login"]["ldap"]) && $this->page->config["login"]["ldap"] === true) && $rs->fields['ldap']==1)
+                    if ((isset($this->container["config"]->login["ldap"]) && $this->container["config"]->login["ldap"] === true) && $rs->fields['ldap']==1)
                     {
-                        $resource = ldap_connect($this->page->config["login"]["ldaphost"], $this->page->config["login"]["ldapporta"]);
-                        ldap_set_option($resource, LDAP_OPT_PROTOCOL_VERSION, $this->page->config["login"]["ldapversao"]);
-                        $bind = ldap_bind($resource, $this->page->config["login"]["ldapdominio"]."\\".$usuario, $senha);
+                        $resource = ldap_connect($this->container["config"]->login["ldaphost"], $this->container["config"]->login["ldapporta"]);
+                        ldap_set_option($resource, LDAP_OPT_PROTOCOL_VERSION, $this->container["config"]->login["ldapversao"]);
+                        $bind = ldap_bind($resource, $this->container["config"]->login["ldapdominio"]."\\".$usuario, $senha);
                         if (!$bind) return false;
                     }
                     // caso contrário, verifica senha no banco
                     else
                     {
-                        
                         $sql2 = "";
                         $bind2 = array();
                         if ($this->container["config"]->bd["tipo"]=="oracle11")
                         {
-                            $sql2 = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                            $sql2 = $this->container["db_con"]->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                                     . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
                                     . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
                                     . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
@@ -261,7 +255,7 @@ class Usuario extends Base
                         }
                         else
                         {
-                            $sql2 = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                            $sql2 = $this->container["db_con"]->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                                     . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
                                     . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
                                     . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
@@ -282,19 +276,16 @@ class Usuario extends Base
                         if ($rs2->_numOfRows == 0) return false;
                     }
                     
-                    
                     // popula sessao de usuario
                     $_SESSION["usuario"] = $rs->fields;
                     
-                    
-//                    xd($rs->fields);
                     // atualiza data validade do usuario
                     $data_validade = strftime("%Y%m%d", strtotime("+6 month"));
                     $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["usuario"]["nome"]." "
                             . " SET ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["data_atualizacao"]." = ".ConverteData($data_validade,16)." "
                             . "WHERE ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." = ".$_SESSION["usuario"]["cod_usuario"];
                     $rs2 = $this->container["db"]->execSQL($sql);
-                    
+
                     // carrega permissões do usuario
                     $this->carregar();
                     return true;
@@ -315,7 +306,7 @@ class Usuario extends Base
 
             if ($this->container["config"]->bd["tipo"]=="oracle11")
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                $sql = $this->container["db_con"]->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
@@ -332,7 +323,7 @@ class Usuario extends Base
             }
             else
             {
-                $sql = $this->page->db->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
+                $sql = $this->container["db_con"]->getCon()->prepare("SELECT ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["cod_usuario"]." AS cod_usuario, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["nome"]." AS nome, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["email"]." AS email, "
                         . " ".$this->container["config"]->bd["tabelas"]["usuario"]["colunas"]["chefia"]." AS chefia, "
@@ -386,9 +377,9 @@ class Usuario extends Base
 		
 	function carregar()
 	{
-            $_SESSION['usuario']['direitos'] = $this->pegarDireitosUsuario($_SESSION['usuario']['cod_usuario']);
-            $this->carregarInfoPerfis();
-            $this->pegarPerfil();
+        $_SESSION['usuario']['direitos'] = $this->pegarDireitosUsuario($_SESSION['usuario']['cod_usuario']);
+        $this->carregarInfoPerfis();
+        $this->pegarPerfil();
 	}
 
 
@@ -422,12 +413,13 @@ class Usuario extends Base
 	function pegarPerfil($cod_objeto=0)
 	{
         // xd($this->page->objeto->valor('cod_objeto'));
-            if ($cod_objeto==0 && !$this->page->objeto->valor('cod_objeto')) return false;
-            if ($cod_objeto==0) $cod_objeto = $this->page->objeto->valor('cod_objeto');
-            $caminho[] = $cod_objeto;
-            $objeto = new Objeto($this->page, $cod_objeto);
-            $caminho = array_merge($caminho, array_reverse($objeto->caminhoObjeto));
-            
+        // xd($this->container["objeto"]->valor("titulo"));
+        if ($cod_objeto==0 && !$this->container["objeto"]->valor('cod_objeto')) return false;
+        if ($cod_objeto==0) $cod_objeto = $this->container["objeto"]->valor('cod_objeto');
+        $caminho[] = $cod_objeto;
+        $objeto = new Objeto($this->container, $cod_objeto);
+        $caminho = array_merge($caminho, array_reverse($objeto->caminhoObjeto));
+        
             foreach ($caminho as $cod_obj)
             {
                 $cod_obj = (int)$cod_obj;;

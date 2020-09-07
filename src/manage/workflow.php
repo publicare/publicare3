@@ -29,9 +29,7 @@
  */
 namespace Pbl;
 
-global $page;
-
-	$loglist = $page->log->PegaLogWorkflow($page->objeto->valor("cod_objeto"));
+	$loglist = $this->container["log"]->pegarLogWorkflow($this->container["objeto"]->valor("cod_objeto"));
 	if (count ($loglist))
 	{
 		//BoxSimplesTop();

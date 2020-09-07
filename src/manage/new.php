@@ -27,9 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-
-global $page, $cod_objeto;
+global $cod_objeto;
 ?>
 <script type="text/javascript">
 $("document").ready(function(){
@@ -40,22 +38,22 @@ $("document").ready(function(){
     });
 });
 </script>
-<form action="do/new_post/<?=$page->objeto->valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="post">
+<form action="do/new_post/<?php echo($this->container["objeto"]->valor("cod_objeto"));?>.html" name="listcontent" id="listcontent" method="post">
     <input type="hidden" name="cod_objeto" value="<?php echo($cod_objeto) ?>">
     <input type="hidden" name="prefixo" id="prefixo" value="">
     <!-- === Selecione a classe === -->
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3><strong>Selecione a Classe</strong></h3>
-            <p class="padding-top10"><b>Objeto atual</b>: <?php echo($page->objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>) - <b>Classe</b>: <?php echo($page->objeto->valor("classe")) ?> (<?php echo($page->objeto->valor("cod_classe")) ?>)</p>
+            <p class="padding-top10"><b>Objeto atual</b>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>) - <b>Classe</b>: <?php echo($this->container["objeto"]->valor("classe")) ?> (<?php echo($this->container["objeto"]->valor("cod_classe")) ?>)</p>
         </div>
         <div class="panel-body">
             <!-- === Classes === -->
             <h4 class="padding-bottom20"><strong>Classes</strong></h4>
             <p>A lista abaixo apresenta as classes que podem ser utilizadas a partir do objeto atual.</p>
 <?php
-$lista = $page->administracao->listarClassesPermitidas($page->objeto->valor("cod_classe"));
-$lista2 = $page->administracao->listarClassesPermitidasObjeto($page->objeto->valor("cod_objeto"));
+$lista = $this->container["administracao"]->listarClassesPermitidas($this->container["objeto"]->valor("cod_classe"));
+$lista2 = $this->container["administracao"]->listarClassesPermitidasObjeto($this->container["objeto"]->valor("cod_objeto"));
 //x($lista);
 //x($lista2);
 foreach ($lista2 as $l)

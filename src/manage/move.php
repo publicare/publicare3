@@ -32,4 +32,4 @@ namespace Pbl\Core;
 	include_once ("iniciar.php");
 	$page->objManage->ObjectQuickMove($page->obj->cod_object);
 	
-	//header ("Location:".$page->config["portal"]["url"]."/index.php?action=/content/view&cod_object=".$cod_object);
+	//header ("Location:".$this->container["config"]->portal["url"]."/index.php?action=/content/view&cod_object=".$cod_object);

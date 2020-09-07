@@ -40,7 +40,7 @@ global $page;
 					if ($_POST['senha']!=$_POST['nomehidden'])
 						$sql .= ",senha='".md5($_POST['senha'])."'";
 					$sql .= " where cod_usuario=".$_POST['cod_usuario'];
-					$page->db->ExecSQL($sql);
+					$this->container["db"]->execSQL($sql);
 				}
 			}
 			else
@@ -50,7 +50,7 @@ global $page;
 		
 	}
 
-	$url = "Location:".$page->config["portal"]["url"]."/do/gerdadospessoais/".$page->objeto->valor('cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
+	$url = "Location:".$this->container["config"]->portal["url"]."/do/gerdadospessoais/".$this->container["objeto"]->valor('cod_objeto').".html?cod_usuario=".$_POST['cod_usuario'];
 	if ($Msg)
 	{
 		$url .= "&Msg=".urlencode($Msg)."&nome=".urlencode($_POST['nome']).'&login='.urlencode($_POST['login']).'&email='.urlencode($_POST['senha']);
@@ -59,7 +59,7 @@ global $page;
 	}
 	else
 	{
-		$url = "Location:".$page->config["portal"]["url"]."/security/logout/1.html";
+		$url = "Location:".$this->container["config"]->portal["url"]."/security/logout/1.html";
 		header($url);
 		exit();
 	}

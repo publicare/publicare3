@@ -44,7 +44,7 @@ $row = array("texto" => $nome,
 
 
 if ($cod_pele > 0) {
-    $pele = $page->administracao->pegarListaPeles($cod_pele);
+    $pele = $this->container["administracao"]->pegarListaPeles($cod_pele);
     $row = $pele[0];
 }
 
@@ -61,10 +61,10 @@ $("document").ready(function(){
 </script>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li><a href="do/gerusuario/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="do/classes/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li class="active"><a href="do/peles/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li><a href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
+    <li><a href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li><a href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li class="active"><a href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -74,7 +74,7 @@ $("document").ready(function(){
     <div class="panel-body">
 
         <!-- === Selecione a pele === -->
-        <form action="do/peles/<?php echo $page->objeto->valor("cod_objeto") ?>.html" method="post">            
+        <form action="do/peles/<?php echo $this->container["objeto"]->valor("cod_objeto") ?>.html" method="post">            
             <div class="panel panel-info">
                 <div class="panel-heading">Selecione a Pele</div>
                 <div class="panel-body">
@@ -83,7 +83,7 @@ $("document").ready(function(){
                         <select name="cod_pele" class="form-control">
                             <option value="0"> -- NOVA -- </option>
 <?php
-$peles = $page->administracao->pegarListaPeles();
+$peles = $this->container["administracao"]->pegarListaPeles();
 foreach ($peles as $pele)
 {
 ?>
@@ -117,7 +117,7 @@ if ($erro!="")
 }
 ?>
         <!-- === Nova Pele === -->
-        <form action="do/peles_post/<?php echo $page->objeto->valor("cod_objeto") ?>.html" method="post">
+        <form action="do/peles_post/<?php echo $this->container["objeto"]->valor("cod_objeto") ?>.html" method="post">
             <div class="panel panel-info">
                 <div class="panel-heading"><?php if ($cod_pele > 0) { ?>Editar Pele - código: <?php echo($cod_pele); ?><?php } else { ?>Nova Pele<?php } ?></div>
                 <div class="panel-body">

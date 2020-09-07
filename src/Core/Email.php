@@ -31,7 +31,9 @@
 
 namespace Pbl\Core;
 
-class Email
+use Pbl\Core\Base;
+
+class Email extends Base
 {
 
 	public $_remetente = "";

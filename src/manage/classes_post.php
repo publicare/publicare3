@@ -45,7 +45,7 @@ $ic_classe = isset($_POST['ic_classe'])?htmlspecialchars($_POST["ic_classe"], EN
 
 // Apaga a classe
 if (isset($_POST['apagar_classe']) && $_POST['apagar_classe'] == "1" && $cod_classe > 0) {
-    $page->administracao->apagarClasse($_POST['cod_classe']);
+    $this->container["administracao"]->apagarClasse($_POST['cod_classe']);
     $cod_classe = 0;
 }
 // criar / editar classe
@@ -99,17 +99,17 @@ elseif (isset($_POST['btn_gravar']) && $_POST['btn_gravar']=="Gravar")
     // Editar classe
     if ($cod_classe > 0)
     {
-        $page->administracao->atualizarClasse($cod_classe, $dados_classe);
+        $this->container["administracao"]->atualizarClasse($cod_classe, $dados_classe);
     }
     // Criar classe
     else 
     {
-        $cod_classe = $page->administracao->criarClasse($dados_classe);
-        //$page->administracao->criarTemplateClasse($cod_classe);
+        $cod_classe = $this->container["administracao"]->criarClasse($dados_classe);
+        //$this->container["administracao"]->criarTemplateClasse($cod_classe);
     }
         
     // Recupera dados da classe
-    $classinfo = $page->administracao->pegarInfoDaClasse($cod_classe);
+    $classinfo = $this->container["administracao"]->pegarInfoDaClasse($cod_classe);
     
 //    xd($props);
     
@@ -137,35 +137,35 @@ elseif (isset($_POST['btn_gravar']) && $_POST['btn_gravar']=="Gravar")
             // apagar propriedade
             if ($propp["ativa"] == 0)
             {
-                $page->administracao->apagarPropriedadeDaClasse($cod_propriedade);
+                $this->container["administracao"]->apagarPropriedadeDaClasse($cod_propriedade);
             }
             // alterar propriedade
             else
             {
 //            xd($propp);
-                $page->administracao->atualizarDadosPropriedade($cod_propriedade, $dados);
+                $this->container["administracao"]->atualizarDadosPropriedade($cod_propriedade, $dados);
             }
         }
         // nova propriedade
         else
         {
-            $page->administracao->acrescentarPropriedadeAClasse($cod_classe, $dados);
+            $this->container["administracao"]->acrescentarPropriedadeAClasse($cod_classe, $dados);
         }
     }
     
     // Cria view de modelo para classe
-//    $page->administracao->criarTemplateClasse($page, $cod_classe);
+//    $this->container["administracao"]->criarTemplateClasse($page, $cod_classe);
     
     // Atualiza informações sobre classes que pode conter
-    if (isset($_POST["podeconter"])) $page->administracao->montarRelacionamentoClasses($cod_classe, $_POST["podeconter"], 1);
+    if (isset($_POST["podeconter"])) $this->container["administracao"]->montarRelacionamentoClasses($cod_classe, $_POST["podeconter"], 1);
     
     // Atualiza informação sobre onde pode ser criado
-    if (isset($_POST["criadoem"])) $page->administracao->montarRelacionamentoClasses($cod_classe, $_POST["criadoem"], 2);
+    if (isset($_POST["criadoem"])) $this->container["administracao"]->montarRelacionamentoClasses($cod_classe, $_POST["criadoem"], 2);
     
     // Atualiza lista de objetos onde pode ser criada
     if (isset($_POST["objetos"])) 
     {
-        $page->administracao->montarRelacionamentoClasseObjeto($cod_classe, $_POST["objetos"], $_POST["objetosurls"]);
+        $this->container["administracao"]->montarRelacionamentoClasseObjeto($cod_classe, $_POST["objetos"], $_POST["objetosurls"]);
     }
     
     if (isset($_POST["apagar_icone"]) && $_POST["apagar_icone"] == "apagar")
@@ -180,14 +180,14 @@ elseif (isset($_POST['btn_gravar']) && $_POST['btn_gravar']=="Gravar")
 }
 
 // limpa cache
-$page->administracao->cacheFlush();
+$this->container["administracao"]->cacheFlush();
 
 if (isset($_SESSION['classesPrefixos'])) unset($_SESSION['classesPrefixos']);
 if (isset($_SESSION['classesNomes'])) unset($_SESSION['classesNomes']);
 if (isset($_SESSION['classes'])) unset($_SESSION['classes']);
 if (isset($_SESSION['classesIndexaveis'])) unset($_SESSION['classesIndexaveis']);
 
-$header = "Location:" . $page->config["portal"]["url"] . "/do/classes/" . $page->objeto->valor("cod_objeto") . ".html";
+$header = "Location:" . $this->container["config"]->portal["url"] . "/do/classes/" . $this->container["objeto"]->valor("cod_objeto") . ".html";
 header($header);
 
 exit();

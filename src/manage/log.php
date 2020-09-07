@@ -32,7 +32,7 @@ namespace Pbl\Core;
 	
 	header("Content-Type: text/html; charset=ISO-8859-1",true);
 	
-	$loglist=$page->log->PegaLogObjeto($page->objeto->valor("cod_objeto"));
+	$loglist=$this->container["log"]->PegaLogObjeto($this->container["objeto"]->valor("cod_objeto"));
 //	var_dump($loglist);
 //	exit();
 	if (count ($loglist))

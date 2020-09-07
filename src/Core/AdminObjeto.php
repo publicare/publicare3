@@ -28,11 +28,11 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\AdminObjeto;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
-use Pbl\Core\Objeto\Objeto;
-use Pbl\Core\Blob\Blob;
+use Pbl\Core\Objeto;
+use Pbl\Core\Blob;
 
 /**
  * Classe adminobjeto, responsável por gerenciar parte usuários de objetos
@@ -264,7 +264,7 @@ class AdminObjeto extends Base
             x("adminobjeto::criarObjeto cod_objeto=".$cod_objeto);
         }
         
-        $objeto = new Objeto($this->page, $cod_objeto);
+        $objeto = new Objeto($this->container, $cod_objeto);
         return $objeto;
     }
 
@@ -652,6 +652,7 @@ class AdminObjeto extends Base
         {
             $teste = substr($teste, strpos($teste, '.') + 1);
         }
+        // xd($this->container["db"]->getMetadados());
         if (in_array($teste, $this->container["db"]->getMetadados())) return true;
 
         if (strpos($teste,'objeto.') || strpos($teste, $this->container["config"]->bd["tabelas"]['objeto']["nick"].".")) return true;
@@ -1684,7 +1685,7 @@ class AdminObjeto extends Base
         if ($cod_objeto != -1)
         {
             $caminho = $this->recursivaCaminhoObjeto($cod_objeto);
-            $objBlob = new Objeto($this->page, $cod_objeto);
+            $objBlob = new Objeto($this->container, $cod_objeto);
         }
         
         

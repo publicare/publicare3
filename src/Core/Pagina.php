@@ -29,7 +29,7 @@
  * THE SOFTWARE.
 */
 
-namespace Pbl\Core\Pagina;
+namespace Pbl\Core;
 
 use Pbl\Core\Base;
 
@@ -267,10 +267,10 @@ class Pagina extends Base
                 if (!strpos($acao,'_post') && $incluirheader)
                 {
 //                    include("header_publicare.php");
-                    $incluir["header"]["arquivo"] = "includes/header_publicare.php";
+                    $incluir["header"]["arquivo"] = __DIR__."/../includes/header_publicare.php";
                     $incluir["header"]["parse"] = false;
                     
-                    $incluir["footer"]["arquivo"] = "includes/footer_publicare.php";
+                    $incluir["footer"]["arquivo"] = __DIR__."/../includes/footer_publicare.php";
                     $incluir["footer"]["parse"] = false;
                 }
                 else
@@ -446,7 +446,8 @@ class Pagina extends Base
         }
         else
         {
-            include($incluir["view"]["arquivo"]);
+            // xd($incluir["view"]["arquivo"]);
+            include(__DIR__."../../".$incluir["view"]["arquivo"]);
         }
         
         if ($incluirheader)

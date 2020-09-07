@@ -30,6 +30,6 @@
 namespace Pbl\Core;
 global $page;
 
-$page->administracao->apagarObjeto($page->objeto->valor("cod_objeto"));
-header("Location:".$page->config["portal"]["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");
+$this->container["administracao"]->apagarObjeto($this->container["objeto"]->valor("cod_objeto"));
+header("Location:".$this->container["config"]->portal["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");
 ?>

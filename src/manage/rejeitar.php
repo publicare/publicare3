@@ -32,28 +32,28 @@ namespace Pbl;
 global $page;
 
 
-$classname = $page->objeto->valor("prefixoclasse");
-$classe = $page->administracao->pegarInfoDaClasse($page->objeto->valor("cod_classe"));
+$classname = $this->container["objeto"]->valor("prefixoclasse");
+$classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));
 ?>
 <!-- === Rejeitar Objeto === -->
 <div class="panel panel-primary">
     <div class="panel-heading"><h3><b>Rejeitar Objeto</b></h3>
     <p class="padding-top10">
-            <strong>Despublicar</strong>: <?php echo($page->objeto->valor("titulo")) ?> (<?php echo($page->objeto->valor("cod_objeto")) ?>)<br /><strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
-            <strong>Vers&atilde;o</strong>: <?php echo($page->objeto->valor("versao")) ?>
+            <strong>Despublicar</strong>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>)<br /><strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
+            <strong>Vers&atilde;o</strong>: <?php echo($this->container["objeto"]->valor("versao")) ?>
         </p>
     </div>
 
-	<form action="do/rejeitar_post/<?php echo($page->objeto->valor("cod_objeto"));?>.html" method="post">
+	<form action="do/rejeitar_post/<?php echo($this->container["objeto"]->valor("cod_objeto"));?>.html" method="post">
 		<div class="panel-body">
 			
 			<!-- === Objeto === -->
 			<div class="panel panel-info modelo_propriedade">
 				<div class="panel-heading">
 					<div class="row">
-						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); ?></h3></div>
+						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($this->container["objeto"]->valor("titulo")); ?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
-							<a href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+							<a href="<?php echo($this->container["config"]->portal["url"]); ?><?php echo($this->container["objeto"]->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 						</div>
 					</div>
 				</div>

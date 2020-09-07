@@ -29,7 +29,7 @@
  * THE SOFTWARE.
 */
     
-namespace Pbl\Core\Parse;
+namespace Pbl\Core;
 
 use Exception;
 
@@ -587,7 +587,7 @@ class Parse extends Base
             
             "incluimenu" => array(
                 'regex' => '',
-                'output' => '<?php if ($this->container["usuario"]->estaLogado(_PERFIL_RESTRITO)) include ("includes/menu_publicare.php")?>',
+                'output' => '<?php if ($this->container["usuario"]->estaLogado(_PERFIL_RESTRITO)) include (__DIR__."/../includes/menu_publicare.php")?>',
                 'parameters' => false,
                 'helptext' => 'O comando <strong>incluimenu</strong> deve ser escrito assim: <strong>&lt;@incluimenu@&gt;</strong>',
             ),

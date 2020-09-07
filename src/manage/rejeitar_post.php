@@ -32,6 +32,6 @@ global $page;
 
 $mensagem = (string)filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-$page->administracao->rejeitarObjeto("Rejeitada publicação da versão ".$page->objeto->valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $page->objeto->valor('cod_objeto'));
-header("Location:".$page->config["portal"]["url"].$page->objeto->valor('url'));
+$this->container["administracao"]->rejeitarObjeto("Rejeitada publicação da versão ".$this->container["objeto"]->valor("versao").($mensagem!=""?" - Comentários: ".$mensagem:""), $this->container["objeto"]->valor('cod_objeto'));
+header("Location:".$this->container["config"]->portal["url"].$this->container["objeto"]->valor('url'));
 

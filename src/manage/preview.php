@@ -33,9 +33,9 @@ global $page;
 ?>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-  <li class="active"><a href="do/preview/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
-  <li><a href="do/log_workflow/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Workflow</a></li>
-  <li><a href="do/log_objeto/<?php echo($page->objeto->valor('cod_objeto')) ?>.html">Log Status</a></li>
+  <li class="active"><a href="do/preview/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Indice do Objeto</a></li>
+  <li><a href="do/log_workflow/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Workflow</a></li>
+  <li><a href="do/log_objeto/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Log Status</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
@@ -48,9 +48,9 @@ global $page;
 		<div class="panel panel-info modelo_propriedade">
 			<div class="panel-heading">
 				<div class="row">
-					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($page->objeto->valor("titulo")); echo " <i>[cod: ".$page->objeto->valor("cod_objeto")."]</i>"; ?></h3></div>
+					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($this->container["objeto"]->valor("titulo")); echo " <i>[cod: ".$this->container["objeto"]->valor("cod_objeto")."]</i>"; ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
-						<a class="ABranco" href="<?php echo($page->config["portal"]["url"]); ?><?php echo($page->objeto->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
+						<a class="ABranco" href="<?php echo($this->container["config"]->portal["url"]); ?><?php echo($this->container["objeto"]->valor("url"));?>" rel="tooltip" data-color-class="primary" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Visualizar objeto" data-placement="left" title="Visualizar Objeto"><i class='fapbl fapbl-eye'></i></a>
 					</div>
 				</div>
 			</div>
@@ -62,7 +62,7 @@ global $page;
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Nome do Site:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->config["portal"]["nome"] . " [<i>" . $page->config["portal"]["linguagem"] . "</i>]"; ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $this->container["config"]->portal["nome"] . " [<i>" . $this->container["config"]->portal["linguagem"] . "</i>]"; ?></div>
 							</div>
 						</li>
 						<li>
@@ -70,7 +70,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Hierarquia:</strong></div>
 								<div class="col-md-9 col-sm-8">
 <?php
-	$tmpCaminhoObjeto=$page->objeto->pegarCaminhoComTitulo();
+	$tmpCaminhoObjeto=$this->container["objeto"]->pegarCaminhoComTitulo();
 	foreach ($tmpCaminhoObjeto as $item)
 	{
 		echo '<a href="do/preview/'.$item['cod_objeto'].'.html">'.$item['titulo'].'</a><i> [cod: '.$item['cod_objeto'].']</i><br>';
@@ -82,7 +82,7 @@ global $page;
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Classe:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->valor("classe")." [".$page->objeto->valor("prefixoclasse")."]"; ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $this->container["objeto"]->valor("classe")." [".$this->container["objeto"]->valor("prefixoclasse")."]"; ?></div>
 							</div>
 						</li>
 						<li>
@@ -90,10 +90,10 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Pele:</strong></div>
 								<div class="col-md-9 col-sm-8">
 <?php
-	if ($page->objeto->metadados['cod_pele'])
+	if ($this->container["objeto"]->metadados['cod_pele'])
 	{
-		echo $page->objeto->metadados['prefixopele'];
-		echo "<i> [cod: ".$page->objeto->metadados['cod_pele']."]</i>";
+		echo $this->container["objeto"]->metadados['prefixopele'];
+		echo "<i> [cod: ".$this->container["objeto"]->metadados['cod_pele']."]</i>";
 	}
 	else
 	echo "N&atilde;o utilizada [cod: 0]"
@@ -106,11 +106,11 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Script:</strong></div>
 								<div class="col-md-9 col-sm-8">
 <?php
-	if ($page->objeto->metadados['script_exibir']) {
-	 if (file_exists($_SERVER['DOCUMENT_ROOT'].$page->objeto->metadados['script_exibir']))
-		echo $page->objeto->metadados['script_exibir'];
+	if ($this->container["objeto"]->metadados['script_exibir']) {
+	 if (file_exists($_SERVER['DOCUMENT_ROOT'].$this->container["objeto"]->metadados['script_exibir']))
+		echo $this->container["objeto"]->metadados['script_exibir'];
 	 else
-		echo "<b>A view do objeto foi deletada! <i>[".$page->objeto->metadados['script_exibir']."]</i></b>";}
+		echo "<b>A view do objeto foi deletada! <i>[".$this->container["objeto"]->metadados['script_exibir']."]</i></b>";}
 	else
 		echo "Sele&ccedil;&atilde;o autom&aacute;tica [cod: 0]";
 ?>
@@ -122,7 +122,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Objeto pode ter filhos:</strong></div>
 								<div class="col-md-9 col-sm-8">
 									<?php
-									if ($page->objeto->valor("temfilhos"))
+									if ($this->container["objeto"]->valor("temfilhos"))
 										echo "Sim";
 									else
 										echo "Nao";
@@ -135,7 +135,7 @@ global $page;
 								<div class="col-md-3 col-sm-4"><strong>Status do objeto:</strong></div>
 								<div class="col-md-9 col-sm-8">
 <?php
-	if ($page->objeto->valor("cod_status")!=_STATUS_PUBLICADO)
+	if ($this->container["objeto"]->valor("cod_status")!=_STATUS_PUBLICADO)
 		echo "<b>N&atilde;o publicado</b>";
 	else
 		echo "Publicado";
@@ -146,13 +146,13 @@ global $page;
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Publica&ccedil;&atilde;o:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->valor("data_publicacao"); ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $this->container["objeto"]->valor("data_publicacao"); ?></div>
 							</div>
 						</li>
 						<li>
 							<div class="row">
 								<div class="col-md-3 col-sm-4"><strong>Validade:</strong></div>
-								<div class="col-md-9 col-sm-8"><?php echo $page->objeto->valor("data_validade"); ?></div>
+								<div class="col-md-9 col-sm-8"><?php echo $this->container["objeto"]->valor("data_validade"); ?></div>
 							</div>
 						</li>
 					</ul>
