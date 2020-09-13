@@ -31,6 +31,6 @@
 
 use Pbl\Core\Includes;
 
-$css = new Includes($container, array("bootstrap.min.css", "all.min.css", "default.css"), "css");
+$css = new Includes($container, array("bootstrap.min.css", "all.min.css"), "css");
 $css->imprimeResultado();
 exit();

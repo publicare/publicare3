@@ -31,6 +31,6 @@
 
 use Pbl\Core\Includes;
 
-$js = new Includes($container, array("jquery-3.3.1.min.js", "bootstrap.min.js", "modernizr.custom.js", "classie.js", "gnmenu.js", "jquery.complexify.js", "funcoes.js", "jquery.validate.min.js", "additional-methods.min.js", "messages_pt_BR.js", "jquery.mask.js", "scripts_custom.js", "jodit.min.js"), "js");
+$js = new Includes($container, array("jquery-3.5.1.min.js", "bootstrap.min.js", "jquery-ui.min.js", "jodit.min.js", "jquery.mask.min.js", "jquery.validate.min.js", "jquery.validate.min.js", "additional-methods.min.js", "messages_pt_BR.min.js", "datatables.min.js", "scripts_datatable.js", "funcoes.js"), "js");
 $js->imprimeResultado();
 exit();

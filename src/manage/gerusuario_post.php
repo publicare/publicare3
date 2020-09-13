@@ -27,8 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page;
 
 // recupera dados do form
 $cod_usuario = isset($_POST['cod_usuario'])?(int)htmlspecialchars($_POST["cod_usuario"], ENT_QUOTES, "UTF-8"):0;

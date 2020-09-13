@@ -27,8 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page, $loglist, $log, $count;
+global $loglist, $log, $count;
 
 	$loglist = $this->container["log"]->PegaLogObjeto($this->container["objeto"]->valor("cod_objeto"));
 //	if (count ($loglist))

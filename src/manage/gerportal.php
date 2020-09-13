@@ -27,22 +27,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page, $PORTAL_EMAIL, $_DBSERVERTYPE, $_DBHOST, $_DB;
 ?>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-          <li class="active"><a href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-          <li><a href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-          <li><a href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-          <li><a href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li class="nav-item"><a class="nav-link active" href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Portal</a></li>
+    <li class="nav-item"><a class="nav-link" href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li class="nav-item"><a class="nav-link" href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li class="nav-item"><a class="nav-link" href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
 <!-- === Informações do Publicare === -->
-<div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Informações do Publicare</b></h3></div>
-    <div class="panel-body">
+<div class="card">
+    <div class="card-header bg-primary text-white"><h3><b>Informações do Portal</b></h3></div>
+    <div class="card-body">
         
         <div id="list-conter-classe"> 
             <ul>

@@ -27,9 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
 ?>
 
 <form action="do/submeter_post/<? echo $this->container["objeto"]->valor($page, "cod_objeto");?>.html" method="post">

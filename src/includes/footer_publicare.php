@@ -52,6 +52,5 @@
 		<!-- === Final === Botão para voltar ao topo === -->
 
 		<noscript>Seu navegador n&atilde;o suporta javascript!</noscript>
-
 	</body>
 </html>

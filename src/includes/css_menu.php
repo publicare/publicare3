@@ -31,6 +31,6 @@
 
 use Pbl\Core\Includes;
 
-$css = new Includes($container, array("all.min.css", "component_mp.css"), "css");
+$css = new Includes($container, array("all.min.css", "pblmenu.css"), "css");
 $css->imprimeResultado();
 exit();

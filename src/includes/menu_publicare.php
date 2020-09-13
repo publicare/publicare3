@@ -32,65 +32,39 @@
 *
 * Arquivo responsavel por montar o menu PUBLICARE nos portais
 **/
-
-global $PORTAL_NAME, $cod_objeto, $page, $menu;
+global $container;
 ?>
-
-<script src="include/javascript_menu" type="text/javascript"></script>
 <link href="include/css_menu" rel="stylesheet" type="text/css">
 
-<script type="text/javascript"> 
-	$(document).ready(function(){	
-		// Inicializar menu
-		new gnMenu( document.getElementById( 'gn-menupbl' ) );
-	});
-</script>
+<div class="pblmenu-wrap">
+	<nav class="pblmenu">
+		<h3>MENU</h3>
+		<div class="pblicon-list">
+		<?php
+		$menu = $container["usuario"]->menu();
+			$cont = 0;
+			foreach ($menu as $item)
+			{
+				
+				if ($item["script"] == "")
+				{
+					echo('<a href="#" class="secao"><i class="fapbl '.$item["icone"].'"></i><span>'.$item["acao"].'</span></a>');
+				}
+				else
+				{
+					if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
+					echo('<a href="'.$container["config"]->portal["url"]."/".$item["script"]."/".$container["objeto"]->valor('cod_objeto').'.html"><i class="fapbl '.$item["icone"].'"></i><span>'.$item["acao"].'</span></a>');
+				}
+			}
+			?>
+		</div>
+	</nav>
+	<button class="pblclose-button" id="pblclose-button">Fechar Menu</button>
+</div>
+<div class="barra-pbl">
+	<button class="pblmenu-button" id="pblopen-button">Abrir Menu</button>
+	<div class="pblnome-usuario"><?php echo($_SESSION["usuario"]["nome"]); ?></div>
+	<div class="pblmenu-sair"><a href="#">Sair</a></div>
+</div>
 
-		<!-- === Menu, Usuário logado e Logout === -->
-                <ul id="gn-menupbl" class="gn-menu-mainpbl">
-			<!-- === Menu === -->
-                        <li class="gn-triggerpbl">
-				<a class="gn-iconpbl gn-icon-menupbl"><span>Menu</span></a>
-				<nav class="gn-menu-wrapperpbl">
-					<div class="gn-scrollerpbl">
-						<ul class="gn-menupbl">
-				<?php
-					$menu = $container["usuario"]->menu();
-					$cont = 0;
-					foreach ($menu as $item)
-					{
-						if ($item["script"] == "")
-						{
-							$cont++;
-							if ($cont > 1)
-							{
-							   echo "</ul></li>";
-							}
-							echo "
-							<li><a><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a>
-								<ul class='gn-submenupbl'>";
-						}
-						else
-						{
-							if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
-							echo "
-								<li><a href='".$container["config"]->portal["url"]."/".$item["script"]."/".$container["objeto"]->valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
-						}
-					}
-				?>
-						</ul>
-					</div>
-				</nav>
-			</li>			
-			<!-- === Final === Menu === -->
-			
-			<!-- === Usuário logado === -->
-			<li class="codrops-icon codrops-icon-drop logado"><div class="name"><?php echo($_SESSION["usuario"]["nome"]); ?></div></li>
-			<!-- === Final === Usuário logado === -->
-			
-			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($container["config"]->portal["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Sair</span></a></li>
-			<!-- === Final === Logout === -->
-			
-		</ul> 
-		<!-- === Final === Menu, Usuário logado e Logout === -->
+<script src="include/javascript_menu" type="text/javascript"></script>

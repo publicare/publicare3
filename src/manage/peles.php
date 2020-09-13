@@ -27,9 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
 
 $cod_pele = isset($_REQUEST['cod_pele']) ? (int)htmlspecialchars($_REQUEST['cod_pele'], ENT_QUOTES, "UTF-8") : 0;
 $nome = isset($_REQUEST['nome']) ? htmlspecialchars($_REQUEST['nome'], ENT_QUOTES, "UTF-8") : "";
@@ -61,23 +58,23 @@ $("document").ready(function(){
 </script>
 <!-- === Menu === -->
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li><a href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li class="active"><a href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li class="nav-item"><a class="nav-link " href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Portal</a></li>
+    <li class="nav-item"><a class="nav-link " href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li class="nav-item"><a class="nav-link " href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li class="nav-item"><a class="nav-link active" href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
 <!-- === Gerenciar Peles === -->
-<div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Gerenciar Peles</b></h3></div>
-    <div class="panel-body">
+<div class="card">
+    <div class="card-header bg-primary text-white"><h3><b>Gerenciar Peles</b></h3></div>
+    <div class="card-body">
 
         <!-- === Selecione a pele === -->
         <form action="do/peles/<?php echo $this->container["objeto"]->valor("cod_objeto") ?>.html" method="post">            
-            <div class="panel panel-info">
-                <div class="panel-heading">Selecione a Pele</div>
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-header">Selecione a Pele</div>
+                <div class="card-body">
                     <label for="InputNome" class="col-md-2 col-form-label">Apar&ecirc;ncia</label>
                     <div class="col-md-6">
                         <select name="cod_pele" class="form-control">
@@ -107,7 +104,7 @@ foreach ($peles as $pele)
 if ($erro!="")
 {
 ?>
-<div class="alert alert-danger alert-dismissible fade in" role="alert">
+<div class="alert alert-danger alert-dismissible" role="alert">
 	<button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">x</span></button>
 	<h4><b>Ocorreu um erro!</b></h4>
 	<p><?php echo($erro); ?></p>
@@ -118,9 +115,9 @@ if ($erro!="")
 ?>
         <!-- === Nova Pele === -->
         <form action="do/peles_post/<?php echo $this->container["objeto"]->valor("cod_objeto") ?>.html" method="post">
-            <div class="panel panel-info">
-                <div class="panel-heading"><?php if ($cod_pele > 0) { ?>Editar Pele - código: <?php echo($cod_pele); ?><?php } else { ?>Nova Pele<?php } ?></div>
-                <div class="panel-body">
+            <div class="card mt-1">
+                <div class="card-header"><?php if ($cod_pele > 0) { ?>Editar Pele - código: <?php echo($cod_pele); ?><?php } else { ?>Nova Pele<?php } ?></div>
+                <div class="card-body">
                     <input type="hidden" name="cod_pele" value="<?php echo $cod_pele ?>">
                     <div class="form-group row ">
                         <label for="InputNome" class="col-md-2 col-form-label">Nome</label>
@@ -142,13 +139,13 @@ if ($erro!="")
                     </div>
                 </div>
 				<div id="container_alerta"></div>
-				<div class="alert alert-danger alert-dismissible fade in modelo_apagar" role="alert" style="display: none;">
+				<div class="alert alert-danger alert-dismissible modelo_apagar" role="alert" style="display: none;">
 						<button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">x</span></button>
 						<h4><b>Apagar pele!</b></h4>
 						<p>Deseja realmente apagar a pele?</p>
 						<p><button type="submit" class="btn btn-danger apagar" name="delete">Apagar</button> <button type="button" class="btn btn-default naoapagar" data-dismiss="alert" aria-label="Não Apagar">Não Apagar</button></p>
 					</div>
-                <div class="panel-footer" style="text-align: right">
+                <div class="card-footer" style="text-align: right">
 					
                     <?php
                         if ($cod_pele)

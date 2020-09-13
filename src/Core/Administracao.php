@@ -1125,17 +1125,20 @@ class Administracao extends Base
      */
     function apagarObjeto($cod_objeto, $definitivo = false)
     {
+        $tblObjeto = $this->container["config"]->bd["tabelas"]["objeto"];
+        $tblParentesco = $this->container["config"]->bd["tabelas"]["parentesco"];
+
         if (!$definitivo)
         {
-            $sql = "SELECT distinct ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." AS cod_objeto, "
-                    . " ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_status"]." AS cod_status "
-                    . " FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"]." "
-                    . " INNER JOIN ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"]." "
-                        . " ON ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." "
-                    . " WHERE (".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_pai"]." = ".$cod_objeto." "
-                    . " OR ".$this->container["config"]->bd["tabelas"]["parentesco"]["nick"].".".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
-                    . " AND (".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 0"
-                        . " OR ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." is null) ";
+            $sql = "SELECT distinct ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_objeto"]." AS cod_objeto, "
+                    . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["cod_status"]." AS cod_status "
+                    . " FROM ".$tblParentesco["nome"]." ".$tblParentesco["nick"]." "
+                    . " INNER JOIN ".$tblObjeto["nome"]." ".$tblObjeto["nick"]." "
+                        . " ON ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_objeto"]." = ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["cod_objeto"]." "
+                    . " WHERE (".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_pai"]." = ".$cod_objeto." "
+                    . " OR ".$tblParentesco["nick"].".".$tblParentesco["colunas"]["cod_objeto"]." = ".$cod_objeto.") "
+                    . " AND (".$tblObjeto["nick"].".".$tblObjeto["colunas"]["apagado"]." = 0"
+                        . " OR ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["apagado"]." is null) ";
             $res = $this->container["db"]->execSQL($sql);
 
             while ($row = $res->FetchRow())
@@ -1145,13 +1148,13 @@ class Administracao extends Base
                     $this->removerPendencia("Removida pendência de publicação por remoção do objeto", $row['cod_objeto']);
                 }
                 
-                $sql = "UPDATE ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
-                        . " SET ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["apagado"]." = 1, "
-                        . " ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["data_exclusao"]." = ".date("YmdHis")." "
-                        . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
+                $sql = "UPDATE ".$tblObjeto["nome"]." "
+                        . " SET ".$tblObjeto["colunas"]["apagado"]." = 1, "
+                        . " ".$tblObjeto["colunas"]["data_exclusao"]." = ".date("YmdHis")." "
+                        . " WHERE ".$tblObjeto["colunas"]["cod_objeto"]." = ".$row['cod_objeto'];
                 $this->container["db"]->execSQL($sql);
                 
-                $this->container["log"]->incluirLogObjeto($cod_objeto,_OPERACAO_OBJETO_REMOVER);
+                $this->container["log"]->incluirLogObjeto($cod_objeto, _OPERACAO_OBJETO_REMOVER);
             
                 if ($row["cod_objeto"] != $cod_objeto)
                 {

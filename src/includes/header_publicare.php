@@ -34,7 +34,7 @@
  * Arquivo responsavel por montar o header do Publicare
  * 
  */
-global $PORTAL_NAME, $cod_objeto, $container;
+global $container;
 
 $msg = isset($_REQUEST["msg"]) ? htmlspecialchars(urldecode($_REQUEST["msg"]), ENT_QUOTES, "UTF-8") : "";
 $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"]), ENT_QUOTES, "UTF-8") : "";
@@ -56,84 +56,9 @@ $msge = isset($_REQUEST["msge"]) ? htmlspecialchars(urldecode($_REQUEST["msge"])
     </head>
 
     <body>
+
+		<?php include(__DIR__."/menu_publicare.php"); ?>
 		
-		<!-- === Menu, Usuário logado e Logout === -->
-		<ul id="gn-menupbl" class="gn-menu-mainpbl">
-			<!-- === Menu === -->
-			<li class="gn-triggerpbl">
-				<a class="gn-iconpbl gn-icon-menupbl"><span>Menu</span></a>
-				<nav class="gn-menu-wrapperpbl">
-					<div class="gn-scrollerpbl">
-						<ul class="gn-menupbl">
-				<?php
-					$menu = $container["usuario"]->menu();
-					$cont = 0;
-					foreach ($menu as $item)
-					{
-                                            
-						if ($item["script"] == "")
-						{
-							$cont++;
-							if ($cont > 1)
-							{
-							   echo "</ul></li>";
-							}
-							echo "
-							<li><a><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a>
-								<ul class='gn-submenupbl'>";
-						}
-						else
-						{
-							if (substr($item["script"], 0, 1)=="/") $item["script"] = substr($item["script"], 1);
-							echo "
-								<li><a href='".$container["config"]->portal["url"]."/".$item["script"]."/".$container["objeto"]->valor('cod_objeto').".html'><i class='fapbl ".$item["icone"]."'></i>".$item["acao"]."</a></li>";
-						}
-					}
-				?>
-						</ul>
-					</div>
-				</nav>
-			</li>			
-			<!-- === Final === Menu === -->
-			
-			<!-- === Usuário logado === -->
-			<li class="codrops-icon codrops-icon-drop logado"><div class="name"><?php echo($_SESSION["usuario"]["nome"]); ?></div></li>
-			<!-- === Final === Usuário logado === -->
-			
-			<!-- === Logout === -->
-			<li><a class="codrops-icon codrops-icon-drop logout" href="<?php echo($container["config"]->portal["url"]); ?>/do/logout"><i class="fapbl fapbl-unlock-alt"></i><span>&nbsp;Logout</span></a></li>
-			<!-- === Final === Logout === -->
-			
-		</ul> 
-		<!-- === Final === Menu, Usuário logado e Logout === -->
-		
-		<!-- === Container (Conteúdo) === -->
 		<div id="container-tela">
 			<div class="container-tela-int">
 				
-				<!-- === Conteúdo === --> 
-                                
-<?php
-if ($msge!="")
-{
-?>
-    <div class="alert alert-danger alert-dismissible fade in modelo_apagar" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">x</span></button>
-        <h4><b>Erro!</b></h4>
-        <p><?php echo($msge); ?></p>
-        <p><button type="button" class="btn btn-default naoapagar" data-dismiss="alert" aria-label="Fechar">Fechar</button></p>
-    </div>
-<?php
-}
-if ($msg!="")
-{
-?>
-    <div class="alert alert-success alert-dismissible fade in modelo_apagar" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">x</span></button>
-        <h4><b>Sucesso!</b></h4>
-        <p><?php echo($msg); ?></p>
-        <p><button type="button" class="btn btn-default naoapagar" data-dismiss="alert" aria-label="Fechar">Fechar</button></p>
-    </div>
-<?php
-}
-?>

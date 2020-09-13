@@ -27,9 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
 
 $classname = $this->container["objeto"]->valor("prefixoclasse");
 $classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));

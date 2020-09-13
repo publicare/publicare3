@@ -27,11 +27,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
 
-global $page;
+global $container;
 
-function ChecaValidade(&$page, $nome, $prefixo, $cod_pele_atual)
+function ChecaValidade(&$container, $nome, $prefixo, $cod_pele_atual)
 {
     if ($nome == '')
     {
@@ -49,21 +48,21 @@ function ChecaValidade(&$page, $nome, $prefixo, $cod_pele_atual)
         }
         else
         {
-            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS cod_pele "
-                    . " FROM ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
-                    . " WHERE ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"]." = '".$nome."'";
-            if ($cod_pele_atual) $sql .= " AND ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
-            $rs = $page->db->execSQL($sql);
+            $sql = "SELECT ".$container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$container["config"]->bd["tabelas"]["pele"]["nome"]." "
+                    . " WHERE ".$container["config"]->bd["tabelas"]["pele"]["colunas"]["nome"]." = '".$nome."'";
+            if ($cod_pele_atual) $sql .= " AND ".$container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
+            $rs = $container["db"]->execSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Nome de pele j&aacute; existente. Escolha outro nome.';
             }
             
-            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS cod_pele "
-                    . " FROM ".$this->container["config"]->bd["tabelas"]["pele"]["nome"]." "
-                    . " WHERE ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
-            if ($cod_pele_atual) $sql .= " AND ".$this->container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
-            $rs = $page->db->execSQL($sql);
+            $sql = "SELECT ".$container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." AS cod_pele "
+                    . " FROM ".$container["config"]->bd["tabelas"]["pele"]["nome"]." "
+                    . " WHERE ".$container["config"]->bd["tabelas"]["pele"]["colunas"]["prefixo"]." = '".$prefixo."'";
+            if ($cod_pele_atual) $sql .= " AND ".$container["config"]->bd["tabelas"]["pele"]["colunas"]["cod_pele"]." <> ".$cod_pele_atual;
+            $rs = $container["db"]->execSQL($sql);
             if (!$rs->EOF)
             {
                 return 'Prefixo j&aacute; existente. Escolha outro prefixo.';
@@ -80,7 +79,7 @@ $cod_pele = isset($_POST['cod_pele'])?(int)htmlspecialchars($_POST['cod_pele'], 
 $publica = isset($_POST['publica'])?(int)htmlspecialchars($_POST['publica'], ENT_QUOTES, "UTF-8"):0;
 
 //Checa se os dados enviados são válidos
-$msg = ChecaValidade($page, $nome, $prefixo, $cod_pele);
+$msg = ChecaValidade($container, $nome, $prefixo, $cod_pele);
 
 // se tiver codigo da pele e for clicado o botao de excluir
 if ($cod_pele > 0 && isset($_POST['delete']))

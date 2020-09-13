@@ -57,6 +57,8 @@ class Start
         $container->register(new BancoProvider());
         $container->register(new GeralProvider());
 
+        // xd($container->keys());
+
         // inicia sessao caso não esteja iniciada ainda
         if (!isset($_SESSION)) 
         {

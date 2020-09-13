@@ -63,7 +63,7 @@ else
     $titulo = "Editar";
 }
 
-$objeto = clone $this->container["objeto"];
+$objeto = clone($this->container["objeto"]);
 
 $versao = isset($_GET['v'])?(int)htmlspecialchars($_GET["v"], ENT_QUOTES, "UTF-8"):0;
 if ($versao > 0)
@@ -99,8 +99,6 @@ $new_status = 0;
 // o unico objeto que não pode ser despublicado é a página inicial, objeto _ROOT
 if ($this->container["objeto"]->valor("cod_objeto") == $this->container["config"]->portal["objroot"]) $new_status = _STATUS_PUBLICADO;
 else $new_status = _STATUS_PRIVADO;
-
-
 ?>
 <script src="include/javascript_datepicker" type="text/javascript"></script>
 <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
@@ -110,10 +108,10 @@ else $new_status = _STATUS_PRIVADO;
     <input type="hidden" name="cod_classe" value="<?php echo($classe["classe"]["cod_classe"]); ?>">
     <input type="hidden" name="cod_pai" value="<?php echo($cod_pai); ?>">
     <input type="hidden" name="cod_objeto" value="<?php echo($edit?$this->container["objeto"]->valor("cod_objeto"):0); ?>">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
             <h3><strong><?php echo($titulo); ?> objeto</strong></h3>
-            <p class="padding-top10">
+            <p>
 <?php
     if ($edit)
     {
@@ -132,7 +130,7 @@ else $new_status = _STATUS_PRIVADO;
 ?>
             </p>
         </div>
-        <div class="panel-footer text-right">
+        <div class="card-footer text-right">
             <!-- === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
             <div class="divBotoesAcao">
                 <div class="row">
@@ -188,7 +186,7 @@ else
 if ($edit === true && $this->container["usuario"]->cod_perfil <= _PERFIL_EDITOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html" class="btn btn-secondary">Gerar QRCode</a>
 <?php                
 }
 ?>
@@ -203,14 +201,14 @@ if ($edit === true && $this->container["usuario"]->cod_perfil <= _PERFIL_EDITOR)
             </div>
             <!-- === Final === Mensagem de ação === -->
         </div>
-        <div class="panel-body">
-            <div class="panel panel-info">
-                <div class="panel-heading">
+        <div class="card-body">
+            <div class="card">
+                <div class="card-header bg-default">
                     Dados do Objeto
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="row form-group">
-                        <label class="col-md-3 col-form-label" for="titulo"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo t&iacute;tulo do objeto é obrigatório.' data-placement='top' title='O campo t&iacute;tulo do objeto é obrigatório.'></i> T&iacute;tulo do objeto <small><small>* <br />(#titulo)</small></small></label>
+                        <label class="col-md-3" for="titulo"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo t&iacute;tulo do objeto é obrigatório.' data-placement='top' title='O campo t&iacute;tulo do objeto é obrigatório.'></i> T&iacute;tulo do objeto <small><small>* <br />(#titulo)</small></small></label>
                         <div class="col-md-9">
                             <input type="text" name="titulo" id="titulo" class="form-control required" value="<?php echo($edit?$objeto->valor("titulo"):"") ?>" />
                         </div>
@@ -243,7 +241,7 @@ foreach ($classe["prop"] as $prop)
     }
 ?>
                     <div class="row form-group" style="<?php echo($visivel); ?>">
-                        <label class="col-md-3 col-form-label" for="property___<?php echo($prop["nome"]); ?>">
+                        <label class="col-md-3 " for="property___<?php echo($prop["nome"]); ?>">
 <?php
     if ($prop["descricao"]!="")
     {
@@ -352,31 +350,31 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
+                    <div class="card mt-2">
+                        <div class="card-header bg-default">
                             SEO
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="descricao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo Descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.' data-placement='top' title='O campo descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.'></i> Descri&ccedil;&atilde;o <small><small><br />(#descricao)</small></small></label>
+                                <label class="col-md-4 " for="descricao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo Descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.' data-placement='top' title='O campo descri&ccedil;&atilde;o normalmente &eacute; utilizado na MetaTag Description, para indexa&ccedil;&atilde;o por sites de busca.'></i> Descri&ccedil;&atilde;o <small><small><br />(#descricao)</small></small></label>
                                 <div class="col-md-8">
                                     <textarea name="descricao" id="descricao" class="form-control"><?php echo($edit?$objeto->valor("descricao"):""); ?></textarea>
                                 </div>
                             </div>
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="url_amigavel"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".' data-placement='top' title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".'></i> URL Amigável <small><small><br />(#url_amigavel)</small></small></label>
+                                <label class="col-md-4 " for="url_amigavel"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".' data-placement='top' title='O campo URL Amigável define o endereço do objeto. Ex: Para o objeto "Página Inicial" do site www.site.com.br, a URL Amigável pode ser "pagina-inicial", ficando "www.site.com.br/pagina-inicial".'></i> URL Amigável <small><small><br />(#url_amigavel)</small></small></label>
                                 <div class="col-md-8">
                                     <input type="text" name="url_amigavel" id="url_amigavel" class="form-control" value="<?php echo($edit?$objeto->valor("url_amigavel"):""); ?>" />
                                 </div>
                             </div>
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="tags"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.' data-placement='top' title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.'></i> TAGS <small><small><br />(#tags)</small></small></label>
+                                <label class="col-md-4 " for="tags"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.' data-placement='top' title='O campo TAGS normalmente &eacute; utilizado na MetaTag KeyWords, para indexa&ccedil;&atilde;o por sites de busca. Informe as tags separadas por vírgula.'></i> TAGS <small><small><br />(#tags)</small></small></label>
                                 <div class="col-md-8">
                                     <textarea name="tags" id="tags" class="form-control"><?php echo($edit?$objeto->valor("tags"):""); ?></textarea>
                                 </div>
                             </div> 
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="peso"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.' data-placement='top' title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.'></i> Peso <small><small><br />(#peso)</small></small></label>
+                                <label class="col-md-4 " for="peso"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.' data-placement='top' title='O campo "Peso" normalmente é utilizado para ordenação dos objetos.'></i> Peso <small><small><br />(#peso)</small></small></label>
                                 <div class="col-md-8">
                                     <input type="number" name="peso" id="peso" class="form-control required" value="<?php echo($peso); ?>" />
                                 </div>
@@ -385,25 +383,25 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
+                    <div class="card  mt-2">
+                        <div class="card-header">
                             Dados avançados
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="data_publicacao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual o objeto ficar&aacute; vis&iacute;vel.' data-placement='top' title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual objeto ficar&aacute; vis&iacute;vel.'></i> Data publica&ccedil;&atilde;o <small><small>* <br />(#data_publicacao)</small></small></label>
+                                <label class="col-md-4 " for="data_publicacao"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual o objeto ficar&aacute; vis&iacute;vel.' data-placement='top' title='O campo data publica&ccedil;&atilde;o informa a data/hora a partir da qual objeto ficar&aacute; vis&iacute;vel.'></i> Data publica&ccedil;&atilde;o <small><small>* <br />(#data_publicacao)</small></small></label>
                                 <div class="col-md-8">
                                     <input type="text" name="data_publicacao" id="data_publicacao" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $objeto->valor("data_publicacao")):($dataAtual." ".$horaAtual)) ?>"/>
                                 </div>
                             </div>
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="data_validade"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data validade informa a data/hora a partir da qual objeto deixar&aacute; de ser vis&iacute;vel.' data-placement='top' title='O campo data validade informa a data/hora a partir da qual o objeto deixar&aacute; de ser vis&iacute;vel.'></i> Data validade <small><small>* <br />(#data_validade)</small></small></label>
+                                <label class="col-md-4 " for="data_validade"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo data validade informa a data/hora a partir da qual objeto deixar&aacute; de ser vis&iacute;vel.' data-placement='top' title='O campo data validade informa a data/hora a partir da qual o objeto deixar&aacute; de ser vis&iacute;vel.'></i> Data validade <small><small>* <br />(#data_validade)</small></small></label>
                                 <div class="col-md-8">
                                     <input type="text" name="data_validade" id="data_validade" class="form-control required datepicker" value="<?php echo($edit?preg_replace("[\: ]", "", $objeto->valor("data_validade")):$dataValidade." ".$horaAtual) ?>" />
                                 </div>
                             </div>
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="cod_pele"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Pele <small><small><br />(#cod_pele)</small></small></label>
+                                <label class="col-md-4 " for="cod_pele"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Pele <small><small><br />(#cod_pele)</small></small></label>
                                 <div class="col-md-8">
                                     <select class="form-control" name="cod_pele" id="cod_pele">
                                         <option value="">- Pele Padrão -</option>
@@ -420,7 +418,7 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                                 </div>
                             </div>
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="script_exibir"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Script de exibição <small><small><br />(#script_exibir)</small></small></label>
+                                <label class="col-md-4 " for="script_exibir"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='A pele do objeto...' data-placement='top' title='A pele do objeto...'></i> Script de exibição <small><small><br />(#script_exibir)</small></small></label>
                                 <div class="col-md-8">
                                     <select class="form-control" name="script_exibir" id="script_exibir">
                                         <option value="">. selecione .</option>
@@ -428,7 +426,7 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
                                 </div>
                             </div>
                             <div class="row form-group">
-                                <label class="col-md-4 col-form-label" for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto <small><small><br />(#cod_usuario)</small></small></label>
+                                <label class="col-md-4 " for="cod_usuario"><i class="fapbl fapbl-info-circle" rel='tooltip' data-color-class='primary' data-animate=' animated fadeIn' data-toggle='tooltip' data-original-title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.' data-placement='top' title='O campo "Dono do objeto" indica qual usuário será o responsável pelo objeto.'></i> Dono do objeto <small><small><br />(#cod_usuario)</small></small></label>
                                 <div class="col-md-8">
         <?php
         $usuarios = $this->container["administracao"]->pegarListaDependentes($cod_usuario);
@@ -468,7 +466,7 @@ $propobrigatoria = substr($propobrigatoria, 0, strlen($propobrigatoria)-1);
             </div>
             
         </div>
-        <div class="panel-footer text-right">
+        <div class="card-footer text-right">
             <!-- === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
             <div class="divBotoesAcao">
                 <input type="submit" value="Gravar" name="gravar" class="btn btn-info btnAcao">
@@ -491,7 +489,7 @@ else
 if ($edit === true && $this->container["usuario"]->cod_perfil == _PERFIL_ADMINISTRADOR)
 {
 ?>
-                <a href="do/qrcode/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html" class="btn btn-default">Gerar QRCode</a>
+                <a href="do/qrcode/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html" class="btn btn-secondary">Gerar QRCode</a>
 <?php                
 }
 ?>

@@ -23,15 +23,15 @@ var linguagemDataTable = {
     }
 };
 
-$.fn.dataTable.ext.order.intl = function ( locales, options ) {
-    if ( window.Intl ) {
-        var collator = new window.Intl.Collator( locales, options );
-        var types = $.fn.dataTable.ext.type;
+// $.fn.dataTable.ext.order.intl = function ( locales, options ) {
+//     if ( window.Intl ) {
+//         var collator = new window.Intl.Collator( locales, options );
+//         var types = $.fn.dataTable.ext.type;
  
-        delete types.order['string-pre'];
-        types.order['string-asc'] = collator.compare;
-        types.order['string-desc'] = function ( a, b ) {
-            return collator.compare( a, b ) * -1;
-        };
-    }
-};
+//         delete types.order['string-pre'];
+//         types.order['string-asc'] = collator.compare;
+//         types.order['string-desc'] = function ( a, b ) {
+//             return collator.compare( a, b ) * -1;
+//         };
+//     }
+// };

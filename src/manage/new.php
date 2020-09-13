@@ -42,14 +42,14 @@ $("document").ready(function(){
     <input type="hidden" name="cod_objeto" value="<?php echo($cod_objeto) ?>">
     <input type="hidden" name="prefixo" id="prefixo" value="">
     <!-- === Selecione a classe === -->
-    <div class="panel panel-primary">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
             <h3><strong>Selecione a Classe</strong></h3>
-            <p class="padding-top10"><b>Objeto atual</b>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>) - <b>Classe</b>: <?php echo($this->container["objeto"]->valor("classe")) ?> (<?php echo($this->container["objeto"]->valor("cod_classe")) ?>)</p>
+            <p><b>Objeto atual</b>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>) - <b>Classe</b>: <?php echo($this->container["objeto"]->valor("classe")) ?> (<?php echo($this->container["objeto"]->valor("cod_classe")) ?>)</p>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <!-- === Classes === -->
-            <h4 class="padding-bottom20"><strong>Classes</strong></h4>
+            <h4><strong>Classes</strong></h4>
             <p>A lista abaixo apresenta as classes que podem ser utilizadas a partir do objeto atual.</p>
 <?php
 $lista = $this->container["administracao"]->listarClassesPermitidas($this->container["objeto"]->valor("cod_classe"));
@@ -80,10 +80,10 @@ usort($lista, function($a, $b){
 foreach($lista as $row)
 {
 ?>
-            <div class="panel panel-info">
-                <div class="panel-heading">
+            <div class="card mt-1">
+                <div class="card-header">
                     <div class="row">
-                        <div class="col-sm-9"><h4 class="padding-bottom10"><strong><?php echo($row['nome']) ?></strong></h4><i><?php echo($row['descricao']) ?></i></div>
+                        <div class="col-sm-9"><h4><strong><?php echo($row['nome']) ?></strong></h4><i><?php echo($row['descricao']) ?></i></div>
                         <div class="col-sm-3 text-right"><a href="#" id="<?=$row['prefixo']?>" class="btn btn-success btn_usarclasse">Usar classe</a></div>
                     </div>
                 </div>

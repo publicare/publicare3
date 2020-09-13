@@ -35,17 +35,49 @@ use Pbl\Core\Base;
 
 class Objeto extends Base
 {
-    public $ponteiro=0;
-    public $quantidade=0;
-    public $caminhoObjeto = array();
-    public $metadados;
-    public $propriedades;
-    // public $ArrayMetadados;
+    private $caminhoObjeto = array();
+    private $metadados;
+    private $propriedades;
+    private $iniciado = false;
+
+    public function __get($campo)
+    {
+        if (isset($this->$campo)) return $this->$campo;
+        return false;
+    }
+
+    public function setMetadado($campo, $valor)
+    {
+        $this->metadados[$campo] = $valor;
+    }
+
+    public function __serialize()
+    {
+        return(
+            array(
+                "caminhoObjeto" => $this->caminhoObjeto, 
+                "metadados" => $this->metadados, 
+                "propriedades" => $this->propriedades,
+                "iniciado" => $this->iniciado
+            )
+        );
+    }
+
+    public function __debugInfo()
+    {
+        return(
+            array(
+                "caminhoObjeto" => $this->caminhoObjeto, 
+                "metadados" => $this->metadados, 
+                "propriedades" => $this->propriedades,
+                "iniciado" => $this->iniciado
+            )
+        );
+    }
 
     public function __construct($container, $cod_objeto=-1)
     {
         parent::__construct($container);
-        // xd($cod_objeto);
         $this->iniciar($cod_objeto);
     }
     
@@ -66,55 +98,13 @@ class Objeto extends Base
             {
                 $this->povoar($dados);
                 $this->caminhoObjeto = $this->pegarCaminho();
-                return true;
+                $this->iniciado = true;
             }
         }
 
         //Nao conseguiu selecionar o objeto
-        return false;
+        // $this->iniciado = false;
     }
-
-    /**
-     * Método construtor da classe objeto
-     * @param Pagina $page - Referencia do objeto page
-     * @param mixed $cod_objeto - Pode ser string ou inteiro
-     * @return boolean
-     */
-    // function __construct($page, $cod_objeto=-1)
-    // {
-    //     $this->page = $page;
-
-    //     if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
-    //     {
-    //         x("objeto::construct cod_objeto=".$cod_objeto);
-    //     }
-        
-    //     $this->ArrayMetadados = $this->page->db->metadados;
-    //     if ($cod_objeto!=-1)
-    //     {
-    //         if (is_numeric($cod_objeto))
-    //         {
-    //             $dados = $this->page->adminobjeto->pegarDadosObjetoId($cod_objeto);
-    //         }
-    //         else
-    //         {
-    //             $dados = $this->page->adminobjeto->pegarDadosObjetoTitulo($cod_objeto);
-    //         }
-
-    //         if (is_array($dados) && sizeof($dados)>2)
-    //         {
-    //             $this->povoar($dados);
-    //             $this->caminhoObjeto = $this->pegarCaminho();
-    //             return true;
-    //         }
-
-    //         //xd($this);
-
-    //     }
-
-    //     //Nao conseguiu selecionar o objeto
-    //     return false;
-    // }
 
     /**
      * Povoa objeto do tipo Objeto com os metadados, datas de publicação e validade, url amigavel e tags
@@ -125,17 +115,24 @@ class Objeto extends Base
         $this->metadados = $dados;
         $this->metadados['data_publicacao'] = ConverteData($this->metadados['data_publicacao'],1);
         $this->metadados['data_validade'] = ConverteData($this->metadados['data_validade'],1);
+        $this->metadados['data_exclusao'] = ConverteData($this->metadados['data_exclusao'],1);
         //INCLUIDO O TITULO DO OBJETO NA URL
         if ($this->metadados['url_amigavel'] 
-                && $this->metadados['url_amigavel']!="")  
-        {
+                && $this->metadados['url_amigavel']!="") {
             $this->metadados['url'] = "/".$this->metadados['url_amigavel'];
         }
-        else 
-        {
+        else {
             $this->metadados['url']='/content/view/'.$this->metadados['cod_objeto']."/".limpaString($this->metadados['titulo']).".html";
         }
         $this->metadados['tags'] = $this->container["adminobjeto"]->pegarTags($this->metadados['cod_objeto']);
+    }
+
+    public function carregarPropriedades()
+    {
+        if (!isset($this->propriedades) || !is_array($this->propriedades))
+        {
+            $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
+        }
     }
 
     /**
@@ -177,14 +174,15 @@ class Objeto extends Base
         {
             return trim($this->metadados[$campo]);
         }
-        elseif ($campo=="tags")
-        {
-
-        }
         else
         {
             return trim ($this->propriedade($campo));
         }
+    }
+
+    function valorParaEdicao($campo)
+    {
+        return $this->valor($campo);
     }
 
     /**
@@ -202,14 +200,13 @@ class Objeto extends Base
      * @param string $campo - nome da propriedade que contem o blob
      * @return string
      */
-    function baixarBlob($campo)
+    public function baixarBlob($campo)
     {
-        if (!isset($this->propriedades) || !is_array($this->propriedades))
-        {
-            $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
-        }
+        $this->carregarPropriedades();
         return isset($this->propriedades[$campo]['cod_blob'])?$this->container["config"]->portal["url"]."/blob/baixar/".$this->propriedades[$campo]['cod_blob']:"";
     }
+
+
     
     /**
      * Exibe blob na tela utilizando funcionalidade viewblob.
@@ -219,20 +216,11 @@ class Objeto extends Base
      * @param integer $height - Altura da imagem
      * @return bytes - Retorna bytes da imagem para exibição
      */
-    function exibirBlob($campo, $width=0, $height=0)
+    public function exibirBlob($campo, $width=0, $height=0)
     {
-        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
-        {
-            x("objeto::exibirBlob campo:".$campo);
-        }
-        if (!isset($this->propriedades) || !is_array($this->propriedades))
-        {
-                $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
-        }
+        $this->carregarPropriedades();
 
-//        return _URL."/html/objects/_viewblob.php?cod_blob=".$this->propriedades[$campo]['cod_blob']."&width=$width&height=$height";
         return isset($this->propriedades[$campo]['cod_blob'])?$this->container["config"]->portal["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$width."&h=".$height:"";
-        // return $this->container["config"]->portal["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$width."&h=".$height;
     }
 
     /**
@@ -245,37 +233,15 @@ class Objeto extends Base
      */
     function exibirThumb($campo, $width=0, $height=0)
     {
-        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
-        {
-            x("objeto::exibirThumb campo:".$campo);
-        }
-        if (!isset($this->propriedades) || !is_array($this->propriedades))
-        {
-            $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
-        }
-        
-        $largura = $width>0?$width:$this->container["config"]->portal["largurathumb"];
-//        return _URL."/html/objects/_viewthumb.php?cod_blob=".$this->propriedades[$campo]['cod_blob']."&width=$width&height=$height";
-        // return $this->container["config"]->portal["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$largura."&h=".$height;
-        return isset($this->propriedades[$campo]['cod_blob'])?$this->container["config"]->portal["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$largura."&h=".$height:"";
+        $this->carregarPropriedades();
+        $config = $this->container["config"]->portal;
+                
+        $largura = $width>0?$width:$config["largurathumb"];
+
+        return isset($this->propriedades[$campo]['cod_blob'])?$config["url"]."/blob/ver/".$this->propriedades[$campo]['cod_blob']."?w=".$largura."&h=".$height:"";
     }
 
-    function valorParaEdicao($campo)
-    {
-        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
-        {
-            x("objeto::valorParaEdicao campo:".$campo);
-        }
-
-        if ($this->container["adminobjeto"]->ehMetadado($campo))
-        {
-            return (trim($this->metadados[$campo]));
-        }
-        else
-        {
-            return (trim($this->propriedade($campo)));
-        }
-    }
+    
 
     function pegarListaPropriedades()
     {
@@ -283,11 +249,9 @@ class Objeto extends Base
         {
             x("objeto::pegarListaPropriedades");
         }
+
+        $this->carregarPropriedades();
         
-        if (!is_array($this->propriedades) || count($this->propriedades)==0)
-        {
-                $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
-        }
         return $this->propriedades;
     }
 
@@ -301,7 +265,7 @@ class Objeto extends Base
         $campo = strtolower($campo);
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
+            $this->propriedades = $this->carregarPropriedades();
         }
         // if (isset($this->propriedades[$campo])) return $this->propriedades[$campo]['valor'];
         // else return "";
@@ -319,11 +283,8 @@ class Objeto extends Base
         {
             x("objeto::tamanhoBlob campo:".$campo);
         }
-        
-        if (!isset($this->propriedades) || !is_array($this->propriedades))
-        {
-            $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
-        }
+
+        $this->carregarPropriedades();
         
         // x($this->propriedades);
         // return ($this->propriedades[$campo]['tamanho_blob']);
@@ -337,10 +298,7 @@ class Objeto extends Base
             x("objeto::tipoBlob campo:".$campo);
         }
         
-        if (!isset($this->propriedades) || !is_array($this->propriedades))
-        {
-            $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
-        }
+        $this->carregarPropriedades();
 
         // return ($this->propriedades[$campo]['tipo_blob']);
         return  isset($this->propriedades[$campo]['tipo_blob'])?isset($this->propriedades[$campo]['tipo_blob']):"";

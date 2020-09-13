@@ -27,8 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page;
 
 $netRedirect = "list_content";
 if (isset($_POST['objlist']) && is_array($_POST['objlist']))

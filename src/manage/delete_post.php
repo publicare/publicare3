@@ -27,8 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page;
 
 $this->container["administracao"]->apagarObjeto($this->container["objeto"]->valor("cod_objeto"));
 header("Location:".$this->container["config"]->portal["url"]."/content/view/".$_POST['cod_pai'].".html?PortalMessage=Objeto+Apagado");

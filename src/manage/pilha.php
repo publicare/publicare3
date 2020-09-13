@@ -27,13 +27,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
 ?>
 <ul class="nav nav-tabs">
-  <li><a href="do/list_content/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Listar Conteúdo</a></li>
-  <li class="active"><a href="do/pilha/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Pilha</a></li>
+    <li class="nav-item">
+        <a class="nav-link" href="do/list_content/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Listar Conteúdo</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="do/pilha/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Pilha</a>
+    </li>
 </ul>
 <script>
 $(document).ready(function(){
@@ -43,31 +44,31 @@ $(document).ready(function(){
     });
 });
 </script>
-<div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Pilha</b></h3></div>
+<div class="card">
+    <div class="card-header bg-primary text-white"><h3><b>Pilha</b></h3></div>
     
 <?php
 if (($this->container["objeto"]->podeTerFilhos()))
 {
 ?>
     <form action="do/pilha_post/<?php echo $this->container["objeto"]->valor("cod_objeto");?>.html" method="POST" name="objmanage" id="objmanage">
-        <div class="panel-body">
+        <div class="card-body">
             <select class="pblSelectForm" name="cod_objmanage">
             <?php echo $this->container["administracao"]->dropdownPilha() ?>
             </select>
         </div>
         
-        <div class="panel-footer">
+        <div class="card-footer">
 <?php
     if ($this->container["administracao"]->temPilha())
     {
 ?>
-            <div id="divBotoesAcao"><center>
+            <div id="divBotoesAcao" class="text-center" >
                 <input class="btn btn-info btnAcao" type="submit" name="pastelink" value="Colar Link">&nbsp;&nbsp;
                 <input class="btn btn-warning btnAcao" type="submit" name="move" value="Mover">
                 <input class="btn btn-success btnAcao" type="submit" name="copy" value="Colar c&oacute;pia">
                 <input class="btn btn-danger btnAcao" type="submit" name="clear" value="Limpar Lista">
-                </center></div>
+            </div>
             <!-- === Final === Botões (Inverter, Publicar, Despublicar, Apagar, Duplicar e Copiar para a pilha) === -->
             <!-- === Mensagem de ação === -->
             <div class="alert alert-warning alert-dismissible fade in" role="alert" id="divMensagemGravar" style="display: none;">

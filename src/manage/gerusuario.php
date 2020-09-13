@@ -27,8 +27,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page;
+
+use Pbl\Core\Objeto;
+use Pbl\Core\Usuario;
 
 // pega lista completa de usuários
 $usuarios = $this->container["usuario"]->listarUsuarios(1);
@@ -59,7 +60,7 @@ if (isset($_GET["ajaxtbl"]))
         $permissoes = $this->container["usuario"]->pegarDireitosUsuario($usu["cod_usuario"]);
         foreach ($permissoes as $cod=>$perm)                          
         {
-            $objtemp = new Objeto($page, $cod);
+            $objtemp = new Objeto($this->container, $cod);
             $usu["permissoes"] .= "<br/>".$objtemp->valor("titulo")." <strong>(".$cod.")</strong> - ".$this->container["usuario"]->pegarNomePerfil($perm);
         }
         
@@ -73,7 +74,7 @@ if (isset($_GET["ajaxtbl"]))
                 . 'data-toggle="tooltip" '
                 . 'data-original-title="Editar Usuário" '
                 . 'data-placement="left" '
-                . 'title="Editar este usuário"><i class="fapbl fapbl-pencil-alt font-size16"></i></a> ';
+                . 'title="Editar este usuário"><i class="fapbl fapbl-pencil-alt"></i></a> ';
         $usu["acoes"] .= '<a href="do/gerusuario/'.$this->container["objeto"]->valor('cod_objeto').'.html?acao=bloquear&cod='.$usu["cod_usuario"].'" '
                 . ' title="Apagar Usuário" '
                 . 'rel="tooltip" '
@@ -81,7 +82,7 @@ if (isset($_GET["ajaxtbl"]))
                 . 'data-toggle="tooltip" '
                 . 'data-original-title="Apagar Usuário" '
                 . 'data-placement="left" '
-                . 'title="Apagar este usuário"><i class="fapbl fapbl-times-circle font-size16"></i></a> ';
+                . 'title="Apagar este usuário"><i class="fapbl fapbl-times-circle"></i></a> ';
         
         $array["data"][] = $usu;
         
@@ -99,34 +100,34 @@ $cod = isset($_REQUEST["cod"]) ? (int)htmlspecialchars($_REQUEST["cod"], ENT_QUO
 ?>
 <!-- === Menu === --> 
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li class="active"><a href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li><a href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li><a href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li class="nav-item"><a class="nav-link " href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Portal</a></li>
+    <li class="nav-item"><a class="nav-link active" href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li class="nav-item"><a class="nav-link" href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li class="nav-item"><a class="nav-link" href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 <!-- === FInal === Menu === -->
 
 <!-- === Gerenciar Usuários === -->
-<div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Gerenciar Usu&aacute;rios</b></h3></div>
+<div class="card">
+    <div class="card-header bg-primary text-white"><h3><b>Gerenciar Usu&aacute;rios</b></h3></div>
 <?php
 if ($acao == "")
 {
 ?>
-    <div class="panel-footer">
-        <center><input type="button" value="Adicionar usuário" class="btn btn-success" id="btnAdicionar" /></center>
+    <div class="card-footer text-center" >
+        <input type="button" value="Adicionar usuário" class="btn btn-success" id="btnAdicionar" />
     </div>
 
     
-    <div class="panel-body">
+    <div class="card-body">
         <script src="include/javascript_datatable" type="text/javascript"></script>
         <link href="include/css_datatable" rel="stylesheet" type="text/css"> 
         
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="font-size20" style="line-height: 30px;">Usuários cadastrados</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 style="line-height: 30px;">Usuários cadastrados</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 
                 <table id="tabela_usuario" class="table-striped">
                     <thead>
@@ -223,14 +224,15 @@ elseif ($acao == "novo" || ($acao == "editar" && $cod > 0))
     <script src="include/javascript_datepicker" type="text/javascript"></script>
     <link href="include/css_datepicker" rel="stylesheet" type="text/css">  
     
-    <div class="panel-body">
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="font-size20" style="line-height: 30px;"><?php echo($titPagina); ?> usuário</h3>
+    <div class="card-body">
+
+        <div class="card">
+            <div class="card-header">
+                <h3 style="line-height: 30px;"><?php echo($titPagina); ?> usuário</h3>
             </div>
 			
             <form action="do/gerusuario_post/<?php echo $this->container["objeto"]->valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
-                <div class="panel-body">
+                <div class="card-body">
                 				
                     <input type="hidden" name="cod_usuario" id="cod_usuario" value="<?php echo isset($usuario['cod_usuario']) ? $usuario['cod_usuario'] : ""; ?>" />
                     <input type="hidden" name="nomehidden" value="<?php echo isset($usuario['nome']) ? $usuario['nome'] : ""; ?>" />
@@ -301,8 +303,8 @@ if (defined("_ldaphost") && _ldaphost!="")
                                     if ($validade=="") 
                                     {
                                         $data = date("d/m/Y");
-                                        $data = DateTime::createFromFormat('d/m/Y', $data);
-                                        $data->add(new DateInterval('P180D'));
+                                        $data = \DateTime::createFromFormat('d/m/Y', $data);
+                                        $data->add(new \DateInterval('P180D'));
                                         $validade = $data->format('d/m/Y');
                                     }
                                     ?></label>
@@ -327,22 +329,22 @@ if (defined("_ldaphost") && _ldaphost!="")
                             ?>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="perfil" value="<?= _PERFIL_ADMINISTRADOR ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_ADMINISTRADOR) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Adminstrador<BR>
+                                    <input class="mr-1" type="radio" name="perfil" value="<?= _PERFIL_ADMINISTRADOR ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_ADMINISTRADOR) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Adminstrador<BR>
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="perfil" value="<?= _PERFIL_EDITOR ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_EDITOR) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Editor<BR>
+                                    <input class="mr-1" type="radio" name="perfil" value="<?= _PERFIL_EDITOR ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_EDITOR) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Editor<BR>
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="perfil" value="<?= _PERFIL_AUTOR ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_AUTOR) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Autor<BR>
+                                    <input class="mr-1" type="radio" name="perfil" value="<?= _PERFIL_AUTOR ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_AUTOR) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Autor<BR>
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="perfil" value="<?= _PERFIL_RESTRITO ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_RESTRITO) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Restrito<BR>
+                                    <input class="mr-1" type="radio" name="perfil" value="<?= _PERFIL_RESTRITO ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_RESTRITO) ? 'checked' : '' ?> <?= $tmpDisabled; ?>>Restrito<BR>
                                 </label>
                             </div>
 <!--                            <div class="form-group">
@@ -352,7 +354,7 @@ if (defined("_ldaphost") && _ldaphost!="")
                             </div>-->
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="perfil" value="<?= _PERFIL_DEFAULT ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_DEFAULT) ? 'checked' : '' ?> <?= $tmpDisabled; ?> >Default<BR>
+                                    <input class="mr-1" type="radio" name="perfil" value="<?= _PERFIL_DEFAULT ?>" <?= ($tmpPerfilObjetoAtual == _PERFIL_DEFAULT) ? 'checked' : '' ?> <?= $tmpDisabled; ?> >Default<BR>
                                 </label>
                             </div>
                             <div class="form-group">
@@ -373,7 +375,7 @@ if (defined("_ldaphost") && _ldaphost!="")
                         </div>
                     </div>
                 </div>
-                <div class="panel-footer" style="text-align: right;">
+                <div class="card-footer" style="text-align: right;">
                     <div class="row">
                         <div class="col-md-12">
                             <input type="submit" value="Gravar" class="btn btn-success" name="btnGravar" id="btnGravar" />
@@ -393,7 +395,7 @@ $(document).ready(function() {
             if ($("#cod_usuario").val() != "" && $("#InputSenha").val() == "") verifica = false;
             if (verifica)
             {
-                var complexidade = $("#PassValue").val();
+                // var complexidade = $("#PassValue").val();
 //                if (complexidade <= 40) 
 //                {
 //                    alert("Senha com complexidade baixa.\nUtilize uma senha combinando letras maiúsculas, minúsculas e números.");
@@ -403,9 +405,9 @@ $(document).ready(function() {
             form.submit();
         }
     });
-    $("#InputSenha").complexify({}, function (valid, complexity) { 
-        document.getElementById("PassValue").value = complexity; 
-    });
+    // $("#InputSenha").complexify({}, function (valid, complexity) { 
+    //     document.getElementById("PassValue").value = complexity; 
+    // });
     $("#btnCancelar").click(function(){
         document.location.href="do/gerusuario/<?php echo($this->container["objeto"]->valor("cod_objeto")); ?>.html";
     });
@@ -436,16 +438,17 @@ elseif ($acao=="bloquear" && $cod > 0)
         exit();
     }
 ?>
-    <div class="panel-body">
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="font-size20" style="line-height: 30px;">Apagar usuário</h3>
+    <div class="card-body">
+        <div class="card">
+            <div class="card-header">
+                <h3 style="line-height: 30px;">Apagar usuário</h3>
             </div>
             <form action="do/gerusuario_post/<?php echo $this->container["objeto"]->valor('cod_objeto') ?>.html" method="POST" id="form_usuario">
                 <input type="hidden" name="cod_usuario" value="<?php echo($cod); ?>" />
-                <div class="panel-body">
+                <div class="card-body">
                     <p>Deseja realmente apagar o usuário <b>"<?php echo($usuario["nome"]); ?>"</b>?</p>
-                    <p><input type="submit" class="btn btn-danger" name="btnApagar" value="Apagar" /> <input type="button" class="btn btn-default" value="Não Apagar" id="btnBNao" /></p>
+                    <p><input type="submit" class="btn btn-danger" name="btnApagar" value="Apagar" /> 
+                    <input type="button" class="btn btn-secondary" value="Não Apagar" id="btnBNao" /></p>
                 </div>
             </form>
         </div>

@@ -27,29 +27,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
 
 $cod_objeto = $this->container["objeto"]->valor("cod_objeto");
 //
 //$total = $this->container["administracao"]->PegaTotalDeVencidos($page, $cod_objeto);
 //$inicio = !isset($inicio)?0:$inicio;
 ?>
-<script src="include/javascript_datatable" type="text/javascript"></script>
-<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
  
 <script>
 $(document).ready(function(){
      
-    $.fn.dataTable.moment( 'DD/MM/YYYY' );
+    // $.fn.dataTable.moment( 'DD/MM/YYYY' );
     
-    $('#tabelaLista')
-            .dataTable({
-                responsive: true,
-                language: linguagemDataTable,
-                order: [[ 2, "desc" ]],
-            });
+    $('#tabelaLista').dataTable({
+		responsive: true,
+		language: linguagemDataTable
+	});
             
     $(".btnAcao").click(function(){
         $("#divMensagemGravar").show();
@@ -69,16 +62,14 @@ $(document).ready(function(){
 </script>
 
 <!-- === Objeto Vencidos === -->
-<div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Objeto Vencidos</b></h3></div>
+<div class="card">
+    <div class="card-header bg-primary text-white"><h3><b>Objeto Vencidos</b></h3></div>
 	
 		<form action="do/vencidos_post/<?=$this->container["objeto"]->valor("cod_objeto")?>.html" name="listcontent" id="listcontent" method="POST">
 		<input type="hidden" name="return_obj" value="<?php echo $this->container["objeto"]->valor("cod_objeto")?>">
 			
 		<!-- === Botões (Inverter, Publicar) === -->
-		<div class="panel-footer">
-			<center>
-				
+		<div class="card-footer text-center">
 				<input type="button" value="Inverter Sele&ccedil;&atilde;o" name="purge" class="btn btn-warning" id="btnInverter">
 <?php
 if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
@@ -88,11 +79,10 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 <?php 
 }
 ?>
-			</center>
 		</div>
 		<!-- === Final === Botões (Inverter, Publicar) === -->
 			
-		<div class="panel-body">
+		<div class="card-body">
 			
 			<!-- === Mensagem de ação === -->
             <div class="alert alert-info alert-dismissible fade in modeloapagarclasse" role="alert" id="trGravarTop2" style="display: none;">
@@ -104,8 +94,8 @@ if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
 			<h4 class="padding-bottom20 padding-top10 font-size20">ATEN&Ccedil;&Atilde;O: Objeto deletados aqui n&atilde;o poder&atilde;o ser recuperados!</h4>
 			
 			<!-- === Listar Conteúdo === -->
-			<div class="panel panel-info modelo_propriedade">
-				<div class="panel-heading">
+			<div class="card">
+				<div class="card-header">
 					<div class="row">
 						<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo $this->container["objeto"]->valor("titulo")?></h3></div>
 						<div class="col-sm-3 text-right titulo-icones">
@@ -121,7 +111,7 @@ if ($this->container["objeto"]->valor("cod_objeto") != $this->container["config"
 						</div>
 					</div>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 									   
                     <!-- === Tabela Listar Conteúdo (DATATABLE) === -->
                     <table id="tabelaLista" class="display" style="width:100%">

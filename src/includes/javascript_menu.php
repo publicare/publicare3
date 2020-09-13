@@ -31,6 +31,6 @@
 
 use Pbl\Core\Includes;
 
-$js = new Includes($container, array("classie.js", "gnmenu.js"), "js");
+$js = new Includes($container, array("classie.js", "pblmenu.js"), "js");
 $js->imprimeResultado();
-exit(); 
+exit();

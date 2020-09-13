@@ -28,8 +28,6 @@
  * THE SOFTWARE.
  */
 
-namespace Pbl;
-global $page;
 
 	$this->container["administracao"]->submeterObjeto($_POST['message'], $this->container["objeto"]->valor('cod_objeto'));
 	header("Location:".$this->container["objeto"]->valor('url')."?PortalMessage=Status+Alterado");

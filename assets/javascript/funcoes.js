@@ -100,8 +100,8 @@ function classeAdicionarPropriedade(cod, prefixo, rotulo, tipodado, valorpadrao,
     
     var formulario = $("div.modelo_propriedade").clone(true);
     
-    formulario[0].getElementsByClassName("panel-heading")[0].getElementsByClassName("numero")[0].innerHTML = numero;
-    if (cod > 0) formulario[0].getElementsByClassName("panel-heading")[0].getElementsByClassName("codigo")[0].innerHTML = "(código: " + cod + ")";
+    formulario[0].getElementsByClassName("card-header")[0].getElementsByClassName("numero")[0].innerHTML = numero;
+    if (cod > 0) formulario[0].getElementsByClassName("card-header")[0].getElementsByClassName("codigo")[0].innerHTML = "(código: " + cod + ")";
     formulario[0].id = "linha_prop_" + numero;
     formulario.removeClass("modelo_propriedade");
     

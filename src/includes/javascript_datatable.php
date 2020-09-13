@@ -31,6 +31,6 @@
 
 use Pbl\Core\Includes;
 
-$js = new Includes($container, array("jquery.dataTables.min.js", "dataTables.responsive.min.js", "scripts_datatable.js", "moment.min.js", "datetime-moment.js"), "js");
+$js = new Includes($container, array("dataTables.min.js"), "js");
 $js->imprimeResultado();
 exit(); 

@@ -27,22 +27,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
-
 $inicio = $this->container["objeto"]->valor("cod_objeto");
+
+// xd($this->container["objeto"]);
+
+if (isset($_GET["ajaxtbl"]))
+{
+    $array = $this->container["adminobjeto"]->buscaObjetoJsonDatatable($_POST, true);
+    echo($array);
+    exit();
+}
 ?>
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#tabelaLista')
-            .dataTable({
-                responsive: true,
-                language: linguagemDataTable,
-                order: [[ 3, "desc" ]],
-            });
-            
+
+	$('#tabelaLista').dataTable({
+		"responsive": true,
+		"language": linguagemDataTable,
+		"processing": true,
+		"serverSide": true,
+		"ajax": {
+			"url": "do/recuperar/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html?naoincluirheader&ajaxtbl",
+			"type": "POST"
+		},
+		"order": [[ 4, "desc" ]],
+		"columns": [
+			{ 
+				"data": "checkbox",
+				"orderable": false,
+				"searchable": false
+			},
+			{ "data": "cod_objeto" },
+			{ "data": "titulo" },
+			{ "data": "classe" },
+			{ "data": "data_exclusao" }
+		]
+	});
+
     $(".btnAcao").click(function(){
         $("#divMensagemGravar").show();
         $("#divBotoesAcao").hide();
@@ -59,19 +81,17 @@ $(document).ready(function(){
     });
 });
 </script>
-<script src="include/javascript_datatable" type="text/javascript"></script>
-<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
 
 <!-- === Recuperar objetos apagados === -->
-<div class="panel panel-primary">
-    <div class="panel-heading"><h3><b>Recuperar objetos apagados</b></h3></div>
+<div class="card">
+    <div class="card-header bg-primary text-white"><h3><b>Recuperar objetos apagados</b></h3></div>
 
 	<form action="do/recuperar_post/<?php echo $this->container["objeto"]->valor('cod_objeto')?>.html" name="listcontent" id="listcontent" method="POST">
-	<div class="panel-body">
+	<div class="card-body">
 
 		<!-- === Listar Conteúdo === -->
-		<div class="panel panel-info modelo_propriedade">
-			<div class="panel-heading">
+		<div class="card">
+			<div class="card-header">
 				<div class="row">
 					<div class="col-sm-9"><h3 class="font-size20" style="line-height: 30px;"><?php echo($this->container["objeto"]->valor("titulo")); ?></h3></div>
 					<div class="col-sm-3 text-right titulo-icones">
@@ -88,60 +108,20 @@ if ($this->container["objeto"]->valor("cod_objeto") != $this->container["config"
 				</div>
 			</div>
 
-			<div class="panel-body">
+			<div class="card-body">
 
 				<!-- === Tabela Listar Conteúdo (DATATABLE) === -->
 				<table id="tabelaLista" class="display" style="width:100%">
 					<thead>
 						<tr>
 							<th>#</th>
+							<th>C&oacute;digo</th>
 							<th>T&iacute;tulo</th>
 							<th>Classe</th>
 							<th>Data da exclusão</th>
 						</tr>
 					</thead>
-					<tbody>
-<?php
-	$deletedlist = $this->container["administracao"]->pegarListaApagados($inicio);
-
-	$count=0;
-	foreach ($deletedlist as $obj)
-	{
-		$show=true;
-		if ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR || $_SESSION['usuario']['perfil']==_PERFIL_RESTRITO)
-		{
-			if ($obj['cod_usuario']==$_SESSION['usuario']['cod_usuario'])
-				$show=true;
-			else
-				$show=false;
-		}
-		if ($show)
-		{
-			if ($count++%2)
-				$classe="pblTextoLogImpar";
-			else
-				$classe="pblTextoLogPar";
-?>
-						<tr>
-							<td width="10"><input type="checkbox" id="objlist[]" name="objlist[]" value="<?php echo $obj["cod_objeto"];?>" class="chkObj"></td>
-							<td width="60%"><a href="<? echo $obj["exibir"]?>"><strong><? echo $obj["titulo"];?></strong></a></td>
-							<td width="20%"><?php echo $obj["classe"];?></td>
-							<td width="20%"><?php echo ConverteData($obj["data_exclusao"], 5);?></td>
-						</tr>
-<?php
-		}
-	}
-?>
-
-					</tbody>
-					<tfoot>
-						<tr>
-							<th>#</th>
-							<th>T&iacute;tulo</th>
-							<th>Classe</th>
-							<th>Data da exclusão</th>
-						</tr>
-					</tfoot>
+					
 				</table>
 				<!-- === Final === Tabela Listar Conteúdo (DATATABLE) === -->
 
@@ -150,7 +130,7 @@ if ($this->container["objeto"]->valor("cod_objeto") != $this->container["config"
 		<!-- === Final === Listar Conteúdo === -->
 			
 	</div>
-    <div class="panel-footer" style="text-align: right;">
+    <div class="card-footer" style="text-align: right;">
 		<input type="button" name="purge" value="Inverter Sele&ccedil;&atilde;o" class="btn btn-warning" id="btnInverter">
 		<input type="submit" name="undelete" value="Recuperar Objetos Selecionados" class="btn btn-success">
     </div> 

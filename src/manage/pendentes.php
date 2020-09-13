@@ -27,9 +27,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
 
-global $page, $cod_objeto;
+global $cod_objeto;
 
 $sql = "SELECT count(t2.cod_objeto) as total  
 from pendencia t1 

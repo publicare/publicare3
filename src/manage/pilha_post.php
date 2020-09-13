@@ -27,9 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl;
-
-global $page;
 
 $cod_objeto = $this->container["objeto"]->valor("cod_objeto");
 

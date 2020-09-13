@@ -64,6 +64,8 @@ class Pagina extends Base
      */
     public $TempoDeExecucao;
 
+    public $avisos = array();
+
     public function setAction($action)
     {
         $this->action = $action;
@@ -317,6 +319,8 @@ class Pagina extends Base
                     return false;
                 }
                 
+                // xd($this->container["objeto"]->metadados);
+
                 // caso tenha view definida manualmente pega o arquivo
                 $tmpScriptAtual = $this->container["objeto"]->metadados['script_exibir'];
                 
@@ -529,9 +533,9 @@ class Pagina extends Base
             $pagina = $_SERVER['DOCUMENT_ROOT']."/html/template/error404.php";
             $parse = true;
         }
-        elseif (file_exists($this->container["config"]->portal["pblpath"]."/includes/error404.php"))
+        elseif (file_exists(__DIR__."/../includes/error404.php"))
         {
-            $pagina = $this->container["config"]->portal["pblpath"]."/includes/error404.php";
+            $pagina = __DIR__."/../includes/error404.php";
             $parse = false;
         }
         else

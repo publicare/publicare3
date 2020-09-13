@@ -76,7 +76,8 @@ class Banco extends Base
                 . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["peso"]." AS peso, "
                 . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["url_amigavel"]." AS url_amigavel, "
                 . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["versao"]." AS versao, "
-                . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["versao_publicada"]." AS versao_publicada ";
+                . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["versao_publicada"]." AS versao_publicada, "
+                . " ".$tblObjeto["nick"].".".$tblObjeto["colunas"]["data_exclusao"]." AS data_exclusao ";
 	
 	// definindo clausula from do sql geral de consulta
         $this->sqlObjFrom = " FROM ".$tblObjeto["nome"]." ".$tblObjeto["nick"]." "
@@ -94,7 +95,7 @@ class Banco extends Base
             'classe', 'temfilhos', 'prefixoclasse', 'cod_pele', 'pele', 'prefixopele', 'cod_status', 
             'status', 'titulo', 'descricao', 'data_publicacao', 'data_validade', 'script_exibir', 
             'apagado', 'objetosistema', 'url', 'peso', 'tags', 'url_amigavel', 'versao',
-            'versao_publicada'
+            'versao_publicada', 'data_exclusao'
         );
     }
 

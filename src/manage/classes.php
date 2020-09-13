@@ -27,8 +27,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Pbl\Core;
-global $page;
 
 $classinfo = array();
 $cod_classe = 0;
@@ -54,7 +52,7 @@ $("document").ready(function(){
 if ($acao=="")
 {
 ?>
-        $.fn.dataTable.ext.order.intl("pt");
+        // $.fn.dataTable.ext.order.intl("pt");
     $('#tabelaLista')
         .dataTable({
             responsive: true,
@@ -105,31 +103,28 @@ elseif ($acao=="new" || $acao=="edit")
 </script>
  
 <ul class="nav nav-tabs">
-    <li><a href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Publicare</a></li>
-    <li><a href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
-    <li class="active"><a href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
-    <li><a href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
+    <li class="nav-item"><a class="nav-link " href="do/indexportal/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Informações do Portal</a></li>
+    <li class="nav-item"><a class="nav-link " href="do/gerusuario/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar usuários</a></li>
+    <li class="nav-item"><a class="nav-link active" href="do/classes/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar classes</a></li>
+    <li class="nav-item"><a class="nav-link" href="do/peles/<?php echo($this->container["objeto"]->valor('cod_objeto')) ?>.html">Gerenciar Peles</a></li>
 </ul>
 
-<script src="include/javascript_datatable" type="text/javascript"></script>
-<link href="include/css_datatable" rel="stylesheet" type="text/css"> 
-
-    <div class="panel panel-primary">
-        <div class="panel-heading"><h3><b>Gerenciar Classes</b></h3></div>
+    <div class="card">
+        <div class="card-header bg-primary text-white"><h3><b>Gerenciar Classes</b></h3></div>
 
 <?php
 if ($acao=="")
 {
 ?>
-        <div class="panel-footer">
+        <div class="card-footer">
             <div class="row">
-                <div class="col-md-12">
-                    <center><input type="button" value="Adicionar Classe" name="btn_addclasse" id="btn_addclasse" class="btn btn-success" /></center>
+                <div class="col-md-12 text-center">
+                    <input type="button" value="Adicionar Classe" name="btn_addclasse" id="btn_addclasse" class="btn btn-success" />
                 </div>
             </div>
         </div>
         
-        <div class="panel-body">
+        <div class="card-body">
             <!-- === Tabela Listar Conteúdo (DATATABLE) === -->
             <table id="tabelaLista" class="display" style="width:100%">
                 <thead>
@@ -197,10 +192,10 @@ elseif ($acao == "edit" || $acao=="new")
             <input type="hidden" name="old_indexar" value="<?php echo(isset($classinfo['classe']['indexar'])?$classinfo['classe']['indexar']:""); ?>">
             <input type="hidden" name="old_temfilhos" value="<?php echo(isset($classinfo['classe']['temfilhos'])?$classinfo['classe']['temfilhos']:""); ?>">
             
-            <div class="panel-body">
-                <div class="panel panel-info">
-                    <div class="panel-heading">Dados da Classe</div>
-                    <div class="panel-body">
+            <div class="card-body">
+                <div class="card">
+                    <div class="card-header">Dados da Classe</div>
+                    <div class="card-body">
                         <div class="row form-group">
                             <label for="txtNome" class="col-md-3 col-form-label">Nome</label>
                             <div class="col-md-9">
@@ -267,9 +262,9 @@ elseif ($acao == "edit" || $acao=="new")
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="panel panel-info">
-                            <div class="panel-heading"><b>Pode conter</b></div>
-                            <div class="panel-body">
+                        <div class="card mt-1">
+                            <div class="card-header"><b>Pode conter</b></div>
+                            <div class="card-body">
                                 <div id="list-conter-classe">
                                     <ul>
     <?php
@@ -287,9 +282,9 @@ elseif ($acao == "edit" || $acao=="new")
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="panel panel-info">
-                            <div class="panel-heading"><b>Pode ser criado nas classes</b></div>
-                            <div class="panel-body">
+                        <div class="card mt-1">
+                            <div class="card-header"><b>Pode ser criado nas classes</b></div>
+                            <div class="card-body">
                                 <div id="list-conter-classe">
                                     <ul>
     <?php
@@ -307,9 +302,9 @@ elseif ($acao == "edit" || $acao=="new")
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-info">
-                    <div class="panel-heading"><b>Pode ser criado em</b></div>
-                    <div class="panel-body">
+                <div class="card mt-1">
+                    <div class="card-header"><b>Pode ser criado em</b></div>
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
                                 <input type="text" class="form-control" name="incluirObjeto" id="txtPode" />
@@ -350,11 +345,11 @@ elseif ($acao == "edit" || $acao=="new")
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-info modelo_propriedade" style="display: none;">
-                    <div class="panel-heading">
+                <div class="card mt-1 modelo_propriedade" style="display: none;">
+                    <div class="card-header">
                         <b>Propriedade <span class="numero" />0</span></b> <span class="codigo" /></span>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group col_1_1">
@@ -442,11 +437,11 @@ elseif ($acao == "edit" || $acao=="new")
                         </div>
                     </div>
                     <div class="container_alert"></div>
-                    <div class="panel-footer" style="text-align: right">
+                    <div class="card-footer" style="text-align: right">
                         <input type="button" value="Apagar Propriedade" class="btn btn-danger btnapagar" />
                     </div>
                 </div>
-                <div class="alert alert-danger alert-dismissible fade in modelo_apagar" role="alert" style="display: none;">
+                <div class="alert alert-danger alert-dismissible modelo_apagar" role="alert" style="display: none;">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Fechar"><span aria-hidden="true">x</span></button>
                     <h4><b>Deseja realmente apagar esta propriedade?</b></h4>
                     <p>Ao apagar a propriedade estará apagando as informações dos objetos, caso tenha informações cadastradas.</p>
@@ -460,18 +455,16 @@ elseif ($acao == "edit" || $acao=="new")
 
                 
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="row">
-                    <div class="col-md-8">
-                        <center><input type="button" value="Adicionar Propriedade" name="btn_add" id="btn_add" class="btn btn-info" /></center>
+                    <div class="col-md-8 text-center">
+                        <input type="button" value="Adicionar Propriedade" name="btn_add" id="btn_add" class="btn btn-info" />
                     </div>
-                    <div class="col-md-4">
-                        <center>
+                    <div class="col-md-4 text-center">
                             <!--<input type="button" value="Apagar Classe" name="btn_del" id="btn_del" class="btn btn-danger" onclick="classeApagarClasse();" />-->
                             <input type="submit" value="Gravar" name="btn_gravar" id="btn_gravar" class="btn btn-success" />
                             <input type="button" value="Cancelar" name="btn_cancel" id="btn_cancel" class="btn btn-warning" />
                             <input type="hidden" name="apagar_classe" id="apagar_classe" value="0" />
-                        </center>
                     </div>
                 </div>
             </div>
@@ -497,7 +490,7 @@ elseif ($acao=="del")
         <form action="do/classes_post/<?php echo $this->container["objeto"]->valor("cod_objeto")?>.html" method="post" name="formClasse" id="formClasse" enctype="multipart/form-data">
         <input type="hidden" name="cod_classe" value="<?php echo($classinfo["classe"]["cod_classe"]); ?>">
         <input type="hidden" name="apagar_classe" id='apagar_classe' value="">
-<div class="alert alert-danger alert-dismissible fade in modeloapagarclasse" role="alert" id="alertapagarclasse">
+        <div class="alert alert-danger alert-dismissible modeloapagarclasse" role="alert" id="alertapagarclasse">
                     <h4><b>Deseja realmente apagar a classe '<?php echo($classinfo["classe"]["nome"]); ?>'?</b></h4>
     <?php
     if (isset($classinfo["obj_conta"]) && $classinfo["obj_conta"]>0)

@@ -69,6 +69,120 @@ class AdminObjeto extends Base
                 . " OR ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_usuario"]." = ".$_SESSION['usuario']['cod_usuario'].') ';
     }
 
+    public function buscaObjetoJsonDatatable($data, $apagados=false)
+    {
+        $busca = isset($data["search"]["value"])&&$data["search"]["value"]!=""?htmlspecialchars($data["search"]["value"], ENT_QUOTES, "UTF-8"):"";
+        $draw = isset($data["draw"])&&$data["draw"]!=""?htmlspecialchars($data["draw"], ENT_QUOTES, "UTF-8"):"1";
+        $qry = "";
+        if($apagados === true)
+        {
+            // $qry = "data_exclusao !=null".$qry;
+        }
+        $array = array();
+        if ($busca != "")
+        {
+            $qry .= /*($apagados === true?"&&":"").*/"titulo like %".$busca."%";
+            $qry .= "||classe like %".$busca."%";
+            if(is_numeric($busca))
+            {
+                $qry .= "||cod_objeto like %".$busca."%";
+            }
+        }
+        //$qry = "titulo like %a%";
+        $ordem = isset($data["order"][0]["column"])?$data["columns"][(int)$data["order"][0]["column"]]["data"]:"";
+        if (isset($data["order"][0]["dir"]) && $data["order"][0]["dir"]=="desc")
+        {
+            $ordem = "-".$ordem;
+        }
+        $inicio = isset($data["start"])&&$data["start"]?(int)htmlspecialchars($data["start"], ENT_QUOTES, "UTF-8"):-1;
+        $limite = isset($data["length"])&&$data["length"]?(int)htmlspecialchars($data["length"], ENT_QUOTES, "UTF-8"):-1;
+        $pai = $this->container["objeto"]->valor("cod_objeto");
+        $niveis = 0;
+
+
+        // xd($qry);
+    
+        $objetos = $this->localizarObjetos('*', $qry, $ordem, $inicio, $limite, $pai, $niveis, $apagados);
+        $objetos2 = $this->localizarObjetos('*', $qry, $ordem, -1, -1, $pai, $niveis, $apagados);
+        $objetostotal = $this->localizarObjetos('*', "", "", -1, -1, $pai, $niveis, $apagados);
+        $array = array(
+            "draw" => $draw,
+            "recordsTotal" => count($objetostotal),
+            "recordsFiltered" => count($objetos2),
+            "data" => array()
+        );
+        foreach ($objetos as $obj)
+        {
+            $checkbox = "";
+            $titulo = $obj->metadados["titulo"];
+            $acoes = "";
+    
+            if ($obj->metadados["cod_status"] == _STATUS_PRIVADO || $obj->metadados["cod_status"] == _STATUS_REJEITADO)
+            {
+                $titulo = "<font color='red'>".$titulo."</font>";
+            }
+            elseif ($obj->metadados["cod_status"] == _STATUS_SUBMETIDO)
+            {
+                $titulo = "<font color='blue'>".$titulo."</font>";
+            }
+    
+            if ($_SESSION['usuario']['perfil'] < _PERFIL_AUTOR 
+                    || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
+            {
+                $checkbox = '<input type="checkbox" '
+                        . 'id="objlist_'.$obj->valor("cod_objeto").'" '
+                        . 'name="objlist[]" '
+                        . 'value="'.$obj->valor("cod_objeto").'" class="chkObj">';
+            }
+            
+            if ($_SESSION['usuario']['perfil'] < _PERFIL_AUTOR 
+                    || ($_SESSION['usuario']['perfil']==_PERFIL_AUTOR && $obj->valor("cod_usuario")==$_SESSION['usuario']['cod_usuario']))
+            {
+                $acoes .= '<a href="'.$this->container["config"]->portal["url"].'/do/edit/'.$obj->valor("cod_objeto").'.html" '
+                        . 'title="Editar Objeto" '
+                        . 'class="ml-1" '
+                        . 'rel="tooltip" '
+                        . 'data-animate="animated fadeIn" '
+                        . 'data-toggle="tooltip" '
+                        . 'data-original-title="Editar Objeto" '
+                        . 'data-placement="left" '
+                        . 'title="Editar este objeto"><i class="fapbl fapbl-pencil-alt"></i></a>';
+            }
+    
+            $acoes .= "<a href='".$this->container["config"]->portal["url"].$obj->valor("url")."' "
+                    . "title='Exibir Objeto' "
+                    . "rel='tooltip' "
+                    . "data-animate='animated fadeIn' "
+                    . "data-toggle='tooltip' "
+                    . "data-original-title='Visualizar objeto' "
+                    . "data-placement='left' "
+                    . "title='Visualizar objeto' "
+                    . "class='ml-1'><i class='fapbl fapbl-eye'></i></a>";
+    
+            if ($obj->podeTerFilhos())
+            {
+                $acoes .= "<a href='".$this->container["config"]->portal["url"]."/do/list_content/".$obj->valor("cod_objeto").".html' "
+                        . "title='Listar conteúdo' "
+                        . "rel='tooltip' "
+                        . "data-animate='animated fadeIn' "
+                        . "data-toggle='tooltip' "
+                        . "data-original-title='Listar conteúdo' "
+                        . "data-placement='left' "
+                        . "title='Listar conteúdo' "
+                        . "class='ml-1'><i class='fapbl fapbl-folder-open'></i></a>";
+            }
+    
+            $dados = $obj->metadados;
+            $dados["acoes"] = $acoes;
+            $dados["checkbox"] = $checkbox;
+            $dados["titulo"] = $titulo;
+    
+            $array["data"][] = $dados;
+            
+        }
+        return \json_encode($array);
+    }
+
     /**
      * Monta SQL para verificar se objeto está dentro de data válida
      * @return string
@@ -603,7 +717,7 @@ class AdminObjeto extends Base
                 if ($this->ehMetadado($passo_dois[1]))
                 {
                     // TODO: CORRIGIR CAONSULTA COM FILTRO DE DATA
-                    if ($passo_dois[1] == 'data_publicacao' || $passo_dois[1] == 'data_validade')
+                    if ($passo_dois[1] == 'data_publicacao' || $passo_dois[1] == 'data_validade' || $passo_dois[1] == 'data_exclusao')
                     {
 //                        $passo_dois[1] = $this->container["db"]->Day($this->container["config"]->bd["tabelas"]["objeto"]["nick"].'.'.$passo_dois[1]);
                         $passo_dois[3] = str_pad(ConverteData($passo_dois[3],16), 14, "0", STR_PAD_RIGHT);

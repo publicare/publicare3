@@ -31,6 +31,6 @@
 
 use Pbl\Core\Includes;
 
-$css = new Includes($container, array("bootstrap.min.css", "all.min.css", "default.css", "component.css", "jodit.min.css"), "css");
+$css = new Includes($container, array("bootstrap.min.css", "jquery-ui.min.css", "jodit.min.css", "datatables.min.css", "estilos.css"), "css");
 $css->imprimeResultado();
 exit();

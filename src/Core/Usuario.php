@@ -453,7 +453,7 @@ class Usuario extends Base
                 return true;
             }
 			
-            if (is_array($_SESSION['perfil'][$this->cod_perfil]))
+            if (isset($_SESSION['perfil'][$this->cod_perfil]) && is_array($_SESSION['perfil'][$this->cod_perfil]))
             {
                 foreach ($_SESSION['perfil'][$this->cod_perfil] as $perfil)
                 {

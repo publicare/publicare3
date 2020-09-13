@@ -205,7 +205,7 @@ class Blob extends Base
         
         foreach ($this->tipos_ver as $ext=>$type)
         {
-            if (file_exists($this->container["config"]->portal["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $ext))
+            if (file_exists(__DIR__ . '/../../assets/imagens/' . $cod_blob . '.' . $ext))
             {
                 $filetype = $ext;
                 break;
@@ -214,7 +214,7 @@ class Blob extends Base
 
         if (is_null($filetype)) $this->container["page"]->headerHtml(404, "Arquivo não encontrado");
 
-        $arquivo = $this->container["config"]->portal["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype;
+        $arquivo = __DIR__ . '/../../assets/imagens/' . $cod_blob . '.' . $filetype;
         
 //        xd($this->container["config"]->portal["pblpath"] . '/includes/imagens/' . $cod_blob . '.' . $filetype);
         

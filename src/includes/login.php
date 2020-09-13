@@ -29,7 +29,6 @@
  * THE SOFTWARE.
 */
 
-
 // recebe codigo do objeto e trata para evitar sql injection
 $cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['cod_objeto'], ENT_QUOTES, "UTF-8"):$container["config"]->portal["objroot"];
 ?>
@@ -44,8 +43,8 @@ $cod_objeto = isset($_REQUEST["cod_objeto"])?(int)htmlspecialchars($_REQUEST['co
         
         <base href="<?php echo($container["config"]->portal["url"]); ?>/" target="_self" />
 
-        <script src="include/javascript_login" type="text/javascript"></script>
-        <link href="include/css_login" rel="stylesheet" type="text/css">
+        <script src="include/javascript" type="text/javascript"></script>
+        <link href="include/css" rel="stylesheet" type="text/css">
         
         <script type="text/javascript">
             $("document").ready(function(){
