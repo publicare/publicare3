@@ -609,7 +609,7 @@ class AdminObjeto extends Base
                     . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
             $res = $this->container["db"]->execSQL($sql);
             
-//            xd($sql);
+        //    xd($sql);
             
             if($dados = $res->fields)
             {

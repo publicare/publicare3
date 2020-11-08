@@ -55,6 +55,12 @@ if (!function_exists("ofuscaEmail"))
     }
 }
 
+function ignoreErrorHandler()
+{
+	return true;
+}
+ 
+
 
 if (!function_exists("identificaCodigoObjeto"))
 {

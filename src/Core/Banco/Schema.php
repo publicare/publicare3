@@ -57,13 +57,10 @@ class Schema extends Base
 
     private function criaBanco()
     {
-        throw new \Exception("Tabelas não encontradas");
-
-        $schema = $this->container["config"]->bd["tabelas"];
-        foreach ($schema as $tbl)
-        {
-            x($tbl);
-        }
+        $nomeClasse = \ucfirst(\strtolower($this->container["config"]->bd["tipo"]));
+        $nomeClasse = "\\Pbl\\Core\\Banco\\Schema\\".$nomeClasse;
+        $banco = new $nomeClasse($this->container);
+        $banco->iniciar();
     }
 
     public function criaTabela()

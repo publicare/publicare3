@@ -310,16 +310,17 @@ class Pagina extends Base
         // Ver pagina
         elseif ($acao == "/content/view")
         {
-            
             if ($this->usuario->podeExecutar($acao))
             {
+                // xd($this->usuario->podeExecutar($acao));
                 if ($this->container["objeto"]->valor('apagado') && $_SESSION["usuario"]["perfil"] > _PERFIL_EDITOR)
                 {
                     $this->exibirMensagemProibido($acao);
                     return false;
                 }
+
                 
-                // xd($this->container["objeto"]->metadados);
+                
 
                 // caso tenha view definida manualmente pega o arquivo
                 $tmpScriptAtual = $this->container["objeto"]->metadados['script_exibir'];
@@ -544,6 +545,8 @@ class Pagina extends Base
         }
         
         $_SESSION["escondetitulo"] = true;
+
+        xd("PAgina 550 - ");
         
         if ($header != "")
         {

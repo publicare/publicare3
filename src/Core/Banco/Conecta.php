@@ -32,6 +32,8 @@
 namespace Pbl\Core\Banco;
 
 use Pbl\Core\Base;
+use \Exception;
+use \Error;
 
 class Conecta extends Base
 {
@@ -44,40 +46,83 @@ class Conecta extends Base
         return $this->con;
     }
 
+    private function tipoConexao()
+    {
+        switch ($this->container["config"]->bd["tipo"])
+        {
+            case "pdo_oci":
+            case "oracle":
+            case "oracle11":
+            case "oci8":
+                return "oci8";
+                break;
+            case "pdo_pgsql":
+            case "pgsql":
+            case "postgres":
+            case "postgresql":
+                return "pgsql";
+                break;
+            case "mysql":
+            case "mysqli":
+            case "pdo_mysql":
+                return "mysqli";
+                break;
+        }
+        return false;
+    }
+
     private function conecta()
     {
         try {
-            switch ($this->container["config"]->bd["tipo"])
+
+            $config = $this->container["config"];
+            $tipo = $this->tipoConexao();
+            if (!$tipo)
             {
-                case "pdo_oci":
-                case "oracle":
-                case "oracle11":
+                throw new Exception("Tipo de conexao nao reconhecido: ".$config->bd["tipo"]);
+            }
+            
+            // configuracoes pre-conexao
+            switch ($tipo)
+            {
+                case "oci8":
                     define('ADODB_ASSOC_CASE', 0);
                     putenv("NLS_COMP=LINGUISTIC");
                     putenv("NLS_LANG=AMERICAN_AMERICA.AL32UTF8");
                     putenv("NLS_SORT=BINARY_CI");
-                    $this->con = ADONewConnection("oci8");
-                    $this->con->Connect($this->container["config"]->bd["host"].":".$this->container["config"]->bd["porta"], $this->container["config"]->bd["usuario"], $this->container["config"]->bd["senha"], $this->container["config"]->bd["nome"]);
                 break;
-                case "pdo_pgsql":
-                case "pgsql":
-                case "postgres":
-                case "postgresql":
-                    $this->con = ADONewConnection("pgsql");
-                    $this->con->Connect($this->container["config"]->bd["host"].":".$this->container["config"]->bd["porta"], $this->container["config"]->bd["usuario"], $this->container["config"]->bd["senha"], $this->container["config"]->bd["nome"]);
-                    $this->con->Execute("SET CLIENT_ENCODING TO 'UTF8'");
-                    break;
-                case "mysql":
-                case "mysqli":
-                case "pdo_mysql":
-                    $this->con = ADONewConnection("mysqli");
-                    $this->con->Connect($this->container["config"]->bd["host"].":".$this->container["config"]->bd["porta"], $this->container["config"]->bd["usuario"], $this->container["config"]->bd["senha"], $this->container["config"]->bd["nome"]);
-                    $this->con->Execute("set names utf8");
-                    break;
             }
 
+            // inicia objeto adodb com a conexao
+            $this->con = ADONewConnection($tipo);
+            // conectando
+            $this->con->Connect($this->container["config"]->bd["host"].":".$this->container["config"]->bd["porta"], $this->container["config"]->bd["usuario"], $this->container["config"]->bd["senha"], $this->container["config"]->bd["nome"]);
+            // debug
             $this->con->debug = $this->container["config"]->bd["debug"];
+
+            // $saveErrorFn = $this->con->raiseErrorFn;
+            // $this->con->raiseErrorFn = 'ignoreErrorHandler';
+            // set_error_handler('ignoreErrorHandler');
+
+            // pos conexao
+            switch ($tipo)
+            {
+                case "pgsql":
+                    $this->con->Execute("SET CLIENT_ENCODING TO 'UTF8'");
+                break;
+                case "mysqli":
+                    $this->con->Execute("set names utf8");
+                break;
+            }
+
             $this->con->SetFetchMode(ADODB_FETCH_ASSOC);
+            // restore_error_handler();
+            // $this->con->raiseErrorFn = $saveErrorFn;
+
+            if ($this->con->errorMsg() && $this->con->errorMsg()!="")
+            {
+                throw new Exception($this->con->errorMsg());
+            }
         }
         catch (Exception $e)
         {

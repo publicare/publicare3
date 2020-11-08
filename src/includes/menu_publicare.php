@@ -35,7 +35,6 @@
 global $container;
 ?>
 <link href="include/css_menu" rel="stylesheet" type="text/css">
-
 <div class="pblmenu-wrap">
 	<nav class="pblmenu">
 		<h3>MENU</h3>
@@ -64,7 +63,8 @@ global $container;
 <div class="barra-pbl">
 	<button class="pblmenu-button" id="pblopen-button">Abrir Menu</button>
 	<div class="pblnome-usuario"><?php echo($_SESSION["usuario"]["nome"]); ?></div>
-	<div class="pblmenu-sair"><a href="#">Sair</a></div>
+	<div class="pblmenu-sair"><a href="do/logout/<?php echo($this->container["objeto"]->valor("cod_objeto")); ?>.html">Sair</a></div>
 </div>
+		
 
 <script src="include/javascript_menu" type="text/javascript"></script>

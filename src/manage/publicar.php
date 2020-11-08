@@ -31,13 +31,11 @@
 $classname = $this->container["objeto"]->valor("prefixoclasse");
 $classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));
 ?>
-<div class="panel panel-primary">
-    <div class="panel-heading">
+<div class="card">
+    <div class="card-header bg-primary text-white">
         <h3><b>Publicar objeto</b></h3>
-        <p class="padding-top10">
-            <strong>Publicar</strong>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>)<br />
-            <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>]<br />
-            <strong>Vers&atilde;o</strong>: <?php echo($this->container["objeto"]->valor("versao")) ?>
+        <p>
+            <strong>Publicar</strong>: <?php echo($this->container["objeto"]->valor("titulo")) ?> (<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>) - <strong>Classe</strong>: <?php echo($classe["classe"]["nome"]); ?> (<?php echo($classe["classe"]["cod_classe"]); ?>) [<?php echo($classe["classe"]["prefixo"]); ?>] - <strong>Vers&atilde;o</strong>: <?php echo($this->container["objeto"]->valor("versao")) ?>
         </p>
     </div>
     

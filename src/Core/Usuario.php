@@ -88,11 +88,35 @@ class Usuario extends Base
             $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
         }
     }
+
+    // public function __serialize()
+    // {
+    //     return(
+    //         array(
+    //             "caminhoObjeto" => $this->caminhoObjeto, 
+    //             "metadados" => $this->metadados, 
+    //             "propriedades" => $this->propriedades,
+    //             "iniciado" => $this->iniciado
+    //         )
+    //     );
+    // }
+
+    // public function __debugInfo()
+    // {
+    //     return(
+    //         array(
+    //             "caminhoObjeto" => $this->caminhoObjeto, 
+    //             "metadados" => $this->metadados, 
+    //             "propriedades" => $this->propriedades,
+    //             "iniciado" => $this->iniciado
+    //         )
+    //     );
+    // }
         
-        function pegarNomePerfil($cod)
-        {
-            return $this->perfil[$cod];
-        }
+    function pegarNomePerfil($cod)
+    {
+        return $this->perfil[$cod];
+    }
         
 	/**
 	 * Busca todos os usuários ativos no banco de dados

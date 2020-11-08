@@ -110,6 +110,8 @@ class Administracao extends Base
         $data_publicacao = htmlspecialchars($dados['data_publicacao'], ENT_QUOTES, "UTF-8");
         $data_validade = htmlspecialchars($dados['data_validade'], ENT_QUOTES, "UTF-8");
         $peso = (int)htmlspecialchars($dados['peso'], ENT_QUOTES, "UTF-8");
+
+        if ($url_amigavel=="") $url_amigavel = limpaString($titulo);
         
         // rodando o formulário
         foreach ($dados as $key=>$valor)

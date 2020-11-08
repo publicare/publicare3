@@ -39,7 +39,7 @@ $("document").ready(function(){
 });
 </script>
 <form action="do/new_post/<?php echo($this->container["objeto"]->valor("cod_objeto"));?>.html" name="listcontent" id="listcontent" method="post">
-    <input type="hidden" name="cod_objeto" value="<?php echo($cod_objeto) ?>">
+    <input type="hidden" name="cod_objeto" value="<?php echo($this->container["objeto"]->valor("cod_objeto")) ?>">
     <input type="hidden" name="prefixo" id="prefixo" value="">
     <!-- === Selecione a classe === -->
     <div class="card">

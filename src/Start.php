@@ -50,6 +50,7 @@ class Start
         require_once(__DIR__ . "/funcoes.php");
         require_once(__DIR__ . "/data.php");
         require_once(__DIR__ . "/verifica_instalacao.php");
+        // require_once(__dir__."/../../../adodb/adodb-php/adodb-errorhandler.inc.php");
 
         // container para injecao de dependencias
         $container = new Container();
