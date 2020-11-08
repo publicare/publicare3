@@ -285,8 +285,6 @@ class Objeto extends Base
         }
 
         $this->carregarPropriedades();
-
-        xd($this->propriedades[$campo]);
         
         // x($this->propriedades);
         // return ($this->propriedades[$campo]['tamanho_blob']);
