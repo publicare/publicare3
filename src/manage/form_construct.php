@@ -259,7 +259,8 @@ foreach ($classe["prop"] as $prop)
         case 1:
             if ($valor != "") 
             {
-                echo "<strong>Arquivo:</strong> ".$valor." - <strong>cod_blob:</strong> ".$this->container["objeto"]->propriedades[$prop["nome"]]["cod_blob"];
+                // xd($objeto);
+                echo "<strong>Arquivo:</strong> ".$valor." - <strong>cod_blob:</strong> ".$objeto->propriedades[$prop["nome"]]["cod_blob"];
                 echo " | <label><input type='checkbox' id='property___".$prop['nome']."' name='property___".$prop['nome']."^delete' value='1'> Apagar arquivo</label>";
                 $obrigatorio = "";
             }

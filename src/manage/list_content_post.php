@@ -39,6 +39,7 @@ if (isset($_POST['objlist']) && is_array($_POST['objlist']))
         }
         if (isset($_POST['duplicate']))
         {
+            // xd($obj);
             $this->container["administracao"]->duplicarObjeto($obj);
         }
         if (isset($_POST['copy']))

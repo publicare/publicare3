@@ -51,29 +51,29 @@ class Objeto extends Base
         $this->metadados[$campo] = $valor;
     }
 
-    public function __serialize()
-    {
-        return(
-            array(
-                "caminhoObjeto" => $this->caminhoObjeto, 
-                "metadados" => $this->metadados, 
-                "propriedades" => $this->propriedades,
-                "iniciado" => $this->iniciado
-            )
-        );
-    }
+    // public function __serialize()
+    // {
+    //     return(
+    //         array(
+    //             "caminhoObjeto" => $this->caminhoObjeto, 
+    //             "metadados" => $this->metadados, 
+    //             "propriedades" => $this->propriedades,
+    //             "iniciado" => $this->iniciado
+    //         )
+    //     );
+    // }
 
-    public function __debugInfo()
-    {
-        return(
-            array(
-                "caminhoObjeto" => $this->caminhoObjeto, 
-                "metadados" => $this->metadados, 
-                "propriedades" => $this->propriedades,
-                "iniciado" => $this->iniciado
-            )
-        );
-    }
+    // public function __debugInfo()
+    // {
+    //     return(
+    //         array(
+    //             "caminhoObjeto" => $this->caminhoObjeto, 
+    //             "metadados" => $this->metadados, 
+    //             "propriedades" => $this->propriedades,
+    //             "iniciado" => $this->iniciado
+    //         )
+    //     );
+    // }
 
     public function __construct($container, $cod_objeto=-1)
     {
@@ -133,6 +133,7 @@ class Objeto extends Base
         {
             $this->propriedades = $this->container["adminobjeto"]->pegarPropriedades($this->metadados['cod_objeto']);
         }
+        return $this->propriedades;
     }
 
     /**
@@ -261,11 +262,12 @@ class Objeto extends Base
         {
             x("objeto::propriedade campo:".$campo);
         }
+
         
         $campo = strtolower($campo);
         if (!isset($this->propriedades) || !is_array($this->propriedades))
         {
-            $this->propriedades = $this->carregarPropriedades();
+            $this->carregarPropriedades();
         }
         // if (isset($this->propriedades[$campo])) return $this->propriedades[$campo]['valor'];
         // else return "";

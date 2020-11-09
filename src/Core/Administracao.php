@@ -174,6 +174,8 @@ class Administracao extends Base
                 . "WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->container["db"]->execSQL($sql);
 
+        // xd($proplist);
+
         $this->apagarPropriedades($cod_objeto, false);
         $this->gravarPropriedades($cod_objeto, $cod_classe, $proplist);
         $this->gravarTags($cod_objeto, $tagslist);
@@ -573,7 +575,7 @@ class Administracao extends Base
                 $ar_fld = preg_split("[___]", $key);
                 if (strpos($ar_fld[1], "^") === false)
                 {
-//                    x($ar_fld[1]);
+                //    x($ar_fld[1]);
                     // se tiver sido inserido valor na propriedade começa os tratamentos e gravação dos dados
                     if ($valor != "")
                     {
@@ -618,6 +620,9 @@ class Administracao extends Base
                                         . " :valor "
                                         . ")";
                                 $bind = array("valor" => $this->container["db"]->slashes($valor));
+
+                                $sql = $this->container["db_con"]->getCon()->prepare($sql);
+                                $rs = $this->container["db"]->execSQL(array($sql, $bind));
                             }
                             else
                             {
@@ -628,13 +633,13 @@ class Administracao extends Base
                                         . ") VALUES ("
                                         . "".$info['cod_propriedade'].", "
                                         . "".$cod_objeto.", "
-                                        . " ? "
-//                                        . "".$info['delimitador'].$this->container["db"]->slashes($valor).$info['delimitador'].""
+                                        // . " ? "
+                                        . "".$info['delimitador'].$this->container["db"]->slashes($valor).$info['delimitador'].""
                                         . ")";
-                                $bind = array(1 => $this->container["db"]->slashes($valor));
+                                // $bind = array(1 => $this->container["db"]->slashes($valor));
+                                // $sql = $this->container["db_con"]->getCon()->prepare($sql);
+                                $rs = $this->container["db"]->execSQL($sql);
                             }
-                            $sql = $this->container["db_con"]->getCon()->prepare($sql);
-                            $rs = $this->container["db"]->execSQL(array($sql, $bind));
                         }
                     }
                 }
@@ -1109,6 +1114,7 @@ class Administracao extends Base
                 . "FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
                 . "WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_pai;
         $this->container["db"]->execSQL($sql);
+        // xd($sql);
         
         // cria parentesco entre objeto e o pai
         $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ("
@@ -1496,6 +1502,8 @@ class Administracao extends Base
 
         $orig_obj = $this->container["adminobjeto"]->criarObjeto($cod_objeto);
         $dados = $orig_obj->metadados;
+
+        
         
         if ($cod_pai==-1) $cod_pai = $dados['cod_pai'];
 
@@ -1512,10 +1520,13 @@ class Administracao extends Base
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["data_validade"]] = ConverteData($dados['data_validade'],27);
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["url_amigavel"]] = $this->verificarExistenciaUrlAmigavel($dados['url_amigavel']);
         $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["peso"]] = $dados['peso'];
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["versao"]] = 1;
+        $campos[$this->container["config"]->bd["tabelas"]['objeto']["colunas"]["apagado"]] = 0;
 
         $cod_objeto = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]['objeto']["nome"], $campos);	
         $this->duplicarPropriedades($cod_objeto, $orig_obj);
         $this->criarParentesco($cod_objeto, $cod_pai);
+        // xd($orig_obj);
 
         if ($orig_obj->pegarListaFilhos())
         {
@@ -1560,6 +1571,7 @@ class Administracao extends Base
             }
         }
         $this->gravarPropriedades($destino, $origem->valor("cod_classe"), $lista);
+        // xd($lista);
     }
 
     /**
