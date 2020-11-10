@@ -694,15 +694,17 @@ class Administracao extends Base
                             . " AND ".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_objeto"]." = ".$cod_objeto;
                     $this->container["db"]->execSQL($sql);
                     
-                    if ($source=='post') $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
-                    else {
-                        if (isset($valor['data'])) $data = stripslashes($valor['data']);
-                        else $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
-                    }
+                    
 
                     // caso seja gravação do blob no banco
                     if (!isset($this->container["config"]->portal["uploadpath"]) || $this->container["config"]->portal["uploadpath"]=="")
                     {
+                        if ($source=='post') $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
+                        else {
+                            if (isset($valor['data'])) $data = stripslashes($valor['data']);
+                            else $data = fread(fopen($valor['tmp_name'], "rb"), filesize($valor['tmp_name']));
+                        }
+
                         $campo = gzcompress($data);
                         $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"][$info['tabela']]["nome"]." ("
                                 . "".$this->container["config"]->bd["tabelas"][$info['tabela']]["colunas"]["cod_propriedade"].", "
@@ -1503,8 +1505,6 @@ class Administracao extends Base
         $orig_obj = $this->container["adminobjeto"]->criarObjeto($cod_objeto);
         $dados = $orig_obj->metadados;
 
-        
-        
         if ($cod_pai==-1) $cod_pai = $dados['cod_pai'];
 
         $campos = array();
@@ -1552,25 +1552,35 @@ class Administracao extends Base
     {
         $propriedades = $origem->pegarListaPropriedades();
         $lista = array();
+        $files = array();
         foreach ($propriedades as $nome => $valor)
         {
             if ($valor["tipo"]=="tbl_objref" && isset($valor["referencia"]))
             {
                 $lista['property___'.$nome] = $valor['referencia'];
             }
-            else
+            elseif ($valor["tipo"] == "tbl_blob" && isset($valor["cod_blob"]))
             {
                 // adicionado para duplicar os blobs no caso de copias
                 if ($valor["tipo"] == "tbl_blob" && isset($valor["cod_blob"]))
                 {
+                    $files["property___".$nome] = array(
+                        "name" => $valor["valor"], 
+                        "size" => $valor["tamanho_blob"], 
+                        "tmp_name" => $this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->container, $valor["cod_blob"])."/".$valor["cod_blob"].".".$valor["tipo_blob"]);
+                    // x($valor);
+                    // xd($files);
                     $this->codigo_temp_blob = $valor['cod_blob'];
                     $this->tipo_temp_blob = $valor['tipo_blob'];
                     $this->tamanho_temp_blob = $valor['tamanho_blob'];
                 }
+            }
+            else
+            {
                 $lista["property___".$nome] = $valor["valor"];
             }
         }
-        $this->gravarPropriedades($destino, $origem->valor("cod_classe"), $lista);
+        $this->gravarPropriedades($destino, $origem->valor("cod_classe"), $lista, $files);
         // xd($lista);
     }
 
