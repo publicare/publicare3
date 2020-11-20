@@ -7,7 +7,7 @@ Possui banco de dados enxuto que possibilita a criação de portais e sistemas w
 
 ![Modelo do Banco de dados](https://github.com/publicare/publicare3/raw/master/docs/banco_dados/modelo_banco_publicare.png)
 
-Nasceu em meados de 2003, com o propósito de facilitar a criação de portais no Ministério da Ciência e Tecnologia. Desde o início pensado para ser leve.  
+Nasceu em meados de 2003, com o propósito de facilitar a criação de portais no Ministério da Ciência e Tecnologia. Desde o início pensado para ser livre.  
 O conteúdo das páginas é inserido e editado pela própria ferramenta e exibido através de moldes (templates) pré definidos. 
 
 Possui uma linguagem própria para criação de templates, em português, diminuindo a curva de aprendizado.  
