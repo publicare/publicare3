@@ -45,6 +45,7 @@ class Schema extends Base
             $sql = "SELECT count(*) FROM ".$tblClasse["nome"];
             if (!$rs = $this->container["db"]->execute($sql))
             {
+                xd("cc");
                 $this->criaBanco();
             }
         }

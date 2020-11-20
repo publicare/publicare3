@@ -155,7 +155,8 @@ class Banco extends Base
         GLOBAL $ADODB_CACHE_DIR;
         
         if (isset($this->container["config"]->bd["cachepath"]) 
-            && $this->container["config"]->bd["cachepath"] != "") 
+            && $this->container["config"]->bd["cachepath"] != ""
+            && $this->container["config"]->bd["cachetipo"] == "disco") 
         {
             $ADODB_CACHE_DIR = $this->container["config"]->bd["cachepath"];
         }
@@ -170,13 +171,13 @@ class Banco extends Base
         if ($limit != -1)
         {
             if ($start == -1) $start = 0;
-            if (is_array($sql)) return $this->con->CacheSelectLimit($tempo, $sql[0], $limit, $start, $sql[1]);
-            else return $this->con->CacheSelectLimit($tempo, $sql, $limit, $start); 
+            if (is_array($sql)) return $this->container["db_con"]->getCon()->CacheSelectLimit($tempo, $sql[0], $limit, $start, $sql[1]);
+            else return $this->container["db_con"]->getCon()->CacheSelectLimit($tempo, $sql, $limit, $start); 
         }
         else
         {
-            if (is_array($sql)) return $this->con->CacheExecute($tempo, $sql[0], $sql[1]);
-            else return $this->con->CacheExecute($tempo, $sql);
+            if (is_array($sql)) return $this->container["db_con"]->getCon()->CacheExecute($tempo, $sql[0], $sql[1]);
+            else return $this->container["db_con"]->getCon()->CacheExecute($tempo, $sql);
         }
     }
 

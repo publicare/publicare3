@@ -100,6 +100,15 @@ class Conecta extends Base
             // debug
             $this->con->debug = $this->container["config"]->bd["debug"];
 
+            if ($this->container["config"]->bd["cache"] === true
+                && $this->container["config"]->bd["cachetipo"] == "memoria" )
+            {
+                $this->con->memCache = true;
+                $this->con->memCacheHost = preg_split("[,]", $this->container["config"]->bd["cachehost"]);
+                $this->con->memCachePort = $this->container["config"]->bd["cacheporta"];
+                $this->con->memCacheCompress = $this->container["config"]->bd["cachecompress"];
+            }
+
             // $saveErrorFn = $this->con->raiseErrorFn;
             // $this->con->raiseErrorFn = 'ignoreErrorHandler';
             // set_error_handler('ignoreErrorHandler');
