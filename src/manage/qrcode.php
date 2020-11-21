@@ -69,7 +69,7 @@ if (isset($_GET["naoincluirheader"]))
     exit();
 }
 $classname = $this->container["objeto"]->valor("prefixoclasse");
-$classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));
+$classe = $this->container["classe"]->pegarInfo($this->container["objeto"]->valor("cod_classe"));
 ?>
 <div class="panel panel-primary">
     <div class="panel-heading">

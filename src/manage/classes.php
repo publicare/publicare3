@@ -38,7 +38,7 @@ if ($acao=="")
 elseif ($acao=="edit" || $acao=="del")
 {
     $cod_classe = isset($_REQUEST['cod_classe'])?htmlspecialchars($_REQUEST["cod_classe"], ENT_QUOTES, "UTF-8"):0;
-    if ((int)$cod_classe > 0) $classinfo = $this->container["administracao"]->pegarInfoDaClasse($cod_classe);
+    if ((int)$cod_classe > 0) $classinfo = $this->container["classe"]->pegarInfo($cod_classe);
 //    xd($classinfo);
 }
 
@@ -140,7 +140,7 @@ if ($acao=="")
                 </thead>
                 <tbody>
 <?php
-$this->container["administracao"]->carregarClasses();
+$this->container["classe"]->carregar();
 foreach ($_SESSION["classes"] as $class)
 {
 ?>
@@ -268,8 +268,7 @@ elseif ($acao == "edit" || $acao=="new")
                                 <div id="list-conter-classe">
                                     <ul>
     <?php
-    $classes = isset($classinfo['todas'])?$classinfo['todas']:$this->container["administracao"]->pegarListaClasses($page);
-//    xd($this->container["administracao"]->pegarListaClasses($page));
+    $classes = isset($classinfo['todas'])?$classinfo['todas']:$this->container["classe"]->pegarLista($page);
     $temfilhos = $cod_classe==0?0:(isset($classinfo['classe']['temfilhos'])?$classinfo['classe']['temfilhos']:0);
     foreach ($classes as $list)
     {
@@ -392,7 +391,7 @@ elseif ($acao == "edit" || $acao=="new")
                             <div class="col-md-8 col_3_1">
                                 <label for="prop_cod_referencia_classe" class="titulo">Classe de Referência</label>
                                 <select class="form-control campo" name="prop_cod_referencia_classe" id="prop_cod_referencia_classe">
-                                    <?php echo($this->container["administracao"]->dropdownClasses(0, true)); ?>
+                                    <?php echo($this->container["classe"]->dropdown(0, true)); ?>
                                 </select>
                             </div>
                             <div class="col-md-4 col_3_2">

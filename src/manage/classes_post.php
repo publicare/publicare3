@@ -44,7 +44,7 @@ $ic_classe = isset($_POST['ic_classe'])?htmlspecialchars($_POST["ic_classe"], EN
 
 // Apaga a classe
 if (isset($_POST['apagar_classe']) && $_POST['apagar_classe'] == "1" && $cod_classe > 0) {
-    $this->container["administracao"]->apagarClasse($_POST['cod_classe']);
+    $this->container["classe"]->apagar($_POST['cod_classe']);
     $cod_classe = 0;
 }
 // criar / editar classe
@@ -98,17 +98,17 @@ elseif (isset($_POST['btn_gravar']) && $_POST['btn_gravar']=="Gravar")
     // Editar classe
     if ($cod_classe > 0)
     {
-        $this->container["administracao"]->atualizarClasse($cod_classe, $dados_classe);
+        $this->container["classe"]->atualizar($cod_classe, $dados_classe);
     }
     // Criar classe
     else 
     {
-        $cod_classe = $this->container["administracao"]->criarClasse($dados_classe);
-        //$this->container["administracao"]->criarTemplateClasse($cod_classe);
+        $cod_classe = $this->container["classe"]->criar($dados_classe);
+        //$this->container["classe"]->criarTemplate($cod_classe);
     }
         
     // Recupera dados da classe
-    $classinfo = $this->container["administracao"]->pegarInfoDaClasse($cod_classe);
+    $classinfo = $this->container["classe"]->pegarInfo($cod_classe);
     
 //    xd($props);
     
@@ -136,30 +136,30 @@ elseif (isset($_POST['btn_gravar']) && $_POST['btn_gravar']=="Gravar")
             // apagar propriedade
             if ($propp["ativa"] == 0)
             {
-                $this->container["administracao"]->apagarPropriedadeDaClasse($cod_propriedade);
+                $this->container["classe"]->apagarPropriedade($cod_propriedade);
             }
             // alterar propriedade
             else
             {
 //            xd($propp);
-                $this->container["administracao"]->atualizarDadosPropriedade($cod_propriedade, $dados);
+                $this->container["classe"]->atualizarDadosPropriedade($cod_propriedade, $dados);
             }
         }
         // nova propriedade
         else
         {
-            $this->container["administracao"]->acrescentarPropriedadeAClasse($cod_classe, $dados);
+            $this->container["classe"]->acrescentarPropriedade($cod_classe, $dados);
         }
     }
     
     // Cria view de modelo para classe
-//    $this->container["administracao"]->criarTemplateClasse($page, $cod_classe);
+//    $this->container["classe"]->criarTemplate($page, $cod_classe);
     
     // Atualiza informações sobre classes que pode conter
-    if (isset($_POST["podeconter"])) $this->container["administracao"]->montarRelacionamentoClasses($cod_classe, $_POST["podeconter"], 1);
+    if (isset($_POST["podeconter"])) $this->container["classe"]->montarRelacionamento($cod_classe, $_POST["podeconter"], 1);
     
     // Atualiza informação sobre onde pode ser criado
-    if (isset($_POST["criadoem"])) $this->container["administracao"]->montarRelacionamentoClasses($cod_classe, $_POST["criadoem"], 2);
+    if (isset($_POST["criadoem"])) $this->container["classe"]->montarRelacionamento($cod_classe, $_POST["criadoem"], 2);
     
     // Atualiza lista de objetos onde pode ser criada
     if (isset($_POST["objetos"])) 

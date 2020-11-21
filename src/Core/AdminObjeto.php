@@ -473,27 +473,7 @@ class AdminObjeto extends Base
         return $result;
     }
 
-    function pegarPropriedadesClasseObjeto($cod_objeto)
-    {
-        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
-        {
-            x("adminobjeto::pegarPropriedades cod_objeto=".$cod_objeto);
-        }
-
-        if ($cod_objeto == $this->container["objeto"]->valor("cod_objeto"))
-        {
-            return $this->container["administracao"]->pegarPropriedadesClasse($this->container["objeto"]->valor("cod_classe"));
-        }
-        else
-        {
-            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_classe"]." AS cod_classe "
-                . " FROM ".$this->container["config"]->bd["tabelas"]["objeto"]["nome"]." "
-                . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
-            $rs = $this->container["db"]->execSQL($sql);
-            $row = $rs->GetRows();
-            return $this->container["administracao"]->pegarPropriedadesClasse($row[0]["cod_classe"]);
-        }
-    }
+    
 
     /**
      * Busca todas as propriedades de determinado objeto
@@ -509,7 +489,7 @@ class AdminObjeto extends Base
 
         $result = array();
 
-        $props = $this->pegarPropriedadesClasseObjeto($cod_objeto);
+        $props = $this->container["classe"]->pegarPropriedadesObjeto($cod_objeto);
         
         $join = array();
         $campos = array();
@@ -959,7 +939,7 @@ class AdminObjeto extends Base
             x("adminobjeto::codigosClasses");
         }
 
-        $this->carregarClasses();
+        $this->container["classe"]->carregar();
         $saida=array();
 
         
@@ -986,46 +966,46 @@ class AdminObjeto extends Base
     /**
      * Carrega as classes do portal e guarda em session
      */
-    function carregarClasses()
-    {
-        if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
-        {
-            x("adminobjeto::carregarClasses");
-        }
+    // function carregarClasses()
+    // {
+    //     if (isset($this->container["config"]->portal["debug"]) && $this->container["config"]->portal["debug"] === true)
+    //     {
+    //         x("adminobjeto::carregarClasses");
+    //     }
 
-        if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0)
-        {
-            if (!isset($_SESSION['classes'])) $_SESSION['classes'] = array();
-            $_SESSION['classesPrefixos'] = array();
-            $_SESSION['classesNomes'] = array();
-            $_SESSION['classesIndexaveis'] = array();
+    //     if ((!isset($_SESSION['classesPrefixos'])) || (!is_array($_SESSION['classesPrefixos'])) || count($_SESSION['classesPrefixos']) == 0)
+    //     {
+    //         if (!isset($_SESSION['classes'])) $_SESSION['classes'] = array();
+    //         $_SESSION['classesPrefixos'] = array();
+    //         $_SESSION['classesNomes'] = array();
+    //         $_SESSION['classesIndexaveis'] = array();
 
-            $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
-                    . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"]." AS prefixo, "
-                    . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS nome, "
-                    . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["indexar"]." AS indexar, "
-                    . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"]." AS descricao, "
-                    . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["sistema"]." AS sistema "
-                    . " FROM ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classe"]["nick"]." "
-                    . " ORDER BY ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"];
-            $rs = $this->container["db"]->execSQL($sql);
+    //         $sql = "SELECT ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["cod_classe"]." AS cod_classe, "
+    //                 . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["prefixo"]." AS prefixo, "
+    //                 . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"]." AS nome, "
+    //                 . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["indexar"]." AS indexar, "
+    //                 . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["descricao"]." AS descricao, "
+    //                 . " ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["sistema"]." AS sistema "
+    //                 . " FROM ".$this->container["config"]->bd["tabelas"]["classe"]["nome"]." ".$this->container["config"]->bd["tabelas"]["classe"]["nick"]." "
+    //                 . " ORDER BY ".$this->container["config"]->bd["tabelas"]["classe"]["nick"].".".$this->container["config"]->bd["tabelas"]["classe"]["colunas"]["nome"];
+    //         $rs = $this->container["db"]->execSQL($sql);
 
-            if ($rs->_numOfRows > 0)
-            {
-                while ($row = $rs->FetchRow())
-                {
-                    $row["propriedades"] = isset($_SESSION['classes'][$row['cod_classe']]["propriedades"])?$_SESSION['classes'][$row['cod_classe']]["propriedades"]:array();
-                    $_SESSION['classes'][$row['cod_classe']] = $row;
+    //         if ($rs->_numOfRows > 0)
+    //         {
+    //             while ($row = $rs->FetchRow())
+    //             {
+    //                 $row["propriedades"] = isset($_SESSION['classes'][$row['cod_classe']]["propriedades"])?$_SESSION['classes'][$row['cod_classe']]["propriedades"]:array();
+    //                 $_SESSION['classes'][$row['cod_classe']] = $row;
 
-                    $_SESSION['classesPrefixos'][$row['prefixo']] = $row['cod_classe'];
-                    $_SESSION['classesNomes'][strtolower($row['nome'])] = $row['cod_classe'];
-                    if ($row['indexar']) {
-                        if (!in_array($row['cod_classe'], $_SESSION['classesIndexaveis'])) $_SESSION['classesIndexaveis'][] = $row['cod_classe'];
-                    }
-                }
-            }
-        }
-    }
+    //                 $_SESSION['classesPrefixos'][$row['prefixo']] = $row['cod_classe'];
+    //                 $_SESSION['classesNomes'][strtolower($row['nome'])] = $row['cod_classe'];
+    //                 if ($row['indexar']) {
+    //                     if (!in_array($row['cod_classe'], $_SESSION['classesIndexaveis'])) $_SESSION['classesIndexaveis'][] = $row['cod_classe'];
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     /**
      * Localiza objetos usando tabela temporária
@@ -1436,7 +1416,7 @@ class AdminObjeto extends Base
             x("adminobjeto::pegarNomeClasse cod_classe=".$cod_classe);
         }
 
-        $this->carregarClasses();
+        $this->container["classe"]->carregar();
         if (isset($_SESSION["classes"][$cod_classe]))
         {
             return array(

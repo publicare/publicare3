@@ -29,7 +29,7 @@
  */
 
 $classname = $this->container["objeto"]->valor("prefixoclasse");
-$classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));
+$classe = $this->container["classe"]->pegarInfo($this->container["objeto"]->valor("cod_classe"));
 ?>
 <div class="card">
     <div class="card-header bg-primary text-white">

@@ -49,7 +49,7 @@ if (strpos($this->container["page"]->action, "edit") === false)
 {
     $classname = substr($this->container["page"]->action, strpos($this->container["page"]->action,'_')+1);
 //    xd($action);
-    $classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["administracao"]->codigoClasse($classname));
+    $classe = $this->container["classe"]->pegarInfo($this->container["classe"]->codigo($classname));
     $titulo = "Criar";
     // Resgata dados do objeto-pai para uso futuro
     $dadosPai = $this->container["adminobjeto"]->pegarDadosObjetoId($this->container["objeto"]->valor("cod_objeto"));
@@ -58,7 +58,7 @@ if (strpos($this->container["page"]->action, "edit") === false)
 else
 {
     $classname = $this->container["objeto"]->valor("prefixoclasse");
-    $classe = $this->container["administracao"]->pegarInfoDaClasse($this->container["objeto"]->valor("cod_classe"));
+    $classe = $this->container["classe"]->pegarInfo($this->container["objeto"]->valor("cod_classe"));
     $edit = true;
     $titulo = "Editar";
 }

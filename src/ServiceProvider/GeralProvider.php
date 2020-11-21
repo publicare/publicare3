@@ -42,6 +42,7 @@ use Pbl\Core\Objeto;
 use Pbl\Core\Pagina;
 use Pbl\Core\Parse;
 use Pbl\Core\Usuario;
+use Pbl\Core\Classe;
 
 class GeralProvider implements ServiceProviderInterface
 {
@@ -53,6 +54,10 @@ class GeralProvider implements ServiceProviderInterface
         
         $container['adminobjeto'] = function ($container) {
             return new AdminObjeto($container);
+        };
+
+        $container['classe'] = function ($container) {
+            return new Classe($container);
         };
 
         $container['blob'] = function ($container) {
