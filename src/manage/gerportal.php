@@ -53,7 +53,7 @@
                 <li>
                     <div class="row">
                         <div class="col-md-3 col-sm-4"><strong>E-Mail Administrador:</strong></div>
-                        <div class="col-md-9 col-sm-8"><?php echo $PORTAL_EMAIL; ?></div>
+                        <div class="col-md-9 col-sm-8"><?php echo $this->container["config"]->portal["email"]; ?></div>
                     </div>
                 </li>
                 <li>
