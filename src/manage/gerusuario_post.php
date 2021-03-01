@@ -149,7 +149,7 @@ if ($_SESSION['usuario']['perfil'] == 1)
 //                    unset($dadosinsert["confsenha"]);
 //                    unset($dadosinsert["perfil"]);
 
-                    $cod_usuario = $page->db->Insert($this->container["config"]->bd["tabelas"]["usuario"]["nome"], $dadosinsert);
+                    $cod_usuario = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]["usuario"]["nome"], $dadosinsert);
 
                     // Se não tiver nenhum perfil selecionado, coloca o perfil default
                     if (strlen($perfil) > 0) {
