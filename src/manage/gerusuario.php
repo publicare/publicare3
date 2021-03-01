@@ -285,7 +285,9 @@ foreach ($usuarios as $usu)
                                 <label class="checkbox-inline" title="Define se usuário deverá alterar a senha no primeiro acesso"><input class="campo" type="checkbox" name="altera_senha" id="altera_senha" value="1" <?php if($usuario["altera_senha"]==1) {echo "checked";} ?> /> Alterar senha</label>
                             </div>
 <?php
-if (defined("_ldaphost") && _ldaphost!="")
+if (isset($this->container["config"]->email["ldap"]) 
+&& $this->container["config"]->email["ldap"]
+&& $this->container["config"]->email["ldaphost"] != "")
 {
 ?>
                             <div class="form-group">
