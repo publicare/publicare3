@@ -350,22 +350,58 @@ class Classe extends Base
      */
     function dropdown($selecionado, $branco=false)
     {
-        $lista = $this->pegarLista($page);
+        $lista = $this->pegarLista();
         return $this->criarDropDown($lista, $selecionado, $branco);
     }
-    
-    
+
+    /**
+     * Recebe array e monta string com <options> para o select do dropdown
+     * @param type $lista
+     * @param type $selecionado
+     * @param type $branco
+     * @param type $nummaxletras
+     * @return string
+     */
+    function criarDropDown($lista, $selecionado, $branco=true, $nummaxletras=0)
+    {
+        $result = "";
+        if ($branco)
+        {
+            $result = '<option value="" selected>&nbsp;Selecione&nbsp;</option>';
+        }
+
+        foreach($lista as $item)
+        {
+            $result.='<option value="'.$item['codigo'].'"';
+            if (($selecionado===$item['codigo']) || ($selecionado===$item['texto']))
+            {
+                $result .=' selected ';
+            }
+            $result .= '>';
+            if ($nummaxletras)
+            {
+                $result .= substr($item['texto'],0,$nummaxletras);
+            }
+            else 
+            {
+                $result .= $item['texto'];
+            }
+            $result .= '</option>';
+        }
+
+        return $result;
+    }
 
     /**
      * Busca lista de classes no banco de dados
      * @param object $page - Referência de objeto da classe Pagina
      * @return array - lista de classes
      */
-    function pegarLista(&$page)
+    function pegarLista()
     {
         $this->carregar();
         
-        foreach ($this->classes as $cod => $dados)
+        foreach ($_SESSION['classes'] as $cod => $dados)
                 $saida[] = array ('codigo'=>$cod, 'texto'=> $dados["nome"]);
 
         return $saida;
