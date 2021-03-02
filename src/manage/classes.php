@@ -268,7 +268,7 @@ elseif ($acao == "edit" || $acao=="new")
                                 <div id="list-conter-classe">
                                     <ul>
     <?php
-    $classes = isset($classinfo['todas'])?$classinfo['todas']:$this->container["classe"]->pegarLista($page);
+    $classes = isset($classinfo['todas'])?$classinfo['todas']:$this->container["classe"]->pegarLista();
     $temfilhos = $cod_classe==0?0:(isset($classinfo['classe']['temfilhos'])?$classinfo['classe']['temfilhos']:0);
     foreach ($classes as $list)
     {
