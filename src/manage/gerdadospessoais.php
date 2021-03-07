@@ -31,7 +31,7 @@
 
 <script type="text/javascript">
     jQuery(document).ready(function ($) {
-        $('#input_senha').pstrength();
+        // $('#input_senha').pstrength();
     });
     
     // Checa Validação Senha
