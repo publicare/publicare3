@@ -48,24 +48,15 @@ class Usuario extends Base
                         _PERFIL_DEFAULT => 'Default'
 			);
         
-	public $cod_objeto;
 	public $usuario;
-	public $browser_ver;
-	public $is_explorer;
-	public $action;
-	public $inicio_secao;
+    public $cod_perfil;
         
-	// /**
-	//  * Metodo construtor da classe usuario
-	//  * @param Page $page - Referencia objeto page
-	//  */
-	// function __construct(&$page)
-	// {
-    //         $this->page = $page;
-            
-    //  
-    // }
-    
+	public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->iniciar();
+    }
+
     /**
      * Inicializa objeto, definindo sessions necessarias a utilizacao
      */
@@ -101,18 +92,6 @@ class Usuario extends Base
     //     );
     // }
 
-    // public function __debugInfo()
-    // {
-    //     return(
-    //         array(
-    //             "caminhoObjeto" => $this->caminhoObjeto, 
-    //             "metadados" => $this->metadados, 
-    //             "propriedades" => $this->propriedades,
-    //             "iniciado" => $this->iniciado
-    //         )
-    //     );
-    // }
-        
     function pegarNomePerfil($cod)
     {
         return $this->perfil[$cod];
