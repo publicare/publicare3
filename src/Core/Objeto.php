@@ -40,45 +40,45 @@ class Objeto extends Base
     private $propriedades;
     private $iniciado = false;
 
+    public function __construct($container, $cod_objeto=-1)
+    {
+        parent::__construct($container);
+        $this->iniciar($cod_objeto);
+    }
+
+    public function __debugInfo()
+    {
+        return(
+            array(
+                "caminhoObjeto" => $this->caminhoObjeto, 
+                "metadados" => $this->metadados, 
+                "propriedades" => $this->propriedades,
+                "iniciado" => $this->iniciado
+            )
+        );
+    }
+
     public function __get($campo)
     {
         if (isset($this->$campo)) return $this->$campo;
         return false;
     }
 
+    public function __serialize()
+    {
+        return(
+            array(
+                "caminhoObjeto" => $this->caminhoObjeto, 
+                "metadados" => $this->metadados, 
+                "propriedades" => $this->propriedades,
+                "iniciado" => $this->iniciado
+            )
+        );
+    }
+
     public function setMetadado($campo, $valor)
     {
         $this->metadados[$campo] = $valor;
-    }
-
-    // public function __serialize()
-    // {
-    //     return(
-    //         array(
-    //             "caminhoObjeto" => $this->caminhoObjeto, 
-    //             "metadados" => $this->metadados, 
-    //             "propriedades" => $this->propriedades,
-    //             "iniciado" => $this->iniciado
-    //         )
-    //     );
-    // }
-
-    // public function __debugInfo()
-    // {
-    //     return(
-    //         array(
-    //             "caminhoObjeto" => $this->caminhoObjeto, 
-    //             "metadados" => $this->metadados, 
-    //             "propriedades" => $this->propriedades,
-    //             "iniciado" => $this->iniciado
-    //         )
-    //     );
-    // }
-
-    public function __construct($container, $cod_objeto=-1)
-    {
-        parent::__construct($container);
-        $this->iniciar($cod_objeto);
     }
     
     public function iniciar($cod_objeto=-1)
