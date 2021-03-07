@@ -44,9 +44,9 @@ class Usuario extends Base
 			_PERFIL_EDITOR => 'Editor',
 			_PERFIL_AUTOR => 'Autor',
 			_PERFIL_RESTRITO => 'Restrito',
-                        _PERFIL_MILITARIZADO => 'Militarizado',
-                        _PERFIL_DEFAULT => 'Default'
-			);
+            _PERFIL_MILITARIZADO => 'Militarizado',
+            _PERFIL_DEFAULT => 'Default'
+    );
         
 	public $usuario;
     public $cod_perfil;
@@ -55,6 +55,17 @@ class Usuario extends Base
     {
         parent::__construct($container);
         $this->iniciar();
+    }
+
+    public function __debugInfo()
+    {
+        return(
+            array(
+                "usuario" => $this->usuario,
+                "cod_perfil" => $this->cod_perfil,
+                "perfil" => $this->perfil
+            )
+        );
     }
 
     /**
@@ -78,6 +89,8 @@ class Usuario extends Base
             if (!isset($_SESSION['usuario']) || !is_array($_SESSION['usuario'])) $_SESSION['usuario'] = array();
             $_SESSION['usuario']['perfil'] = _PERFIL_DEFAULT;
         }
+
+        $this->usuario = $_SESSION['usuario'];
     }
 
     // public function __serialize()
@@ -433,7 +446,7 @@ class Usuario extends Base
                     return $this->cod_perfil;
                 }
             }
-            $this->cod_perfil=0;
+            $this->cod_perfil=_PERFIL_DEFAULT;
             return _PERFIL_DEFAULT;
 	}
 		
