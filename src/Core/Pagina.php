@@ -210,7 +210,7 @@ class Pagina extends Base
             || strpos($acao,"/manage/")!==false)
         {
             if ($acao == "/do/login_post" 
-                || $acao == "/do/esquecisenha_post")
+            || $acao == "/do/esquecisenha_post")
             {
                 $incluirheader = false;
                 $acaoSistema = $vacao[count($vacao)-1];
@@ -219,6 +219,7 @@ class Pagina extends Base
             }
             elseif ($this->usuario->podeExecutar($acao))
             {
+                // xd("a");
                 $this->incluirAdmin();
                 
                 // verifica se eh operacao com pilhas
@@ -318,12 +319,10 @@ class Pagina extends Base
                     $this->exibirMensagemProibido($acao);
                     return false;
                 }
-
                 
-                
-
                 // caso tenha view definida manualmente pega o arquivo
                 $tmpScriptAtual = $this->container["objeto"]->metadados['script_exibir'];
+                
                 
                 // caso o objeto nao esteja protegido
                 if ($this->adminobjeto->estaSobAreaProtegida())
@@ -546,15 +545,15 @@ class Pagina extends Base
         
         $_SESSION["escondetitulo"] = true;
 
-        xd("PAgina 550 - ");
+        // xd("PAgina 550 - ");
         
         if ($header != "")
         {
-            $this->parser->start($header);
+            $this->container["parse"]->start($header);
         }
         if ($parse === true)
         {
-            $this->parser->start($pagina);
+            $this->container["parse"]->start($pagina);
         }
         else
         {
@@ -562,7 +561,7 @@ class Pagina extends Base
         }
         if ($footer != "")
         {
-            $this->parser->start($footer);
+            $this->container["parse"]->start($footer);
         }
         
         exit();

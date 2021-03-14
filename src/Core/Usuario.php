@@ -455,7 +455,7 @@ class Usuario extends Base
             if (!isset($this->cod_perfil)) $this->cod_perfil = _PERFIL_DEFAULT;
 
             //Administrador Pode Tudo
-            if ($this->cod_perfil == _PERFIL_ADMINISTRADOR)
+            if ((int)$this->cod_perfil == (int)_PERFIL_ADMINISTRADOR)
             {
                 switch($script){
                     case '/do/delete':
@@ -465,7 +465,7 @@ class Usuario extends Base
                             return false;
                         }
                         break;
-                } // switch
+                    } // switch
                 return true;
             }
 			

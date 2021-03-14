@@ -99,9 +99,6 @@ class AdminObjeto extends Base
         $pai = $this->container["objeto"]->valor("cod_objeto");
         $niveis = 0;
 
-
-        // xd($qry);
-    
         $objetos = $this->localizarObjetos('*', $qry, $ordem, $inicio, $limite, $pai, $niveis, $apagados);
         $objetos2 = $this->localizarObjetos('*', $qry, $ordem, -1, -1, $pai, $niveis, $apagados);
         $objetostotal = $this->localizarObjetos('*', "", "", -1, -1, $pai, $niveis, $apagados);
@@ -589,8 +586,6 @@ class AdminObjeto extends Base
                     . " WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["nick"].".".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
             $res = $this->container["db"]->execSQL($sql);
             
-        //    xd($sql);
-            
             if($dados = $res->fields)
             {
                 foreach ($tipo as $key => $value)
@@ -741,12 +736,10 @@ class AdminObjeto extends Base
         // {
         //     x("adminobjeto::ehMetadado teste=".$teste);
         // }
-//        xd($this->container["db"]->metadados);
         if (strpos($teste, '.'))
         {
             $teste = substr($teste, strpos($teste, '.') + 1);
         }
-        // xd($this->container["db"]->getMetadados());
         if (in_array($teste, $this->container["db"]->getMetadados())) return true;
 
         if (strpos($teste,'objeto.') || strpos($teste, $this->container["config"]->bd["tabelas"]['objeto']["nick"].".")) return true;
@@ -877,7 +870,6 @@ class AdminObjeto extends Base
         
         if ($tem_propriedade_na_ordem || ($multiclasse && $tem_propriedade_na_qry))
         {
-            //xd($tem_propriedade_na_qry);
             if (!isset($classes_where)) $classes_where = "";
             $sql_out = $this->localizarObjetosTabelaTemporaria ($classes, $array_qry, $array_ordem, $apagado_where.$tags_where.$usuario_where.$classes_where, $pai_join.$tags_join);
             $sqlfinal = $sql_out['tbl'].$sql_out['ordem'];
@@ -909,7 +901,6 @@ class AdminObjeto extends Base
         // Vai criando objetos Objeto e populando array
         for ($i=0; $i<sizeof($row); $i++)
         {
-//            xd($_SESSION['usuario']);
             if ($_SESSION['usuario']['perfil'] < _PERFIL_MILITARIZADO || ($_SESSION['usuario']['perfil']==_PERFIL_DEFAULT || $_SESSION['usuario']['perfil']==_PERFIL_MILITARIZADO) && ($row[$i]["data_publicacao"]<=date("YmdHi")."00" && $row[$i]["data_validade"]>=date("YmdHi")."00"))
             {
                 $obj = new Objeto($this->container);
@@ -942,8 +933,6 @@ class AdminObjeto extends Base
         $this->container["classe"]->carregar();
         $saida=array();
 
-        
-        // xd($_SESSION['classes']);
         if ($classes=='*')
         {
             return $_SESSION['classesNomes'];
@@ -1037,8 +1026,6 @@ class AdminObjeto extends Base
             $temp_where = array();
             $campo_incluido = array();
 
-            // xd($array_ordem);
-			
             //Constroi SQL para casos em que existem propriedades na ordem
             foreach ($array_ordem as $item)
             {
@@ -1087,7 +1074,6 @@ class AdminObjeto extends Base
                 }
                 if ($string_temp != "" && !in_array($string_temp, $ordem_temporaria)) $ordem_temporaria[] = $string_temp;
 
-                //xd($this->container["config"]->bd["tabelas"]);
                 /*
                 
             $result['ordem'][]= $temp_array;
@@ -1140,8 +1126,6 @@ class AdminObjeto extends Base
         $sqlFinal = "SELECT * FROM ( "
                 . join(PHP_EOL." UNION ALL ".PHP_EOL, $sqls_insert)
                 . " ) tabletemp ";
-        
-//        xd($sqlFinal);
         
 //        foreach($sqls_insert as $sqls)
 //        {
@@ -1328,7 +1312,6 @@ class AdminObjeto extends Base
         }
 
         $sql_condicao = "";
-//        xd($_SESSION['usuario']);
         switch ($_SESSION['usuario']['perfil'])
         {
             case _PERFIL_DEFAULT:
@@ -1476,7 +1459,6 @@ class AdminObjeto extends Base
                 }
                 else
                 {
-//                    xd($info['tabela']);
                     //$montagem['from'] .= '(('.$on.') and ('.$campo.'.cod_propriedade='.$info['cod_propriedade'].'))';
                     $montagem['field'] .=  $campo."_ref.".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"][$info['campo_ref']];
                     $montagem['fieldordem'] .=  $campo."_ref.".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"][$info['campo_ref']]." AS ".$campo."_ref___2";
@@ -1782,13 +1764,13 @@ class AdminObjeto extends Base
             $objBlob = new Objeto($this->container, $cod_objeto);
         }
         
-        
         // pegando permissao do usuario no objeto
         $permissao = false;
         if (isset($_SESSION['usuario']["cod_usuario"]))
         {
             $permissao = $this->container["administracao"]->pegarPerfilUsuarioObjeto($_SESSION['usuario']["cod_usuario"], $cod_objeto);
         }
+
         
         // verificando se o objeto está publicado
         if ($objBlob->valor("cod_status") != "2" && !$permissao)

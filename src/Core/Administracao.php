@@ -135,8 +135,6 @@ class Administracao extends Base
                 . "WHERE ".$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_objeto"]." = ".$cod_objeto;
         $this->container["db"]->execSQL($sql);
 
-        // xd($proplist);
-
         $this->apagarPropriedades($cod_objeto, false);
         $this->gravarPropriedades($cod_objeto, $cod_classe, $proplist);
         $this->gravarTags($cod_objeto, $tagslist);
@@ -567,7 +565,6 @@ class Administracao extends Base
             {
                 if (isset($valor['size']) && $valor['size'] > 0)
                 {
-//            xd($array_files);
                     $ar_fld = preg_split("[___]", $key);
                     if (count($ar_fld)>1) { $prop = $ar_fld[1]; }
                     else { $prop = $key; }
@@ -637,8 +634,6 @@ class Administracao extends Base
         $tagslist = array();
         $proplist = array();
         
-//        xd($dados);
-        
         foreach ($dados as $key=>$value)
         {
             if ($key!="submit")
@@ -698,14 +693,11 @@ class Administracao extends Base
         
         if ($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]]==0) { unset($campos[$this->container["config"]->bd["tabelas"]["objeto"]["colunas"]["cod_pele"]]); }
         
-// xd($this->container["config"]->bd);
-
         $cod_objeto = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]["objeto"]["nome"], $campos);
         
         
         // grava as propriedades do objeto
         $this->gravarPropriedades($cod_objeto, $dados['cod_classe'], $proplist, $array_files);
-//        xd($proplist);
         // grava as relações de parentesco do objeto
         $this->criarParentesco($cod_objeto, $dados['cod_pai']);
         // grava as tags
@@ -850,7 +842,6 @@ class Administracao extends Base
         
         $sql = $this->container["db_con"]->getCon()->prepare($sql);
         $rs = $this->container["db"]->execSQL(array($sql, $bind));
-        // xd("aqui");
 
         $this->container["log"]->registrarLogWorkflow("Criada versão ".$versao, $cod_objeto, 1);
     }
@@ -1001,7 +992,6 @@ class Administracao extends Base
                 . "FROM ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." "
                 . "WHERE ".$this->container["config"]->bd["tabelas"]["parentesco"]["colunas"]["cod_objeto"]." = ".$cod_pai;
         $this->container["db"]->execSQL($sql);
-        // xd($sql);
         
         // cria parentesco entre objeto e o pai
         $sql = "INSERT INTO ".$this->container["config"]->bd["tabelas"]["parentesco"]["nome"]." ("
@@ -1105,7 +1095,6 @@ class Administracao extends Base
     {			
         if ($_SESSION['usuario']['perfil'] <= _PERFIL_EDITOR)
         {
-//            xd($mensagem);
             $this->trocarStatusObjeto($mensagem, $cod_objeto, _STATUS_PUBLICADO);
             $this->container["db"]->execSQL("DELETE FROM ".$this->container["config"]->bd["tabelas"]["pendencia"]["nome"]." "
                             . " WHERE ".$this->container["config"]->bd["tabelas"]["pendencia"]["colunas"]["cod_objeto"]." = ".$cod_objeto);
@@ -1352,7 +1341,6 @@ class Administracao extends Base
         $campos['data_validade'] = ConverteData($dados['data_validade'],27);
 
         $novo_cod_objeto = $this->container["db"]->insert('objeto',$campos);		
-//        xd($novo_cod_objeto);
 
         $this->gravarPropriedades($novo_cod_objeto, $cod_classe_interlink, array('property___link'=>$cod_objeto));
         $this->removerObjetoPilha($cod_objeto);
@@ -1411,7 +1399,6 @@ class Administracao extends Base
         $cod_objeto = $this->container["db"]->insert($this->container["config"]->bd["tabelas"]['objeto']["nome"], $campos);	
         $this->duplicarPropriedades($cod_objeto, $orig_obj);
         $this->criarParentesco($cod_objeto, $cod_pai);
-        // xd($orig_obj);
 
         if ($orig_obj->pegarListaFilhos())
         {
@@ -1453,8 +1440,6 @@ class Administracao extends Base
                         "name" => $valor["valor"], 
                         "size" => $valor["tamanho_blob"], 
                         "tmp_name" => $this->container["config"]->portal["uploadpath"].Blob::identificaPasta($this->container, $valor["cod_blob"])."/".$valor["cod_blob"].".".$valor["tipo_blob"]);
-                    // x($valor);
-                    // xd($files);
                     $this->codigo_temp_blob = $valor['cod_blob'];
                     $this->tipo_temp_blob = $valor['tipo_blob'];
                     $this->tamanho_temp_blob = $valor['tamanho_blob'];
@@ -1466,7 +1451,6 @@ class Administracao extends Base
             }
         }
         $this->gravarPropriedades($destino, $origem->valor("cod_classe"), $lista, $files);
-        // xd($lista);
     }
 
     /**
@@ -1964,7 +1948,6 @@ class Administracao extends Base
         
         $executa = false;
         $cod = 0;
-        //        xd($post);
         
         if ($acao=="create")
         {
@@ -1982,7 +1965,6 @@ class Administracao extends Base
             
             $obj = new Objeto($this->container, $cod);
             $this->gravarVersao($cod);
-            // xd("aha");
             $retorno["obj"] = $obj;
             
             if ($publicar==1)

@@ -409,7 +409,7 @@ class Blob extends Base
                     {
                         case "jpg":
                         case "jpeg":
-                            $im = imagecreatefromjpeg($endereco_original);
+                            $im = \imagecreatefromjpeg($endereco_original);
                             break;
                         case "png":
                             $im = imagecreatefrompng($endereco_original);
